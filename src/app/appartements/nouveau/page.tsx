@@ -7,6 +7,7 @@ import { FaArrowLeft, FaSave, FaTimes } from 'react-icons/fa';
 import { useAppartements } from '@/hooks/useAppartements';
 import { StarRating } from '@/components/StarRating';
 import { geocodeAddressWithRetry } from '@/lib/geocoding';
+import { uploadMultipleImages } from '@/lib/storage';
 
 // Calculer la note globale à partir des notes détaillées
 function calculateGlobalNote(notes: { luminosite: number; bruit: number; etat: number; quartier: number; proximite: number }): number {
@@ -52,20 +53,31 @@ export default function NouvelAppartementPage() {
     quartier: 0,
     proximite: 0,
   });
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Géolocaliser l'adresse
+      // 1. Créer d'abord l'appartement pour avoir un ID
+      const tempId = `temp_${Date.now()}`;
+
+      // 2. Upload des images (si il y en a)
+      let uploadedImageUrls: string[] = [];
+      if (selectedFiles.length > 0) {
+        uploadedImageUrls = await uploadMultipleImages(selectedFiles, `appartements/${tempId}`);
+      }
+
+      // 3. Géolocaliser l'adresse
       const fullAddress = `${formData.adresse}, ${formData.codePostal} ${formData.ville}`;
       const coordinates = await geocodeAddressWithRetry(fullAddress);
 
       const dataToSubmit: any = {
         ...formData,
         choix: formData.choix || null,
-        photos: [],
+        photos: uploadedImageUrls,
         documents: [],
         avantages,
         inconvenients,
@@ -87,6 +99,7 @@ export default function NouvelAppartementPage() {
       await addAppartement(dataToSubmit);
       router.push('/appartements');
     } catch (err) {
+      console.error(err);
       alert('Erreur lors de l\'ajout de l\'appartement');
       setLoading(false);
     }
@@ -306,6 +319,64 @@ export default function NouvelAppartementPage() {
               rows={4}
               placeholder="Description de l'appartement, points forts, etc."
             />
+          </div>
+
+          {/* Photos */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">
+              📸 Photos
+            </h2>
+            <div className="space-y-4">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  setSelectedFiles(files);
+                  // Créer des previews
+                  const previews = files.map(file => URL.createObjectURL(file));
+                  setImageUrls(previews);
+                }}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <p className="text-sm text-gray-500">
+                Ajoutez des photos de l'appartement (max 10 photos, 5MB chacune)
+              </p>
+
+              {imageUrls.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                  {imageUrls.map((url, index) => (
+                    <div key={index} className="relative group">
+                      <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                        <img
+                          src={url}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      {index === 0 && (
+                        <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                          Photo principale
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newFiles = selectedFiles.filter((_, i) => i !== index);
+                          const newUrls = imageUrls.filter((_, i) => i !== index);
+                          setSelectedFiles(newFiles);
+                          setImageUrls(newUrls);
+                        }}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Statut de visite */}

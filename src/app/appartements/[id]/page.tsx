@@ -131,20 +131,47 @@ export default function AppartementDetailsPage() {
           </div>
         </div>
 
-        {/* Image principale */}
-        <div className="bg-white rounded-lg shadow-xl overflow-hidden mb-6">
-          <div className="h-96 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-            {appartement.photos && appartement.photos.length > 0 ? (
+        {/* Galerie photos */}
+        {appartement.photos && appartement.photos.length > 0 ? (
+          <div className="bg-white rounded-lg shadow-xl overflow-hidden mb-6">
+            {/* Photo principale */}
+            <div className="h-96 bg-gray-100 flex items-center justify-center overflow-hidden">
               <img
                 src={appartement.photos[0]}
                 alt={appartement.titre}
                 className="w-full h-full object-cover"
               />
-            ) : (
-              <FaMapMarkerAlt className="text-9xl text-blue-300" />
+            </div>
+
+            {/* Miniatures */}
+            {appartement.photos.length > 1 && (
+              <div className="p-4 bg-gray-50">
+                <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                  {appartement.photos.slice(1, 7).map((photo, index) => (
+                    <div key={index} className="aspect-square bg-gray-200 rounded overflow-hidden cursor-pointer hover:opacity-75 transition-opacity">
+                      <img
+                        src={photo}
+                        alt={`Photo ${index + 2}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                  {appartement.photos.length > 7 && (
+                    <div className="aspect-square bg-gray-800 bg-opacity-75 rounded flex items-center justify-center text-white font-bold">
+                      +{appartement.photos.length - 7}
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
-        </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-xl overflow-hidden mb-6">
+            <div className="h-96 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+              <FaMapMarkerAlt className="text-9xl text-blue-300" />
+            </div>
+          </div>
+        )}
 
         {/* Informations principales */}
         <div className="grid md:grid-cols-3 gap-6 mb-6">
