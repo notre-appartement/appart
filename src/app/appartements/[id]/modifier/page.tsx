@@ -1,15 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft, FaSave, FaTimes } from 'react-icons/fa';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { Appartement } from '@/types';
 import { useAppartements } from '@/hooks/useAppartements';
 
-export default function NouvelAppartementPage() {
+export default function ModifierAppartementPage() {
+  const params = useParams();
   const router = useRouter();
-  const { addAppartement } = useAppartements();
-  const [loading, setLoading] = useState(false);
+  const { updateAppartement } = useAppartements();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [appartement, setAppartement] = useState<Appartement | null>(null);
+
   const [formData, setFormData] = useState({
     titre: '',
     adresse: '',
@@ -36,32 +43,106 @@ export default function NouvelAppartementPage() {
   const [inconvenients, setInconvenients] = useState<string[]>([]);
   const [newInconvenient, setNewInconvenient] = useState('');
 
+  // Charger l'appartement
+  useEffect(() => {
+    const fetchAppartement = async () => {
+      try {
+        const docRef = doc(db, 'appartements', params.id as string);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const rawData = docSnap.data();
+          const data = {
+            id: docSnap.id,
+            ...rawData,
+            createdAt: rawData.createdAt?.toDate() || new Date(),
+            updatedAt: rawData.updatedAt?.toDate() || new Date(),
+            dateVisite: rawData.dateVisite ? rawData.dateVisite.toDate() : undefined,
+          } as Appartement;
+
+          setAppartement(data);
+
+          // Remplir le formulaire
+          setFormData({
+            titre: data.titre || '',
+            adresse: data.adresse || '',
+            ville: data.ville || '',
+            codePostal: data.codePostal || '',
+            prix: data.prix || 0,
+            charges: data.charges || 0,
+            surface: data.surface || 0,
+            pieces: data.pieces || 0,
+            chambres: data.chambres || 0,
+            etage: data.etage || 0,
+            ascenseur: data.ascenseur || false,
+            meuble: data.meuble || false,
+            visite: data.visite || false,
+            dateVisite: data.dateVisite ? data.dateVisite.toISOString().split('T')[0] : '',
+            choix: data.choix as any || '',
+            description: data.description || '',
+            lienAnnonce: data.lienAnnonce || '',
+            agence: data.agence || '',
+            contactAgence: data.contactAgence || '',
+          });
+
+          setAvantages(data.avantages || []);
+          setInconvenients(data.inconvenients || []);
+        } else {
+          alert('Appartement non trouvé');
+          router.push('/appartements');
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement:', error);
+        alert('Erreur lors du chargement de l\'appartement');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppartement();
+  }, [params.id, router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setSaving(true);
 
     try {
-      const dataToSubmit: any = {
+      const dataToUpdate: any = {
         ...formData,
         choix: formData.choix || null,
-        photos: [],
-        documents: [],
         avantages,
         inconvenients,
       };
 
       // N'ajouter dateVisite que si elle existe
       if (formData.dateVisite) {
-        dataToSubmit.dateVisite = new Date(formData.dateVisite);
+        dataToUpdate.dateVisite = new Date(formData.dateVisite);
       }
 
-      await addAppartement(dataToSubmit);
-      router.push('/appartements');
+      await updateAppartement(params.id as string, dataToUpdate);
+      router.push(`/appartements/${params.id}`);
     } catch (err) {
-      alert('Erreur lors de l\'ajout de l\'appartement');
-      setLoading(false);
+      alert('Erreur lors de la modification de l\'appartement');
+      setSaving(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            <p className="text-gray-600 mt-4">Chargement...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!appartement) {
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -69,14 +150,14 @@ export default function NouvelAppartementPage() {
         {/* Header */}
         <div className="mb-6">
           <Link
-            href="/appartements"
+            href={`/appartements/${params.id}`}
             className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4"
           >
             <FaArrowLeft className="mr-2" />
-            Retour aux appartements
+            Retour aux détails
           </Link>
           <h1 className="text-3xl font-bold text-gray-800">
-            🏢 Nouvel Appartement
+            ✏️ Modifier l'appartement
           </h1>
         </div>
 
@@ -521,14 +602,14 @@ export default function NouvelAppartementPage() {
           <div className="flex space-x-4">
             <button
               type="submit"
-              disabled={loading}
+              disabled={saving}
               className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
             >
               <FaSave />
-              <span>{loading ? 'Enregistrement...' : 'Enregistrer l\'appartement'}</span>
+              <span>{saving ? 'Enregistrement...' : 'Enregistrer les modifications'}</span>
             </button>
             <Link
-              href="/appartements"
+              href={`/appartements/${params.id}`}
               className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors flex items-center space-x-2"
             >
               <FaTimes />

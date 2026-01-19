@@ -28,13 +28,16 @@ export function useAppartements() {
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const appartementsData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate() || new Date(),
-          updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-          dateVisite: doc.data().dateVisite?.toDate() || undefined,
-        })) as Appartement[];
+        const appartementsData = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt?.toDate() || new Date(),
+            updatedAt: data.updatedAt?.toDate() || new Date(),
+            dateVisite: data.dateVisite ? data.dateVisite.toDate() : undefined,
+          };
+        }) as Appartement[];
 
         setAppartements(appartementsData);
         setLoading(false);

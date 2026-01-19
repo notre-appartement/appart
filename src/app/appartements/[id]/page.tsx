@@ -36,12 +36,13 @@ export default function AppartementDetailsPage() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
+          const data = docSnap.data();
           setAppartement({
             id: docSnap.id,
-            ...docSnap.data(),
-            createdAt: docSnap.data().createdAt?.toDate() || new Date(),
-            updatedAt: docSnap.data().updatedAt?.toDate() || new Date(),
-            dateVisite: docSnap.data().dateVisite?.toDate() || undefined,
+            ...data,
+            createdAt: data.createdAt?.toDate() || new Date(),
+            updatedAt: data.updatedAt?.toDate() || new Date(),
+            dateVisite: data.dateVisite ? data.dateVisite.toDate() : undefined,
           } as Appartement);
         } else {
           alert('Appartement non trouvé');
@@ -111,6 +112,13 @@ export default function AppartementDetailsPage() {
               </p>
             </div>
             <div className="flex space-x-2">
+              <Link
+                href={`/appartements/${appartement.id}/modifier`}
+                className="text-blue-500 hover:text-blue-700 p-2 border border-blue-500 rounded-lg hover:bg-blue-50 transition-colors"
+                title="Modifier"
+              >
+                <FaEdit />
+              </Link>
               <button
                 onClick={handleDelete}
                 className="text-red-500 hover:text-red-700 p-2 border border-red-500 rounded-lg hover:bg-red-50 transition-colors"

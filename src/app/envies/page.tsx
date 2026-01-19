@@ -1,14 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { FaPlus, FaHeart, FaUser, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaHeart, FaUser, FaTrash, FaEdit } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEnvies } from '@/hooks/useEnvies';
 
 export default function EnviesPage() {
   const { displayName } = useAuth();
-  const { envies, loading, addEnvie, deleteEnvie } = useEnvies();
+  const { envies, loading, addEnvie, updateEnvie, deleteEnvie } = useEnvies();
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     nom: '',
     definition: '',
@@ -19,12 +20,36 @@ export default function EnviesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addEnvie(formData);
+      if (editingId) {
+        // Mode édition
+        await updateEnvie(editingId, formData);
+        setEditingId(null);
+      } else {
+        // Mode ajout
+        await addEnvie(formData);
+      }
       setFormData({ nom: '', definition: '', important: false, auteur: 'Aymeric' });
       setShowForm(false);
     } catch (err) {
-      alert('Erreur lors de l\'ajout de l\'envie');
+      alert(editingId ? 'Erreur lors de la modification de l\'envie' : 'Erreur lors de l\'ajout de l\'envie');
     }
+  };
+
+  const handleEdit = (envie: any) => {
+    setFormData({
+      nom: envie.nom,
+      definition: envie.definition || '',
+      important: envie.important,
+      auteur: envie.auteur,
+    });
+    setEditingId(envie.id);
+    setShowForm(true);
+  };
+
+  const handleCancelEdit = () => {
+    setFormData({ nom: '', definition: '', important: false, auteur: 'Aymeric' });
+    setEditingId(null);
+    setShowForm(false);
   };
 
   const handleDelete = async (id: string, nom: string) => {
@@ -54,10 +79,12 @@ export default function EnviesPage() {
             </button>
           </div>
 
-          {/* Formulaire d'ajout */}
+          {/* Formulaire d'ajout/édition */}
           {showForm && (
             <div className="bg-pink-50 border border-pink-200 rounded-lg p-6 mb-6">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">Nouvelle envie</h3>
+              <h3 className="text-lg font-bold text-gray-800 mb-4">
+                {editingId ? '✏️ Modifier l\'envie' : '➕ Nouvelle envie'}
+              </h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -116,21 +143,23 @@ export default function EnviesPage() {
                     type="submit"
                     className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 transition-colors"
                   >
-                    Ajouter
+                    {editingId ? 'Enregistrer' : 'Ajouter'}
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowForm(false)}
+                    onClick={handleCancelEdit}
                     className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
                   >
                     Annuler
                   </button>
                 </div>
 
-                <div className="text-xs text-gray-500 flex items-center space-x-1">
-                  <FaUser className="text-pink-600" />
-                  <span>Ajouté par : <strong>{displayName}</strong></span>
-                </div>
+                {!editingId && (
+                  <div className="text-xs text-gray-500 flex items-center space-x-1">
+                    <FaUser className="text-pink-600" />
+                    <span>Ajouté par : <strong>{displayName}</strong></span>
+                  </div>
+                )}
               </form>
             </div>
           )}
@@ -175,13 +204,22 @@ export default function EnviesPage() {
                         Ajouté par {envie.auteurNom} le {envie.createdAt.toLocaleDateString()}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleDelete(envie.id, envie.nom)}
-                      className="text-red-500 hover:text-red-700 p-2"
-                      title="Supprimer"
-                    >
-                      <FaTrash />
-                    </button>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEdit(envie)}
+                        className="text-blue-500 hover:text-blue-700 p-2"
+                        title="Modifier"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(envie.id, envie.nom)}
+                        className="text-red-500 hover:text-red-700 p-2"
+                        title="Supprimer"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

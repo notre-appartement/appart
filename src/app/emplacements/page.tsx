@@ -1,6 +1,6 @@
 'use client';
 
-import { FaPlus, FaMapMarkerAlt, FaBriefcase, FaHome, FaShoppingCart, FaUsers, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaMapMarkerAlt, FaBriefcase, FaHome, FaShoppingCart, FaUsers, FaTrash, FaEdit } from 'react-icons/fa';
 import Link from 'next/link';
 import { useEmplacements } from '@/hooks/useEmplacements';
 
@@ -93,13 +93,22 @@ export default function EmplacementsPage() {
                           </p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleDelete(emplacement.id, emplacement.nom)}
-                        className="text-red-500 hover:text-red-700 p-2 ml-4"
-                        title="Supprimer"
-                      >
-                        <FaTrash />
-                      </button>
+                      <div className="flex space-x-2 ml-4">
+                        <Link
+                          href={`/emplacements/${emplacement.id}/modifier`}
+                          className="text-blue-500 hover:text-blue-700 p-2"
+                          title="Modifier"
+                        >
+                          <FaEdit />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(emplacement.id, emplacement.nom)}
+                          className="text-red-500 hover:text-red-700 p-2"
+                          title="Supprimer"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );

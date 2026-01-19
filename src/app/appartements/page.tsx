@@ -1,11 +1,19 @@
 'use client';
 
-import { FaPlus, FaMapMarkerAlt, FaEuroSign, FaRuler, FaTrash } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaPlus, FaMapMarkerAlt, FaEuroSign, FaRuler, FaTrash, FaFilter } from 'react-icons/fa';
 import Link from 'next/link';
 import { useAppartements } from '@/hooks/useAppartements';
 
 export default function AppartementsPage() {
   const { appartements, loading, deleteAppartement } = useAppartements();
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    statut: 'tous' as 'tous' | 'visites' | 'a_visiter',
+    evaluation: 'tous' as 'tous' | 'bon' | 'moyen' | 'pas_bon',
+    prixMax: '',
+    surfaceMin: '',
+  });
 
   const handleDelete = async (id: string, titre: string) => {
     if (confirm(`Voulez-vous vraiment supprimer "${titre}" ?`)) {
@@ -17,6 +25,24 @@ export default function AppartementsPage() {
     }
   };
 
+  // Filtrage des appartements
+  const filteredAppartements = appartements.filter((appart) => {
+    // Filtre par statut de visite
+    if (filters.statut === 'visites' && !appart.visite) return false;
+    if (filters.statut === 'a_visiter' && appart.visite) return false;
+
+    // Filtre par évaluation
+    if (filters.evaluation !== 'tous' && appart.choix !== filters.evaluation) return false;
+
+    // Filtre par prix max
+    if (filters.prixMax && appart.prix > Number(filters.prixMax)) return false;
+
+    // Filtre par surface min
+    if (filters.surfaceMin && appart.surface < Number(filters.surfaceMin)) return false;
+
+    return true;
+  });
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto">
@@ -24,15 +50,104 @@ export default function AppartementsPage() {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-3xl font-bold text-gray-800">
               🏢 Nos Appartements
+              {filteredAppartements.length !== appartements.length && (
+                <span className="text-sm text-gray-500 ml-2">
+                  ({filteredAppartements.length}/{appartements.length})
+                </span>
+              )}
             </h2>
-            <Link
-              href="/appartements/nouveau"
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 shadow-lg"
-            >
-              <FaPlus />
-              <span>Ajouter un appartement</span>
-            </Link>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="bg-gray-100 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2"
+              >
+                <FaFilter />
+                <span>Filtres</span>
+              </button>
+              <Link
+                href="/appartements/nouveau"
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 shadow-lg"
+              >
+                <FaPlus />
+                <span>Ajouter</span>
+              </Link>
+            </div>
           </div>
+
+          {/* Filtres */}
+          {showFilters && (
+            <div className="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Statut de visite
+                  </label>
+                  <select
+                    value={filters.statut}
+                    onChange={(e) => setFilters({ ...filters, statut: e.target.value as any })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="tous">Tous</option>
+                    <option value="visites">Déjà visités</option>
+                    <option value="a_visiter">À visiter</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Évaluation
+                  </label>
+                  <select
+                    value={filters.evaluation}
+                    onChange={(e) => setFilters({ ...filters, evaluation: e.target.value as any })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    disabled={filters.statut === 'a_visiter'}
+                  >
+                    <option value="tous">Tous</option>
+                    <option value="bon">✅ Bon</option>
+                    <option value="moyen">⚠️ Moyen</option>
+                    <option value="pas_bon">❌ Pas bon</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Prix max (€)
+                  </label>
+                  <input
+                    type="number"
+                    value={filters.prixMax}
+                    onChange={(e) => setFilters({ ...filters, prixMax: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Ex: 1500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Surface min (m²)
+                  </label>
+                  <input
+                    type="number"
+                    value={filters.surfaceMin}
+                    onChange={(e) => setFilters({ ...filters, surfaceMin: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Ex: 50"
+                  />
+                </div>
+              </div>
+
+              {/* Réinitialiser les filtres */}
+              <div className="mt-4 text-right">
+                <button
+                  onClick={() => setFilters({ statut: 'tous', evaluation: 'tous', prixMax: '', surfaceMin: '' })}
+                  className="text-sm text-gray-600 hover:text-gray-800 underline"
+                >
+                  Réinitialiser les filtres
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Liste des appartements */}
           {loading ? (
@@ -46,9 +161,20 @@ export default function AppartementsPage() {
               <p className="text-xl">Aucun appartement pour le moment</p>
               <p className="text-sm mt-2">Cliquez sur "Ajouter un appartement" pour commencer</p>
             </div>
+          ) : filteredAppartements.length === 0 ? (
+            <div className="text-center text-gray-500 py-12">
+              <FaFilter className="text-6xl mx-auto mb-4 text-gray-300" />
+              <p className="text-xl">Aucun appartement ne correspond aux filtres</p>
+              <button
+                onClick={() => setFilters({ statut: 'tous', evaluation: 'tous', prixMax: '', surfaceMin: '' })}
+                className="text-blue-600 hover:text-blue-800 mt-2 underline"
+              >
+                Réinitialiser les filtres
+              </button>
+            </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {appartements.map((appart) => (
+              {filteredAppartements.map((appart) => (
                 <div
                   key={appart.id}
                   className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow bg-white"
