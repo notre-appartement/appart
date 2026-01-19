@@ -1,13 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { FaPlus, FaMapMarkerAlt, FaEuroSign, FaRuler, FaTrash, FaFilter } from 'react-icons/fa';
+import { FaPlus, FaMapMarkerAlt, FaEuroSign, FaRuler, FaTrash, FaFilter, FaExchangeAlt } from 'react-icons/fa';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAppartements } from '@/hooks/useAppartements';
 
 export default function AppartementsPage() {
+  const router = useRouter();
   const { appartements, loading, deleteAppartement } = useAppartements();
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
   const [filters, setFilters] = useState({
     statut: 'tous' as 'tous' | 'visites' | 'a_visiter',
     evaluation: 'tous' as 'tous' | 'bon' | 'moyen' | 'pas_bon',
@@ -23,6 +26,26 @@ export default function AppartementsPage() {
         alert('Erreur lors de la suppression');
       }
     }
+  };
+
+  const toggleSelection = (id: string) => {
+    if (selectedForComparison.includes(id)) {
+      setSelectedForComparison(selectedForComparison.filter(apId => apId !== id));
+    } else {
+      if (selectedForComparison.length >= 4) {
+        alert('Vous ne pouvez comparer que 4 appartements maximum');
+        return;
+      }
+      setSelectedForComparison([...selectedForComparison, id]);
+    }
+  };
+
+  const handleCompare = () => {
+    if (selectedForComparison.length < 2) {
+      alert('Sélectionnez au moins 2 appartements à comparer');
+      return;
+    }
+    router.push(`/appartements/comparer?ids=${selectedForComparison.join(',')}`);
   };
 
   // Filtrage des appartements
@@ -64,6 +87,15 @@ export default function AppartementsPage() {
                 <FaFilter />
                 <span>Filtres</span>
               </button>
+              {selectedForComparison.length > 0 && (
+                <button
+                  onClick={handleCompare}
+                  className="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+                >
+                  <FaExchangeAlt />
+                  <span>Comparer ({selectedForComparison.length})</span>
+                </button>
+              )}
               <Link
                 href="/appartements/nouveau"
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 shadow-lg"
@@ -177,7 +209,11 @@ export default function AppartementsPage() {
               {filteredAppartements.map((appart) => (
                 <div
                   key={appart.id}
-                  className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow bg-white"
+                  className={`border rounded-lg overflow-hidden hover:shadow-lg transition-all bg-white ${
+                    selectedForComparison.includes(appart.id)
+                      ? 'border-purple-500 border-2 shadow-lg'
+                      : 'border-gray-200'
+                  }`}
                 >
                   {/* Image placeholder */}
                   <div className="h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
@@ -256,6 +292,16 @@ export default function AppartementsPage() {
 
                     {/* Actions */}
                     <div className="flex space-x-2 pt-3 border-t">
+                      <button
+                        onClick={() => toggleSelection(appart.id)}
+                        className={`px-3 py-2 rounded text-sm transition-colors ${
+                          selectedForComparison.includes(appart.id)
+                            ? 'bg-purple-600 text-white hover:bg-purple-700'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {selectedForComparison.includes(appart.id) ? '✓' : '+'}
+                      </button>
                       <Link
                         href={`/appartements/${appart.id}`}
                         className="flex-1 bg-blue-50 text-blue-600 py-2 px-3 rounded hover:bg-blue-100 transition-colors text-center text-sm"
