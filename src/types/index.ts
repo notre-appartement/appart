@@ -66,6 +66,11 @@ export interface Appartement {
   agence?: string;
   contactAgence?: string;
 
+  // Coûts additionnels
+  fraisAgence?: number;
+  depotGarantie?: number;
+  assuranceHabitation?: number;
+
   // Localisation
   latitude?: number;
   longitude?: number;
@@ -98,3 +103,19 @@ export interface VisiteChecklist {
 }
 
 export type UserRole = 'Aymeric' | 'Sarah';
+
+export interface BudgetCategory {
+  id: string;
+  nom: string;
+  pourcentage: number;
+  description?: string;
+  couleur?: string;
+}
+
+export interface UserProfile {
+  uid: string;
+  displayName: string;
+  salaireMensuel: number;
+  categoriesBudget: BudgetCategory[];
+  updatedAt: Date;
+}

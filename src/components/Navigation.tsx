@@ -16,6 +16,7 @@ export default function Navigation() {
     { href: '/envies', label: 'Nos Envies', icon: FaHeart },
     { href: '/emplacements', label: 'Emplacements', icon: FaMapMarkerAlt },
     { href: '/carte', label: 'Carte', icon: FaMap },
+    { href: '/profil', label: 'Profil & Budget', icon: FaUser },
   ];
 
   const handleSignOut = async () => {

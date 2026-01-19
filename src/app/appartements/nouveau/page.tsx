@@ -41,6 +41,9 @@ export default function NouvelAppartementPage() {
     lienAnnonce: '',
     agence: '',
     contactAgence: '',
+    fraisAgence: 0,
+    depotGarantie: 0,
+    assuranceHabitation: 0,
   });
   const [avantages, setAvantages] = useState<string[]>([]);
   const [newAvantage, setNewAvantage] = useState('');
@@ -138,7 +141,7 @@ export default function NouvelAppartementPage() {
                   type="text"
                   value={formData.titre}
                   onChange={(e) => setFormData({ ...formData, titre: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   placeholder="Ex: Bel appartement T3 avec balcon"
                   required
                 />
@@ -203,7 +206,7 @@ export default function NouvelAppartementPage() {
                   type="number"
                   value={formData.prix || ''}
                   onChange={(e) => setFormData({ ...formData, prix: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   placeholder="1200"
                   required
                 />
@@ -216,8 +219,47 @@ export default function NouvelAppartementPage() {
                   type="number"
                   value={formData.charges || ''}
                   onChange={(e) => setFormData({ ...formData, charges: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   placeholder="150"
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4 mt-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Frais d'agence (€)
+                </label>
+                <input
+                  type="number"
+                  value={formData.fraisAgence || ''}
+                  onChange={(e) => setFormData({ ...formData, fraisAgence: Number(e.target.value) })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  placeholder="Ex: 800"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Dépôt de garantie (€)
+                </label>
+                <input
+                  type="number"
+                  value={formData.depotGarantie || ''}
+                  onChange={(e) => setFormData({ ...formData, depotGarantie: Number(e.target.value) })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  placeholder="Ex: 1200"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Assurance habitation (€/an)
+                </label>
+                <input
+                  type="number"
+                  value={formData.assuranceHabitation || ''}
+                  onChange={(e) => setFormData({ ...formData, assuranceHabitation: Number(e.target.value) })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  placeholder="Ex: 200"
                 />
               </div>
             </div>

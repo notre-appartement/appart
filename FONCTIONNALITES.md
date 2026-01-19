@@ -81,14 +81,17 @@
 - [ ] Graphiques de comparaison (radar chart)
 
 ### Gestion du Budget
-- [ ] Définir un budget maximum
-- [ ] Calculateur de coûts totaux
-  - Loyer
-  - Charges
-  - Frais d'agence
-  - Dépôt de garantie
-  - Assurance estimée
-- [ ] Indicateur dépassement de budget
+- [x] Définir un salaire mensuel (Profil)
+- [x] Définir des catégories de budget par pourcentage
+- [x] Calcul automatique de la capacité de loyer partagée
+- [x] Indicateur visuel "Dans le budget" sur la liste des appartements
+- [x] Calculateur de coûts totaux
+  - [x] Loyer
+  - [x] Charges
+  - [x] Frais d'agence
+  - [x] Dépôt de garantie
+  - [x] Assurance estimée
+- [ ] Indicateur dépassement de budget détaillé
 - [ ] Statistiques budgétaires
 
 ### Photos et Documents

@@ -5,10 +5,13 @@ import { FaPlus, FaMapMarkerAlt, FaEuroSign, FaRuler, FaTrash, FaFilter, FaExcha
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAppartements } from '@/hooks/useAppartements';
+import { useSharedBudget } from '@/hooks/useSharedBudget';
 
 export default function AppartementsPage() {
   const router = useRouter();
-  const { appartements, loading, deleteAppartement } = useAppartements();
+  const { appartements, loading: loadingApparts, deleteAppartement } = useAppartements();
+  const { budgetLoyerMax, loading: loadingBudget } = useSharedBudget();
+  const loading = loadingApparts || loadingBudget;
   const [showFilters, setShowFilters] = useState(false);
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
   const [filters, setFilters] = useState({
@@ -117,7 +120,7 @@ export default function AppartementsPage() {
                   <select
                     value={filters.statut}
                     onChange={(e) => setFilters({ ...filters, statut: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   >
                     <option value="tous">Tous</option>
                     <option value="visites">Déjà visités</option>
@@ -132,7 +135,7 @@ export default function AppartementsPage() {
                   <select
                     value={filters.evaluation}
                     onChange={(e) => setFilters({ ...filters, evaluation: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                     disabled={filters.statut === 'a_visiter'}
                   >
                     <option value="tous">Tous</option>
@@ -150,7 +153,7 @@ export default function AppartementsPage() {
                     type="number"
                     value={filters.prixMax}
                     onChange={(e) => setFilters({ ...filters, prixMax: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                     placeholder="Ex: 1500"
                   />
                 </div>
@@ -163,7 +166,7 @@ export default function AppartementsPage() {
                     type="number"
                     value={filters.surfaceMin}
                     onChange={(e) => setFilters({ ...filters, surfaceMin: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                     placeholder="Ex: 50"
                   />
                 </div>
@@ -257,7 +260,16 @@ export default function AppartementsPage() {
                     <div className="flex items-center justify-between text-sm text-gray-700 mb-3">
                       <span className="flex items-center font-semibold text-lg text-blue-600">
                         <FaEuroSign className="mr-1" />
-                        {appart.prix} €
+                        {appart.prix + (appart.charges || 0)} €
+                        {budgetLoyerMax > 0 && (
+                          <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded-full ${
+                            (appart.prix + (appart.charges || 0)) <= budgetLoyerMax 
+                              ? 'bg-green-100 text-green-700' 
+                              : 'bg-red-100 text-red-700'
+                          }`}>
+                            {(appart.prix + (appart.charges || 0)) <= budgetLoyerMax ? 'Budget OK' : 'Hors Budget'}
+                          </span>
+                        )}
                       </span>
                       <span className="flex items-center">
                         <FaRuler className="mr-1" />

@@ -15,13 +15,17 @@ import {
   FaPhone,
   FaLink,
   FaCheckCircle,
-  FaTimesCircle
+  FaTimesCircle,
+  FaWallet,
+  FaShieldAlt,
+  FaHandHoldingUsd
 } from 'react-icons/fa';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Appartement, VisiteChecklist } from '@/types';
 import { useAppartements } from '@/hooks/useAppartements';
 import { useChecklists } from '@/hooks/useChecklists';
+import { useSharedBudget } from '@/hooks/useSharedBudget';
 import { StarRating } from '@/components/StarRating';
 
 export default function AppartementDetailsPage() {
@@ -29,6 +33,7 @@ export default function AppartementDetailsPage() {
   const router = useRouter();
   const { deleteAppartement } = useAppartements();
   const { getChecklist } = useChecklists();
+  const { budgetLoyerMax } = useSharedBudget();
   const [appartement, setAppartement] = useState<Appartement | null>(null);
   const [checklist, setChecklist] = useState<VisiteChecklist | null>(null);
   const [loading, setLoading] = useState(true);
@@ -195,6 +200,17 @@ export default function AppartementDetailsPage() {
             {appartement.charges && appartement.charges > 0 && (
               <p className="text-xs text-gray-500 mt-1">+ {appartement.charges} € de charges</p>
             )}
+            {budgetLoyerMax > 0 && (
+              <div className={`mt-3 inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                (appartement.prix + (appartement.charges || 0)) <= budgetLoyerMax 
+                  ? 'bg-green-100 text-green-700' 
+                  : 'bg-red-100 text-red-700'
+              }`}>
+                {(appartement.prix + (appartement.charges || 0)) <= budgetLoyerMax 
+                  ? '✓ Dans le budget' 
+                  : `✗ Hors budget (Max: ${Math.round(budgetLoyerMax)}€)`}
+              </div>
+            )}
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
@@ -212,6 +228,62 @@ export default function AppartementDetailsPage() {
             )}
           </div>
         </div>
+
+        {/* Coûts détaillés */}
+        {(appartement.fraisAgence || appartement.depotGarantie || appartement.assuranceHabitation) && (
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2">
+              <FaEuroSign className="text-blue-600" /> Coûts de l'installation
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {appartement.fraisAgence !== undefined && appartement.fraisAgence > 0 && (
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
+                      <FaBuilding size={20} />
+                    </div>
+                    <span className="text-sm font-medium text-gray-600">Frais d'agence</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-800">{appartement.fraisAgence} €</p>
+                </div>
+              )}
+              {appartement.depotGarantie !== undefined && appartement.depotGarantie > 0 && (
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-green-100 rounded-lg text-green-600">
+                      <FaHandHoldingUsd size={20} />
+                    </div>
+                    <span className="text-sm font-medium text-gray-600">Dépôt de garantie</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-800">{appartement.depotGarantie} €</p>
+                </div>
+              )}
+              {appartement.assuranceHabitation !== undefined && appartement.assuranceHabitation > 0 && (
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-purple-100 rounded-lg text-purple-600">
+                      <FaShieldAlt size={20} />
+                    </div>
+                    <span className="text-sm font-medium text-gray-600">Assurance (an)</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-800">{appartement.assuranceHabitation} €</p>
+                </div>
+              )}
+            </div>
+            <div className="mt-6 p-4 bg-blue-50 rounded-xl flex justify-between items-center">
+              <div className="flex items-center gap-3 text-blue-800">
+                <FaWallet />
+                <span className="font-bold">Total à prévoir pour l'entrée</span>
+              </div>
+              <p className="text-2xl font-black text-blue-600">
+                {(appartement.fraisAgence || 0) + (appartement.depotGarantie || 0) + (appartement.prix || 0)} €
+              </p>
+            </div>
+            <p className="text-[10px] text-gray-400 mt-2 text-center italic">
+              * Total incluant frais d'agence, dépôt de garantie et le premier mois de loyer hors assurance.
+            </p>
+          </div>
+        )}
 
         {/* Statut de visite */}
         {appartement.visite && (
