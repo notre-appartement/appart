@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import LoginPage from './LoginPage';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { user, loading, isAuthorized } = useAuth();
+  const { user, loading } = useAuth();
 
   // Afficher un loader pendant la vérification
   if (loading) {
@@ -18,11 +18,11 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Si pas connecté ou non autorisé, afficher la page de connexion
-  if (!user || !isAuthorized) {
+  // Si pas connecté, afficher la page de connexion
+  if (!user) {
     return <LoginPage />;
   }
 
-  // Si connecté et autorisé, afficher le contenu
+  // Si connecté, afficher le contenu
   return <>{children}</>;
 }

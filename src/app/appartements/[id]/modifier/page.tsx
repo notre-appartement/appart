@@ -8,6 +8,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Appartement } from '@/types';
 import { useAppartements } from '@/hooks/useAppartements';
+import { useProject } from '@/contexts/ProjectContext';
 import { StarRating } from '@/components/StarRating';
 import { geocodeAddressWithRetry } from '@/lib/geocoding';
 
@@ -23,6 +24,7 @@ export default function ModifierAppartementPage() {
   const params = useParams();
   const router = useRouter();
   const { updateAppartement } = useAppartements();
+  const { currentProject, loading: projectLoading } = useProject();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [appartement, setAppartement] = useState<Appartement | null>(null);
@@ -169,7 +171,7 @@ export default function ModifierAppartementPage() {
     }
   };
 
-  if (loading) {
+  if (loading || projectLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
@@ -177,6 +179,25 @@ export default function ModifierAppartementPage() {
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
             <p className="text-gray-600 mt-4">Chargement...</p>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentProject) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Aucun projet actif</h2>
+          <p className="text-gray-600 mb-4">
+            Vous devez sélectionner un projet avant de modifier un appartement.
+          </p>
+          <Link
+            href="/projets"
+            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Sélectionner un projet
+          </Link>
         </div>
       </div>
     );

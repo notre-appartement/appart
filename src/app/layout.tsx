@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { ProjectProvider } from '@/contexts/ProjectContext'
 import AuthGuard from '@/components/AuthGuard'
 import Navigation from '@/components/Navigation'
 
@@ -21,14 +22,16 @@ export default function RootLayout({
     <html lang="fr">
       <body className={inter.className}>
         <AuthProvider>
-          <AuthGuard>
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-              <Navigation />
-              <main>
-                {children}
-              </main>
-            </div>
-          </AuthGuard>
+          <ProjectProvider>
+            <AuthGuard>
+              <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+                <Navigation />
+                <main>
+                  {children}
+                </main>
+              </div>
+            </AuthGuard>
+          </ProjectProvider>
         </AuthProvider>
       </body>
     </html>

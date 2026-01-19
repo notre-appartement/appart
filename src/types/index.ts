@@ -1,17 +1,19 @@
 export interface Envie {
   id: string;
+  projectId: string;
   nom: string;
   definition: string;
   important: boolean;
-  auteur: 'Aymeric' | 'Sarah' | 'les_deux';
-  auteurNom: string;        // Nom d'affichage de l'auteur
-  auteurEmail: string;      // Email de l'auteur
-  createdBy: string;        // UID Firebase de l'auteur
+  auteur: string;           // Nom de l'auteur ou "partagé" pour une envie commune
+  auteurNom: string;        // Nom d'affichage de l'utilisateur qui a créé l'envie
+  auteurEmail: string;      // Email de l'utilisateur qui a créé l'envie
+  createdBy: string;        // UID Firebase de l'utilisateur qui a créé l'envie
   createdAt: Date;
 }
 
 export interface Emplacement {
   id: string;
+  projectId: string;
   nom: string;
   adresse: string;
   latitude?: number;
@@ -25,6 +27,7 @@ export interface Emplacement {
 
 export interface Appartement {
   id: string;
+  projectId: string;
   titre: string;
   adresse: string;
   ville: string;
@@ -102,7 +105,31 @@ export interface VisiteChecklist {
   completedAt?: Date;
 }
 
-export type UserRole = 'Aymeric' | 'Sarah';
+export interface Projet {
+  id: string;
+  nom: string;
+  description?: string;
+  createurId: string;
+  createurName: string;
+  membres: {
+    uid: string;
+    name: string;
+    email: string;
+    isAdmin: boolean;
+    joinedAt: Date;
+  }[];
+  inviteCode: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ProjetMembre {
+  uid: string;
+  name: string;
+  email: string;
+  isAdmin: boolean;
+  joinedAt: Date;
+}
 
 export interface BudgetCategory {
   id: string;

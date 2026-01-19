@@ -1,6 +1,3 @@
-// Hook exemple pour gérer les envies avec l'authentification
-// Ce fichier montre comment utiliser Firebase avec l'utilisateur connecté
-
 import { useState, useEffect } from 'react';
 import {
   collection,
@@ -11,21 +8,34 @@ import {
   onSnapshot,
   query,
   orderBy,
+  where,
   Timestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProject } from '@/contexts/ProjectContext';
 import { Envie } from '@/types';
 
 export function useEnvies() {
   const [envies, setEnvies] = useState<Envie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user, displayName, userRole } = useAuth();
+  const { user, displayName } = useAuth();
+  const { currentProject } = useProject();
 
   // Écouter les changements en temps réel
   useEffect(() => {
-    const q = query(collection(db, 'envies'), orderBy('createdAt', 'desc'));
+    if (!currentProject) {
+      setEnvies([]);
+      setLoading(false);
+      return;
+    }
+
+    const q = query(
+      collection(db, 'envies'),
+      where('projectId', '==', currentProject.id),
+      orderBy('createdAt', 'desc')
+    );
 
     const unsubscribe = onSnapshot(
       q,
@@ -47,22 +57,27 @@ export function useEnvies() {
     );
 
     return () => unsubscribe();
-  }, []);
+  }, [currentProject]);
 
   // Ajouter une envie (avec l'auteur automatique)
   const addEnvie = async (data: {
     nom: string;
     definition: string;
     important: boolean;
-    auteur: 'Aymeric' | 'Sarah' | 'les_deux';
+    auteur: string;
   }) => {
     if (!user) {
       throw new Error('Vous devez être connecté pour ajouter une envie');
     }
 
+    if (!currentProject) {
+      throw new Error('Aucun projet actif');
+    }
+
     try {
       await addDoc(collection(db, 'envies'), {
         ...data,
+        projectId: currentProject.id,
         auteurNom: displayName,     // Nom de l'utilisateur connecté
         auteurEmail: user.email,    // Email de l'utilisateur
         createdBy: user.uid,        // UID Firebase

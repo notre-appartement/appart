@@ -9,10 +9,12 @@ import {
   onSnapshot,
   query,
   orderBy,
+  where,
   Timestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProject } from '@/contexts/ProjectContext';
 import { Appartement } from '@/types';
 
 export function useAppartements() {
@@ -20,10 +22,21 @@ export function useAppartements() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user, displayName } = useAuth();
+  const { currentProject } = useProject();
 
   // Écouter les changements en temps réel
   useEffect(() => {
-    const q = query(collection(db, 'appartements'), orderBy('createdAt', 'desc'));
+    if (!currentProject) {
+      setAppartements([]);
+      setLoading(false);
+      return;
+    }
+
+    const q = query(
+      collection(db, 'appartements'),
+      where('projectId', '==', currentProject.id),
+      orderBy('createdAt', 'desc')
+    );
 
     const unsubscribe = onSnapshot(
       q,
@@ -50,17 +63,22 @@ export function useAppartements() {
     );
 
     return () => unsubscribe();
-  }, []);
+  }, [currentProject]);
 
   // Ajouter un appartement
-  const addAppartement = async (data: Omit<Appartement, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'createdByName'>) => {
+  const addAppartement = async (data: Omit<Appartement, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'createdByName' | 'projectId'>) => {
     if (!user) {
       throw new Error('Vous devez être connecté pour ajouter un appartement');
+    }
+
+    if (!currentProject) {
+      throw new Error('Aucun projet actif');
     }
 
     try {
       await addDoc(collection(db, 'appartements'), {
         ...data,
+        projectId: currentProject.id,
         createdBy: user.uid,
         createdByName: displayName,
         createdAt: Timestamp.now(),

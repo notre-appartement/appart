@@ -70,7 +70,6 @@ Une application moderne et collaborative conçue pour organiser une recherche d'
     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
     NEXT_PUBLIC_FIREBASE_APP_ID=...
     ```
-4.  **Liste blanche** : Modifiez `src/config/authorized-users.ts` pour définir les accès.
 
 ### Développement & Déploiement
 *   `npm run dev` : Lancer le serveur local sur `localhost:3000`.

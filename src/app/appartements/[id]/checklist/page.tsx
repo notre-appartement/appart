@@ -9,6 +9,7 @@ import { db } from '@/lib/firebase';
 import { Appartement, VisiteChecklist } from '@/types';
 import { useAppartements } from '@/hooks/useAppartements';
 import { useChecklists } from '@/hooks/useChecklists';
+import { useProject } from '@/contexts/ProjectContext';
 import { VisiteChecklistComponent } from '@/components/VisiteChecklist';
 import { createEmptyChecklist } from '@/data/checklistTemplate';
 
@@ -17,6 +18,7 @@ export default function ChecklistPage() {
   const router = useRouter();
   const { updateAppartement } = useAppartements();
   const { getChecklist, createChecklist, updateChecklist } = useChecklists();
+  const { currentProject, loading: projectLoading } = useProject();
   const [appartement, setAppartement] = useState<Appartement | null>(null);
   const [checklist, setChecklist] = useState<VisiteChecklist | null>(null);
   const [loading, setLoading] = useState(true);
@@ -110,7 +112,7 @@ export default function ChecklistPage() {
     }
   };
 
-  if (loading) {
+  if (loading || projectLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-5xl mx-auto">
@@ -118,6 +120,25 @@ export default function ChecklistPage() {
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
             <p className="text-gray-600 mt-4">Chargement de la checklist...</p>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentProject) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Aucun projet actif</h2>
+          <p className="text-gray-600 mb-4">
+            Vous devez sélectionner un projet avant d'accéder à une checklist.
+          </p>
+          <Link
+            href="/projets"
+            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Sélectionner un projet
+          </Link>
         </div>
       </div>
     );

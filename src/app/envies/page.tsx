@@ -1,21 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaHeart, FaUser, FaTrash, FaEdit } from 'react-icons/fa';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEnvies } from '@/hooks/useEnvies';
+import { useProject } from '@/contexts/ProjectContext';
 
 export default function EnviesPage() {
   const { displayName } = useAuth();
   const { envies, loading, addEnvie, updateEnvie, deleteEnvie } = useEnvies();
+  const { currentProject, loading: projectLoading } = useProject();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     nom: '',
     definition: '',
     important: false,
-    auteur: 'Aymeric' as 'Aymeric' | 'Sarah' | 'les_deux',
+    auteur: '', // Sera initialisé par useEffect
   });
+
+  // Récupérer la liste des membres du projet avec une option "Partagé"
+  const membresOptions = useMemo(() => {
+    if (!currentProject) return ['Partagé'];
+    
+    const membres = currentProject.membres.map(m => m.name);
+    return ['Partagé', ...membres];
+  }, [currentProject]);
+
+  // Initialiser l'auteur par défaut quand les membres sont chargés
+  useEffect(() => {
+    if (membresOptions.length > 0 && !formData.auteur) {
+      const defaultAuteur = membresOptions.includes(displayName) ? displayName : membresOptions[0];
+      setFormData(prev => ({ ...prev, auteur: defaultAuteur }));
+    }
+  }, [membresOptions, displayName, formData.auteur]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +47,9 @@ export default function EnviesPage() {
         // Mode ajout
         await addEnvie(formData);
       }
-      setFormData({ nom: '', definition: '', important: false, auteur: 'Aymeric' });
+      // Réinitialiser avec le premier membre ou "Partagé"
+      const defaultAuteur = membresOptions.includes(displayName) ? displayName : membresOptions[0];
+      setFormData({ nom: '', definition: '', important: false, auteur: defaultAuteur });
       setShowForm(false);
     } catch (err) {
       alert(editingId ? 'Erreur lors de la modification de l\'envie' : 'Erreur lors de l\'ajout de l\'envie');
@@ -47,7 +68,8 @@ export default function EnviesPage() {
   };
 
   const handleCancelEdit = () => {
-    setFormData({ nom: '', definition: '', important: false, auteur: 'Aymeric' });
+    const defaultAuteur = membresOptions.includes(displayName) ? displayName : membresOptions[0];
+    setFormData({ nom: '', definition: '', important: false, auteur: defaultAuteur });
     setEditingId(null);
     setShowForm(false);
   };
@@ -61,6 +83,36 @@ export default function EnviesPage() {
       }
     }
   };
+
+  if (projectLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
+          <p className="text-gray-600">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentProject) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Aucun projet actif</h2>
+          <p className="text-gray-600 mb-4">
+            Vous devez sélectionner un projet avant de gérer vos envies.
+          </p>
+          <Link
+            href="/projets"
+            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Sélectionner un projet
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -128,12 +180,14 @@ export default function EnviesPage() {
                     <label className="text-sm font-medium text-gray-700">Qui ?</label>
                     <select
                       value={formData.auteur}
-                      onChange={(e) => setFormData({ ...formData, auteur: e.target.value as any })}
-                      className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                      onChange={(e) => setFormData({ ...formData, auteur: e.target.value })}
+                      className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 text-gray-900"
                     >
-                      <option value="Aymeric">Aymeric</option>
-                      <option value="Sarah">Sarah</option>
-                      <option value="les_deux">Nous deux</option>
+                      {membresOptions.map((membre) => (
+                        <option key={membre} value={membre}>
+                          {membre === 'Partagé' ? '👫 Partagé' : `👤 ${membre}`}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -193,8 +247,7 @@ export default function EnviesPage() {
                           </span>
                         )}
                         <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-                          {envie.auteur === 'les_deux' ? '👫 Les deux' :
-                           envie.auteur === 'Aymeric' ? '👤 Aymeric' : '👤 Sarah'}
+                          {envie.auteur === 'Partagé' ? '👫 Partagé' : `👤 ${envie.auteur}`}
                         </span>
                       </div>
                       {envie.definition && (

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft, FaSave, FaTimes } from 'react-icons/fa';
 import { useAppartements } from '@/hooks/useAppartements';
+import { useProject } from '@/contexts/ProjectContext';
 import { StarRating } from '@/components/StarRating';
 import { geocodeAddressWithRetry } from '@/lib/geocoding';
 import { uploadMultipleImages } from '@/lib/storage';
@@ -20,6 +21,7 @@ function calculateGlobalNote(notes: { luminosite: number; bruit: number; etat: n
 export default function NouvelAppartementPage() {
   const router = useRouter();
   const { addAppartement } = useAppartements();
+  const { currentProject, loading: projectLoading } = useProject();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     titre: '',
@@ -107,6 +109,36 @@ export default function NouvelAppartementPage() {
       setLoading(false);
     }
   };
+
+  if (projectLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
+          <p className="text-gray-600">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentProject) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Aucun projet actif</h2>
+          <p className="text-gray-600 mb-4">
+            Vous devez sélectionner un projet avant d'ajouter un appartement.
+          </p>
+          <Link
+            href="/projets"
+            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Sélectionner un projet
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

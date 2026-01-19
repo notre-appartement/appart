@@ -1,5 +1,38 @@
 # 📋 Liste des Fonctionnalités Prévues
 
+## 🎯 Architecture Multi-Projets (Nouveau !)
+- [x] Système de projets collaboratifs
+- [x] Création de projets avec nom et description
+- [x] Invitation par code unique (8 caractères)
+- [x] Page de sélection/changement de projet
+- [x] Gestion des membres du projet
+- [x] Filtrage automatique par projet (appartements, envies, emplacements)
+- [x] Context global pour le projet actif
+- [x] Stockage du projet actif en localStorage
+- [x] Outil de migration des données existantes
+- [x] **Authentification Ouverte**
+  - [x] Suppression de la liste de mails autorisés
+  - [x] N'importe qui peut créer un compte et se connecter
+  - [x] Accès aux données contrôlé par l'appartenance aux projets
+  - [x] Utilisation du displayName Firebase
+- [x] **Navigation Contextuelle**
+  - [x] Navigation de base (toujours visible) : Mes Projets, Profil & Budget
+  - [x] Navigation projet (visible si projet actif) : Tableau de bord, Appartements, Envies, Emplacements, Carte
+  - [x] Redirection automatique vers sélection de projet si aucun projet actif
+- [x] **Données Privées par Projet**
+  - [x] Chaque appartement, envie, emplacement est lié à un projet spécifique
+  - [x] Stockage avec projectId dans Firestore
+  - [x] Isolation complète des données entre projets
+  - [x] Accès uniquement pour les membres du projet
+- [x] **Page Paramètres du Projet**
+  - [x] Affichage et copie du code d'invitation
+  - [x] Liste des membres avec rôles (Admin/Membre)
+  - [x] Gestion des permissions (admin uniquement)
+  - [x] Promotion/Rétrogradation admin
+  - [x] Suppression de membres (admin uniquement)
+  - [x] Possibilité de quitter un projet
+  - [x] Suppression du projet (admin uniquement)
+
 ## ✅ Phase 1 : Base (Terminé)
 - [x] Structure du projet Next.js avec App Router
 - [x] Configuration Tailwind CSS

@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { useAppartements } from '@/hooks/useAppartements';
 import { useEmplacements } from '@/hooks/useEmplacements';
+import { useProject } from '@/contexts/ProjectContext';
 import { FaMapMarkerAlt, FaHome, FaBriefcase, FaUsers, FaShoppingCart } from 'react-icons/fa';
 
 // Import dynamique pour éviter les problèmes SSR avec Leaflet
@@ -22,6 +24,7 @@ const MapComponent = dynamic(() => import('@/components/MapComponent'), {
 export default function CartePage() {
   const { appartements, loading: loadingApparts } = useAppartements();
   const { emplacements, loading: loadingEmplacements } = useEmplacements();
+  const { currentProject, loading: projectLoading } = useProject();
   const [showAppartements, setShowAppartements] = useState(true);
   const [showEmplacements, setShowEmplacements] = useState(true);
   const [filterEvaluation, setFilterEvaluation] = useState<'tous' | 'bon' | 'moyen' | 'pas_bon'>('tous');
@@ -31,6 +34,36 @@ export default function CartePage() {
     if (filterEvaluation === 'tous') return true;
     return appart.choix === filterEvaluation;
   });
+
+  if (projectLoading || loadingApparts || loadingEmplacements) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
+          <p className="text-gray-600">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentProject) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Aucun projet actif</h2>
+          <p className="text-gray-600 mb-4">
+            Vous devez sélectionner un projet avant de voir la carte.
+          </p>
+          <Link
+            href="/projets"
+            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Sélectionner un projet
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col">
