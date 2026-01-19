@@ -19,32 +19,45 @@ import {
 } from 'react-icons/fa';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Appartement } from '@/types';
+import { Appartement, VisiteChecklist } from '@/types';
 import { useAppartements } from '@/hooks/useAppartements';
+import { useChecklists } from '@/hooks/useChecklists';
 import { StarRating } from '@/components/StarRating';
 
 export default function AppartementDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const { deleteAppartement } = useAppartements();
+  const { getChecklist } = useChecklists();
   const [appartement, setAppartement] = useState<Appartement | null>(null);
+  const [checklist, setChecklist] = useState<VisiteChecklist | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchAppartement = async () => {
+    const fetchData = async () => {
       try {
         const docRef = doc(db, 'appartements', params.id as string);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setAppartement({
+          const appart = {
             id: docSnap.id,
             ...data,
             createdAt: data.createdAt?.toDate() || new Date(),
             updatedAt: data.updatedAt?.toDate() || new Date(),
             dateVisite: data.dateVisite ? data.dateVisite.toDate() : undefined,
-          } as Appartement);
+          } as Appartement;
+
+          setAppartement(appart);
+
+          // Charger la checklist si elle existe
+          if (appart.checklistId) {
+            const checklistData = await getChecklist(appart.checklistId);
+            if (checklistData) {
+              setChecklist(checklistData);
+            }
+          }
         } else {
           alert('Appartement non trouvé');
           router.push('/appartements');
@@ -57,8 +70,8 @@ export default function AppartementDetailsPage() {
       }
     };
 
-    fetchAppartement();
-  }, [params.id, router]);
+    fetchData();
+  }, [params.id, router, getChecklist]);
 
   const handleDelete = async () => {
     if (!appartement) return;
@@ -179,7 +192,7 @@ export default function AppartementDetailsPage() {
             <FaEuroSign className="text-4xl text-blue-600 mx-auto mb-3" />
             <p className="text-sm text-gray-600 mb-1">Loyer</p>
             <p className="text-3xl font-bold text-gray-800">{appartement.prix} €</p>
-            {appartement.charges > 0 && (
+            {appartement.charges && appartement.charges > 0 && (
               <p className="text-xs text-gray-500 mt-1">+ {appartement.charges} € de charges</p>
             )}
           </div>
@@ -250,7 +263,7 @@ export default function AppartementDetailsPage() {
               ⭐ Évaluation détaillée
             </h2>
             <div className="space-y-4">
-              {appartement.notes.luminosite > 0 && (
+              {appartement.notes.luminosite && appartement.notes.luminosite > 0 && (
                 <StarRating
                   rating={appartement.notes.luminosite}
                   onChange={() => {}}
@@ -258,7 +271,7 @@ export default function AppartementDetailsPage() {
                   readonly
                 />
               )}
-              {appartement.notes.bruit > 0 && (
+              {appartement.notes.bruit && appartement.notes.bruit > 0 && (
                 <StarRating
                   rating={appartement.notes.bruit}
                   onChange={() => {}}
@@ -266,7 +279,7 @@ export default function AppartementDetailsPage() {
                   readonly
                 />
               )}
-              {appartement.notes.etat > 0 && (
+              {appartement.notes.etat && appartement.notes.etat > 0 && (
                 <StarRating
                   rating={appartement.notes.etat}
                   onChange={() => {}}
@@ -274,7 +287,7 @@ export default function AppartementDetailsPage() {
                   readonly
                 />
               )}
-              {appartement.notes.quartier > 0 && (
+              {appartement.notes.quartier && appartement.notes.quartier > 0 && (
                 <StarRating
                   rating={appartement.notes.quartier}
                   onChange={() => {}}
@@ -282,7 +295,7 @@ export default function AppartementDetailsPage() {
                   readonly
                 />
               )}
-              {appartement.notes.proximite > 0 && (
+              {appartement.notes.proximite && appartement.notes.proximite > 0 && (
                 <StarRating
                   rating={appartement.notes.proximite}
                   onChange={() => {}}
@@ -414,6 +427,39 @@ export default function AppartementDetailsPage() {
             )}
           </div>
         </div>
+
+        {/* Checklist de visite */}
+         <div className="mb-6">
+			<div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+				<h3 className="text-xl font-bold text-gray-800 mb-2">📋 Checklist de visite</h3>
+				<p className="text-gray-600 mb-4">
+					{checklist
+						? 'Consultez ou modifiez la checklist de visite complète'
+						: 'Créez une checklist pour ne rien oublier lors de votre visite !'}
+				</p>
+				{checklist && (
+					<div className="mb-4">
+						<p className="text-sm text-gray-500 mb-2">
+							Progression : {checklist.items.filter(i => i.checked).length}/{checklist.items.length} items cochés
+						</p>
+						<div className="w-full bg-gray-200 rounded-full h-2 max-w-md mx-auto">
+							<div
+								className="bg-blue-600 h-2 rounded-full transition-all"
+								style={{
+								width: `${(checklist.items.filter(i => i.checked).length / checklist.items.length) * 100}%`
+								}}
+							/>
+						</div>
+					</div>
+				)}
+				<Link
+					href={`/appartements/${appartement.id}/checklist`}
+					className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+				>
+					{checklist ? '📝 Ouvrir la checklist' : '✨ Créer la checklist'}
+				</Link>
+			</div>
+		</div>
 
         {/* Métadonnées */}
         <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600">

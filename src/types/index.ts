@@ -59,6 +59,7 @@ export interface Appartement {
   inconvenients?: string[];
   photos?: string[]; // URLs Firebase Storage
   documents?: string[]; // URLs des documents
+  checklistId?: string; // Référence à la collection checklists
 
   // Liens
   lienAnnonce?: string;
@@ -80,15 +81,20 @@ export interface Appartement {
 
 export interface ChecklistItem {
   id: string;
+  categorie: string;
   label: string;
   checked: boolean;
   note?: string;
 }
 
 export interface VisiteChecklist {
-  appartementId: string;
+  id?: string;
+  appartementId?: string;
   items: ChecklistItem[];
-  notesGenerales?: string;
+  notesGenerales: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  completedAt?: Date;
 }
 
 export type UserRole = 'Aymeric' | 'Sarah';
