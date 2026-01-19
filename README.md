@@ -219,7 +219,7 @@ service firebase.storage {
 
 1. ✅ Structure de base (terminé)
 2. ✅ Implémenter l'authentification Firebase
-3. ✅ CRUD pour les appartements
+3. 🔄 CRUD pour les appartements
 4. ✅ CRUD pour les envies
 5. 🔄 CRUD pour les emplacements
 6. 🔄 Upload et gestion des photos
