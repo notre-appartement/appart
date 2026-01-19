@@ -8,6 +8,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Emplacement } from '@/types';
 import { useEmplacements } from '@/hooks/useEmplacements';
+import { geocodeAddressWithRetry } from '@/lib/geocoding';
 
 export default function ModifierEmplacementPage() {
   const params = useParams();
@@ -66,7 +67,14 @@ export default function ModifierEmplacementPage() {
     setSaving(true);
 
     try {
-      await updateEmplacement(params.id as string, formData);
+      // Géolocaliser l'adresse
+      const coordinates = await geocodeAddressWithRetry(formData.adresse);
+
+      await updateEmplacement(params.id as string, {
+        ...formData,
+        latitude: coordinates?.latitude || emplacement?.latitude,
+        longitude: coordinates?.longitude || emplacement?.longitude,
+      });
       router.push('/emplacements');
     } catch (err) {
       alert('Erreur lors de la modification de l\'emplacement');

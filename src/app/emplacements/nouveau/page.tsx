@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft, FaSave, FaTimes } from 'react-icons/fa';
 import { useEmplacements } from '@/hooks/useEmplacements';
+import { geocodeAddressWithRetry } from '@/lib/geocoding';
 
 export default function NouvelEmplacementPage() {
   const router = useRouter();
@@ -22,7 +23,14 @@ export default function NouvelEmplacementPage() {
     setLoading(true);
 
     try {
-      await addEmplacement(formData);
+      // Géolocaliser l'adresse
+      const coordinates = await geocodeAddressWithRetry(formData.adresse);
+
+      await addEmplacement({
+        ...formData,
+        latitude: coordinates?.latitude,
+        longitude: coordinates?.longitude,
+      });
       router.push('/emplacements');
     } catch (err) {
       alert('Erreur lors de l\'ajout de l\'emplacement');

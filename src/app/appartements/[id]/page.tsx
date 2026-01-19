@@ -21,6 +21,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Appartement } from '@/types';
 import { useAppartements } from '@/hooks/useAppartements';
+import { StarRating } from '@/components/StarRating';
 
 export default function AppartementDetailsPage() {
   const params = useParams();
@@ -209,6 +210,71 @@ export default function AppartementDetailsPage() {
                   <p className="text-sm text-gray-600 mt-1">
                     {appartement.noteGlobale.toFixed(1)}/5
                   </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Notes détaillées */}
+        {appartement.visite && appartement.notes && Object.values(appartement.notes).some(n => n && n > 0) && (
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b">
+              ⭐ Évaluation détaillée
+            </h2>
+            <div className="space-y-4">
+              {appartement.notes.luminosite > 0 && (
+                <StarRating
+                  rating={appartement.notes.luminosite}
+                  onChange={() => {}}
+                  label="☀️ Luminosité"
+                  readonly
+                />
+              )}
+              {appartement.notes.bruit > 0 && (
+                <StarRating
+                  rating={appartement.notes.bruit}
+                  onChange={() => {}}
+                  label="🔇 Calme/Bruit"
+                  readonly
+                />
+              )}
+              {appartement.notes.etat > 0 && (
+                <StarRating
+                  rating={appartement.notes.etat}
+                  onChange={() => {}}
+                  label="🏠 État général"
+                  readonly
+                />
+              )}
+              {appartement.notes.quartier > 0 && (
+                <StarRating
+                  rating={appartement.notes.quartier}
+                  onChange={() => {}}
+                  label="🏘️ Quartier"
+                  readonly
+                />
+              )}
+              {appartement.notes.proximite > 0 && (
+                <StarRating
+                  rating={appartement.notes.proximite}
+                  onChange={() => {}}
+                  label="📍 Proximité"
+                  readonly
+                />
+              )}
+
+              {appartement.noteGlobale && (
+                <div className="mt-6 pt-4 border-t">
+                  <div className="flex items-center justify-between bg-yellow-50 p-4 rounded-lg">
+                    <span className="font-bold text-lg text-gray-800">Note globale</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-3xl font-bold text-yellow-600">
+                        {appartement.noteGlobale.toFixed(1)}
+                      </span>
+                      <span className="text-gray-600">/5</span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

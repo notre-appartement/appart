@@ -8,6 +8,16 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Appartement } from '@/types';
 import { useAppartements } from '@/hooks/useAppartements';
+import { StarRating } from '@/components/StarRating';
+import { geocodeAddressWithRetry } from '@/lib/geocoding';
+
+// Calculer la note globale à partir des notes détaillées
+function calculateGlobalNote(notes: { luminosite: number; bruit: number; etat: number; quartier: number; proximite: number }): number {
+  const values = Object.values(notes).filter(n => n > 0);
+  if (values.length === 0) return 0;
+  const sum = values.reduce((acc, val) => acc + val, 0);
+  return Math.round((sum / values.length) * 10) / 10;
+}
 
 export default function ModifierAppartementPage() {
   const params = useParams();
@@ -42,6 +52,13 @@ export default function ModifierAppartementPage() {
   const [newAvantage, setNewAvantage] = useState('');
   const [inconvenients, setInconvenients] = useState<string[]>([]);
   const [newInconvenient, setNewInconvenient] = useState('');
+  const [notes, setNotes] = useState({
+    luminosite: 0,
+    bruit: 0,
+    etat: 0,
+    quartier: 0,
+    proximite: 0,
+  });
 
   // Charger l'appartement
   useEffect(() => {
@@ -87,6 +104,13 @@ export default function ModifierAppartementPage() {
 
           setAvantages(data.avantages || []);
           setInconvenients(data.inconvenients || []);
+          setNotes({
+            luminosite: data.notes?.luminosite || 0,
+            bruit: data.notes?.bruit || 0,
+            etat: data.notes?.etat || 0,
+            quartier: data.notes?.quartier || 0,
+            proximite: data.notes?.proximite || 0,
+          });
         } else {
           alert('Appartement non trouvé');
           router.push('/appartements');
@@ -107,16 +131,28 @@ export default function ModifierAppartementPage() {
     setSaving(true);
 
     try {
+      // Géolocaliser l'adresse (si elle a changé)
+      const fullAddress = `${formData.adresse}, ${formData.codePostal} ${formData.ville}`;
+      const coordinates = await geocodeAddressWithRetry(fullAddress);
+
       const dataToUpdate: any = {
         ...formData,
         choix: formData.choix || null,
         avantages,
         inconvenients,
+        latitude: coordinates?.latitude || appartement?.latitude,
+        longitude: coordinates?.longitude || appartement?.longitude,
       };
 
       // N'ajouter dateVisite que si elle existe
       if (formData.dateVisite) {
         dataToUpdate.dateVisite = new Date(formData.dateVisite);
+      }
+
+      // N'ajouter les notes que si l'appartement a été visité
+      if (formData.visite && Object.values(notes).some(n => n > 0)) {
+        dataToUpdate.notes = notes;
+        dataToUpdate.noteGlobale = calculateGlobalNote(notes);
       }
 
       await updateAppartement(params.id as string, dataToUpdate);
@@ -437,6 +473,60 @@ export default function ModifierAppartementPage() {
               )}
             </div>
           </div>
+
+          {/* Notes par critères */}
+          {formData.visite && (
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">
+                ⭐ Notes par critères
+              </h2>
+              <div className="space-y-4 bg-yellow-50 p-6 rounded-lg">
+                <p className="text-sm text-gray-600 mb-4">
+                  Notez chaque critère de 1 à 5 étoiles pour vous aider à comparer les appartements
+                </p>
+                <StarRating
+                  rating={notes.luminosite}
+                  onChange={(val) => setNotes({ ...notes, luminosite: val })}
+                  label="☀️ Luminosité"
+                />
+                <StarRating
+                  rating={notes.bruit}
+                  onChange={(val) => setNotes({ ...notes, bruit: val })}
+                  label="🔇 Calme/Bruit"
+                />
+                <StarRating
+                  rating={notes.etat}
+                  onChange={(val) => setNotes({ ...notes, etat: val })}
+                  label="🏠 État général"
+                />
+                <StarRating
+                  rating={notes.quartier}
+                  onChange={(val) => setNotes({ ...notes, quartier: val })}
+                  label="🏘️ Quartier"
+                />
+                <StarRating
+                  rating={notes.proximite}
+                  onChange={(val) => setNotes({ ...notes, proximite: val })}
+                  label="📍 Proximité"
+                />
+
+                {/* Note globale calculée */}
+                {Object.values(notes).some(n => n > 0) && (
+                  <div className="mt-6 pt-4 border-t border-yellow-200">
+                    <div className="flex items-center justify-between bg-yellow-100 p-4 rounded-lg">
+                      <span className="font-bold text-lg text-gray-800">Note globale :</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-3xl font-bold text-yellow-600">
+                          {calculateGlobalNote(notes).toFixed(1)}
+                        </span>
+                        <span className="text-gray-600">/5</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Avantages et inconvénients */}
           {formData.visite && (

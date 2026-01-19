@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaHome, FaBuilding, FaHeart, FaMapMarkerAlt, FaSignOutAlt, FaUser } from 'react-icons/fa';
+import { FaHome, FaBuilding, FaHeart, FaMapMarkerAlt, FaSignOutAlt, FaUser, FaMap } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Navigation() {
@@ -15,6 +15,7 @@ export default function Navigation() {
     { href: '/appartements', label: 'Appartements', icon: FaBuilding },
     { href: '/envies', label: 'Nos Envies', icon: FaHeart },
     { href: '/emplacements', label: 'Emplacements', icon: FaMapMarkerAlt },
+    { href: '/carte', label: 'Carte', icon: FaMap },
   ];
 
   const handleSignOut = async () => {
