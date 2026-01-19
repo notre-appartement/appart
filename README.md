@@ -1,239 +1,96 @@
-# 🏠 Notre Appart - Application de recherche d'appartement
+# 🏠 Notre Appart - Application Collaborative de Recherche d'Appartement
 
-Application pour organiser votre recherche d'appartement à deux, avec gestion des envies, emplacements préférés, et suivi des visites.
+Une application moderne et collaborative conçue pour organiser une recherche d'appartement à deux. Suivez vos visites, comparez vos coups de cœur et gérez vos critères importants en temps réel.
 
-## 🎯 Fonctionnalités
+## 🎯 Fonctionnalités Clés
 
-### ✅ Implémentées
-- ✨ Structure de base Next.js avec TypeScript
-- 🎨 Interface moderne avec Tailwind CSS
-- 📱 Design responsive
-- 🔥 Configuration Firebase prête à l'emploi
-- 🔐 Authentification sécurisée avec liste blanche d'emails
-- 👥 Gestion des utilisateurs (vous + votre copine)
-- 🚪 Protection des routes (connexion obligatoire)
+### 🔐 Sécurité & Collaboration
+*   **Authentification sécurisée** : Connexion via Google ou Email/Mot de passe via Firebase Auth.
+*   **Liste blanche** : Seuls les utilisateurs autorisés (Aymeric & Sarah) peuvent accéder aux données.
+*   **Synchronisation temps réel** : Les modifications apportées par l'un sont instantanément visibles par l'autre grâce à Firestore.
 
-### 🚧 À venir
-- ➕ Gestion des appartements (ajout, modification, suppression)
-- 💕 Gestion des envies et critères importants
-- 📍 Gestion des emplacements préférés
-- ⭐ Système de notation et comparaison
-- 📸 Upload de photos
-- 🗺️ Carte interactive
-- 📊 Statistiques et graphiques
-- 📅 Planning des visites
-- ✅ Checklist de visite
+### 🏢 Gestion des Appartements
+*   **Fiches détaillées** : Prix (loyer + charges), surface, nombre de pièces/chambres, étage, ascenseur, meublé, contact agence et lien de l'annonce.
+*   **Statut & Évaluation** : Suivi du statut (À visiter / Visité) et évaluation rapide (Bon / Moyen / Pas bon).
+*   **Notation intelligente** : Calcul automatique d'une note globale basée sur 5 critères (Luminosité, Bruit, État, Quartier, Proximité).
+*   **Galerie Photo** : Upload multiple d'images avec prévisualisation et stockage sur Firebase Storage.
 
-## 🚀 Installation
+### ✅ Checklist de Visite ultra-complète
+*   **Plus de 40 points de contrôle** répartis en catégories :
+    *   💧 Plomberie (robinets, chauffe-eau, etc.)
+    *   ⚡ Électricité (prises, disjoncteur)
+    *   🔥 Chauffage & Isolation
+    *   🍳 Cuisine & Équipements
+    *   🏢 Parties communes & Voisinage
+*   **Suivi de progression** : Barres de progression par catégorie et globale.
+*   **Notes par point** : Prise de notes détaillée pour chaque élément vérifié.
+
+### 📊 Comparaison Intelligente
+*   **Vue côte à côte** : Comparez jusqu'à 4 appartements sur un seul écran.
+*   **Analyse automatique** : Mise en évidence (surlignage vert) du meilleur prix, de la plus grande surface et de la meilleure note.
+*   **Calcul de rentabilité** : Identification automatique du meilleur rapport qualité/prix.
+
+### 📍 Cartographie & Localisation
+*   **Carte Interactive** : Visualisation de tous les appartements et de vos points d'intérêt (Leaflet).
+*   **Géocodage automatique** : Les adresses sont transformées en coordonnées GPS via l'API Nominatim.
+*   **Points d'Intérêt (Emplacements)** : Enregistrez vos lieux importants (travail, famille, loisirs) avec des icônes colorées.
+
+### 💕 Gestion des Envies
+*   **Critères Partagés** : Listez vos critères indispensables ou souhaités.
+*   **Priorisation** : Définissez l'importance (critique, important, souhaitable) et l'auteur de chaque envie.
+
+## 🛠️ Stack Technique
+
+*   **Framework** : [Next.js 14](https://nextjs.org/) (App Router)
+*   **Langage** : [TypeScript](https://www.typescriptlang.org/)
+*   **Styles** : [Tailwind CSS](https://tailwindcss.com/)
+*   **Base de données & Auth** : [Firebase](https://firebase.google.com/) (Firestore, Auth, Storage)
+*   **Cartographie** : [Leaflet](https://leafletjs.com/) & [React Leaflet](https://react-leaflet.js.org/)
+*   **Icônes** : [React Icons](https://react-icons.github.io/react-icons/)
+*   **Dates** : [date-fns](https://date-fns.org/)
+
+## 🚀 Installation & Configuration
 
 ### Prérequis
-- Node.js 18+ installé
-- Un compte Firebase (gratuit)
+*   Node.js 18.x ou supérieur
+*   Un projet Firebase configuré
 
-### Étapes
+### Installation
+1.  **Cloner le dépôt**
+2.  **Installer les dépendances** :
+    ```bash
+    npm install
+    ```
+3.  **Variables d'environnement** : Créez un fichier `.env.local` à la racine :
+    ```env
+    NEXT_PUBLIC_FIREBASE_API_KEY=...
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+    NEXT_PUBLIC_FIREBASE_APP_ID=...
+    ```
+4.  **Liste blanche** : Modifiez `src/config/authorized-users.ts` pour définir les accès.
 
-1. **Installer les dépendances** :
-```bash
-npm install
+### Développement & Déploiement
+*   `npm run dev` : Lancer le serveur local sur `localhost:3000`.
+*   `npm run build` : Compiler pour la production.
+*   `npm run deploy` : Déployer sur GitHub Pages (via `gh-pages`).
+
+## 🗂️ Structure du Projet
+
+```text
+src/
+├── app/                  # Routes et pages Next.js
+│   ├── appartements/    # Gestion, détails et checklist
+│   ├── carte/           # Page de la carte interactive
+│   ├── emplacements/    # Points d'intérêt
+│   └── envies/          # Critères et souhaits
+├── components/          # Composants React réutilisables
+├── config/              # Configuration (accès, etc.)
+├── contexts/            # Contextes (Authentification)
+├── hooks/               # Hooks personnalisés (Firebase)
+├── lib/                 # Utilitaires (Firebase, Geocoding)
+├── types/               # Interfaces TypeScript
+└── data/                # Données statiques (Template checklist)
 ```
-
-2. **Configurer les utilisateurs autorisés** :
-
-Modifiez le fichier `src/config/authorized-users.ts` avec vos emails :
-
-```typescript
-export const AUTHORIZED_EMAILS = [
-  'votre.email@example.com',
-  'email.copine@example.com',
-];
-```
-
-Voir le guide complet : `docs/AUTHENTIFICATION.md`
-
-3. **Configurer Firebase** :
-
-   a. Allez sur [Firebase Console](https://console.firebase.google.com/)
-
-   b. Créez un nouveau projet
-
-   c. Activez les services suivants :
-      - **Firestore Database** (mode test pour commencer)
-      - **Authentication** (activez Google et/ou Email/Password) ⚠️ OBLIGATOIRE
-      - **Storage** (mode test pour commencer)
-
-   d. Dans les paramètres du projet, copiez la configuration
-
-   e. Créez un fichier `.env.local` à la racine du projet :
-```bash
-NEXT_PUBLIC_FIREBASE_API_KEY=votre_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=votre_project_id.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=votre_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=votre_project_id.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=votre_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=votre_app_id
-```
-
-3. **Créer les comptes utilisateurs** :
-
-Dans Firebase Console > Authentication > Users :
-- Cliquez sur "Add user"
-- Créez un compte pour chaque email autorisé
-- Ou utilisez la connexion Google (plus simple)
-
-4. **Lancer en développement** :
-```bash
-npm run dev
-```
-
-Ouvrez [http://localhost:3000](http://localhost:3000)
-
-Vous verrez la page de connexion. Connectez-vous avec un email autorisé !
-
-## 📦 Déploiement sur GitHub Pages
-
-### Configuration initiale
-
-1. **Modifier `next.config.js`** :
-```javascript
-const nextConfig = {
-  output: 'export',
-  images: {
-    unoptimized: true,
-  },
-  basePath: '/nom-de-votre-repo',
-  assetPrefix: '/nom-de-votre-repo/',
-}
-```
-
-2. **Créer un dépôt GitHub** :
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/votre-username/votre-repo.git
-git push -u origin main
-```
-
-3. **Déployer** :
-```bash
-npm run deploy
-```
-
-4. **Activer GitHub Pages** :
-   - Allez dans Settings > Pages
-   - Source : `gh-pages` branch
-   - Attendez quelques minutes
-
-Votre site sera accessible à : `https://votre-username.github.io/votre-repo/`
-
-### Variables d'environnement pour la production
-
-⚠️ **Important** : Les variables d'environnement `NEXT_PUBLIC_*` sont incluses dans le build.
-Pour la sécurité :
-1. Configurez les règles Firebase pour restreindre l'accès
-2. Utilisez l'authentification Firebase
-3. Ne mettez JAMAIS de clés secrètes avec le préfixe `NEXT_PUBLIC_`
-
-## 🗂️ Structure du projet
-
-```
-appart/
-├── src/
-│   ├── app/                 # Pages Next.js
-│   │   ├── layout.tsx       # Layout principal
-│   │   ├── page.tsx         # Page d'accueil
-│   │   └── globals.css      # Styles globaux
-│   ├── components/          # Composants React
-│   │   ├── Navigation.tsx
-│   │   ├── AppartementsView.tsx
-│   │   ├── EnviesView.tsx
-│   │   └── EmplacementsView.tsx
-│   ├── lib/                 # Utilitaires
-│   │   └── firebase.ts      # Configuration Firebase
-│   └── types/               # Types TypeScript
-│       └── index.ts         # Définitions des types
-├── docs/                    # Documentation
-├── public/                  # Fichiers statiques
-├── .env.example             # Exemple de variables d'environnement
-└── README.md               # Ce fichier
-```
-
-## 🛠️ Scripts disponibles
-
-- `npm run dev` - Lancer en mode développement
-- `npm run build` - Créer le build de production
-- `npm run start` - Lancer le serveur de production
-- `npm run export` - Exporter en site statique
-- `npm run deploy` - Déployer sur GitHub Pages
-
-## 📚 Technologies utilisées
-
-- **Next.js 14** - Framework React
-- **TypeScript** - Typage statique
-- **Tailwind CSS** - Styles utilitaires
-- **Firebase** - Backend (Database, Auth, Storage)
-- **React Icons** - Icônes
-- **date-fns** - Gestion des dates
-
-## 🔒 Sécurité Firebase
-
-Avant de passer en production, configurez les règles Firestore :
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Appartements
-    match /appartements/{appartement} {
-      allow read, write: if request.auth != null;
-    }
-
-    // Envies
-    match /envies/{envie} {
-      allow read, write: if request.auth != null;
-    }
-
-    // Emplacements
-    match /emplacements/{emplacement} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
-```
-
-Et pour Storage :
-
-```javascript
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /appartements/{allPaths=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
-```
-
-## 📝 Prochaines étapes de développement
-
-1. ✅ Structure de base (terminé)
-2. ✅ Implémenter l'authentification Firebase
-3. 🔄 CRUD pour les appartements
-4. ✅ CRUD pour les envies
-5. 🔄 CRUD pour les emplacements
-6. 🔄 Upload et gestion des photos
-7. 🔄 Système de notation
-8. 🔄 Intégration carte interactive
-9. 🔄 Comparaison d'appartements
-10. 🔄 Statistiques et graphiques
-
-## 💡 Besoin d'aide ?
-
-- [Documentation Next.js](https://nextjs.org/docs)
-- [Documentation Firebase](https://firebase.google.com/docs)
-- [Documentation Tailwind CSS](https://tailwindcss.com/docs)
-
----
-
-Fait avec ❤️ pour faciliter votre recherche d'appartement ensemble !
