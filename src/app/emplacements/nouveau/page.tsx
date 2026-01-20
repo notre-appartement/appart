@@ -1,18 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaArrowLeft, FaSave, FaTimes } from 'react-icons/fa';
+import { FaArrowLeft, FaSave, FaTimes, FaCrown, FaLock } from 'react-icons/fa';
 import { useEmplacements } from '@/hooks/useEmplacements';
 import { useProject } from '@/contexts/ProjectContext';
+import { useProjectLimits } from '@/hooks/useProjectLimits';
 import { geocodeAddressWithRetry } from '@/lib/geocoding';
 
 export default function NouvelEmplacementPage() {
   const router = useRouter();
-  const { addEmplacement } = useEmplacements();
+  const { addEmplacement, emplacements } = useEmplacements();
   const { currentProject, loading: projectLoading } = useProject();
+  const { canAddEmplacement, getLimitMessage, planConfig, projectPlan, loading: limitsLoading } = useProjectLimits(currentProject);
   const [loading, setLoading] = useState(false);
+  const [showLimitWarning, setShowLimitWarning] = useState(false);
+
+  // Vérifier la limite au chargement
+  useEffect(() => {
+    if (!limitsLoading && emplacements && !canAddEmplacement(emplacements.length)) {
+      setShowLimitWarning(true);
+    }
+  }, [emplacements, canAddEmplacement, limitsLoading]);
   const [formData, setFormData] = useState({
     nom: '',
     adresse: '',
@@ -65,6 +75,62 @@ export default function NouvelEmplacementPage() {
           >
             Sélectionner un projet
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Vérifier la limite d'emplacements
+  if (showLimitWarning) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-orange-300 rounded-2xl p-12 text-center shadow-xl">
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mb-6 shadow-xl relative">
+              <FaCrown className="text-5xl text-white" />
+              <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold">
+                <FaLock />
+              </div>
+            </div>
+
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+              Limite atteinte
+            </h1>
+
+            <p className="text-lg text-gray-700 mb-4">
+              {getLimitMessage('emplacements')}
+            </p>
+
+            <p className="text-sm text-gray-600 mb-8">
+              Vous avez <strong>{emplacements?.length}/{planConfig.features.maxEmplacements}</strong> emplacements dans ce projet
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/abonnement"
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-4 rounded-lg font-bold hover:shadow-xl transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+              >
+                <FaCrown />
+                Passer à Premium
+              </Link>
+              <Link
+                href="/emplacements"
+                className="bg-gray-200 text-gray-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-300 transition-colors"
+              >
+                Voir mes emplacements
+              </Link>
+            </div>
+
+            <p className="text-xs text-gray-500 mt-4">
+              💡 Plan actuel du projet : <strong>{planConfig.name}</strong>
+              <br />
+              Si vous ou un autre membre passez à Premium, tout le projet débloque les limites !
+            </p>
+
+            <p className="text-xs text-gray-500 mt-4">
+              ✨ Essai gratuit de 14 jours • Sans engagement
+            </p>
+          </div>
         </div>
       </div>
     );

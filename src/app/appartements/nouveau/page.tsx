@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaArrowLeft, FaSave, FaTimes } from 'react-icons/fa';
+import { FaArrowLeft, FaSave, FaTimes, FaCrown, FaLock } from 'react-icons/fa';
 import { useAppartements } from '@/hooks/useAppartements';
 import { useProject } from '@/contexts/ProjectContext';
+import { useProjectLimits } from '@/hooks/useProjectLimits';
 import { StarRating } from '@/components/StarRating';
 import { geocodeAddressWithRetry } from '@/lib/geocoding';
 import { uploadMultipleImages } from '@/lib/storage';
@@ -20,9 +21,18 @@ function calculateGlobalNote(notes: { luminosite: number; bruit: number; etat: n
 
 export default function NouvelAppartementPage() {
   const router = useRouter();
-  const { addAppartement } = useAppartements();
+  const { addAppartement, appartements } = useAppartements();
   const { currentProject, loading: projectLoading } = useProject();
+  const { canAddAppartement, getLimitMessage, planConfig, projectPlan, loading: limitsLoading } = useProjectLimits(currentProject);
   const [loading, setLoading] = useState(false);
+  const [showLimitWarning, setShowLimitWarning] = useState(false);
+
+  // Vérifier la limite au chargement
+  useEffect(() => {
+    if (!limitsLoading && appartements && !canAddAppartement(appartements.length)) {
+      setShowLimitWarning(true);
+    }
+  }, [appartements, canAddAppartement, limitsLoading]);
   const [formData, setFormData] = useState({
     titre: '',
     adresse: '',
@@ -135,6 +145,84 @@ export default function NouvelAppartementPage() {
           >
             Sélectionner un projet
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Vérifier la limite d'appartements
+  if (showLimitWarning) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-orange-300 rounded-2xl p-12 text-center shadow-xl">
+            {/* Icône */}
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mb-6 shadow-xl relative">
+              <FaCrown className="text-5xl text-white" />
+              <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold">
+                <FaLock />
+              </div>
+            </div>
+
+            {/* Titre */}
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+              Limite atteinte
+            </h1>
+
+            {/* Description */}
+            <p className="text-lg text-gray-700 mb-4">
+              {getLimitMessage('appartements')}
+            </p>
+
+            <p className="text-sm text-gray-600 mb-8">
+              Vous avez <strong>{appartements?.length}/{planConfig.features.maxAppartements}</strong> appartements dans ce projet
+            </p>
+
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+              <Link
+                href="/abonnement"
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-4 rounded-lg font-bold hover:shadow-xl transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+              >
+                <FaCrown />
+                {projectPlan === 'free' ? 'Passer à Premium' : 'Passer à Pro'}
+              </Link>
+              <Link
+                href="/appartements"
+                className="bg-gray-200 text-gray-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-300 transition-colors"
+              >
+                Voir mes appartements
+              </Link>
+            </div>
+
+            {/* Avantages */}
+            <div className="mt-8 pt-8 border-t border-orange-200">
+              <p className="text-sm text-gray-600 mb-4">
+                💡 Plan actuel du projet : <strong>{planConfig.name}</strong>
+              </p>
+              <p className="text-xs text-gray-500 mb-4">
+                Si vous ou un autre membre du projet passez à Premium/Pro, tout le projet bénéficie des limites supérieures !
+              </p>
+              <p className="text-sm text-gray-600 mb-4">
+                Avec Premium, le projet débloque :
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-left">
+                <div className="bg-white rounded-lg p-3 shadow-sm">
+                  <p className="font-semibold text-gray-800 text-sm">♾️ Appartements illimités</p>
+                </div>
+                <div className="bg-white rounded-lg p-3 shadow-sm">
+                  <p className="font-semibold text-gray-800 text-sm">📊 Analytics avancés</p>
+                </div>
+                <div className="bg-white rounded-lg p-3 shadow-sm">
+                  <p className="font-semibold text-gray-800 text-sm">💡 Stats de marché</p>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-500 mt-6">
+              ✨ Essai gratuit de 14 jours • Sans engagement
+            </p>
+          </div>
         </div>
       </div>
     );

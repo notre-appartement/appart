@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useProject } from '@/contexts/ProjectContext';
 import { useProjects } from '@/hooks/useProjects';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProjectLimits } from '@/hooks/useProjectLimits';
+import { useSubscription } from '@/hooks/useSubscription';
 import AuthGuard from '@/components/AuthGuard';
 import DeleteProjectModal from '@/components/DeleteProjectModal';
 import {
@@ -17,14 +19,19 @@ import {
   FaUser,
   FaTrash,
   FaSignOutAlt,
-  FaCrown
+  FaCrown,
+  FaRocket,
+  FaStar,
+  FaInfinity
 } from 'react-icons/fa';
 
 export default function ParametresProjetPage() {
   const router = useRouter();
   const { currentProject, setCurrentProject } = useProject();
   const { removeMembre, toggleAdminStatus, leaveProjet, deleteProjet } = useProjects();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const { currentPlan } = useSubscription();
+  const { projectPlan, planConfig, loading: limitsLoading } = useProjectLimits(currentProject);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -120,40 +127,6 @@ export default function ParametresProjetPage() {
           </h1>
           <p className="text-gray-600 mb-8">{currentProject.nom}</p>
 
-          {/* Code d'invitation */}
-          <div className="mb-8 pb-8 border-b">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <FaUsers className="text-blue-600" />
-              Code d'Invitation
-            </h2>
-            <p className="text-sm text-gray-600 mb-4">
-              Partagez ce code avec les personnes que vous souhaitez inviter au projet
-            </p>
-            <div className="flex gap-3 items-center">
-              <div className="flex-1 bg-gray-50 border-2 border-gray-200 rounded-lg p-4 text-center">
-                <p className="text-3xl font-mono font-bold text-gray-800 tracking-widest">
-                  {currentProject.inviteCode}
-                </p>
-              </div>
-              <button
-                onClick={handleCopyCode}
-                className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium"
-              >
-                {copied ? (
-                  <>
-                    <FaCheckCircle />
-                    Copié !
-                  </>
-                ) : (
-                  <>
-                    <FaCopy />
-                    Copier
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-
           {/* Membres du projet */}
           <div className="mb-8 pb-8 border-b">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -230,6 +203,178 @@ export default function ParametresProjetPage() {
             </div>
           </div>
 
+		  {/* Plan d'abonnement du projet */}
+          <div className="mb-8 pb-8 border-b">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <FaStar className="text-yellow-500" />
+              Plan d'Abonnement
+            </h2>
+
+            {limitsLoading ? (
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600 mb-2"></div>
+                <p className="text-sm text-gray-600">Calcul du plan...</p>
+              </div>
+            ) : (
+              <div className={`rounded-xl p-6 border-2 ${
+                projectPlan === 'pro'
+                  ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-300'
+                  : projectPlan === 'premium'
+                  ? 'bg-gradient-to-br from-yellow-50 to-orange-50 border-orange-300'
+                  : 'bg-gradient-to-br from-gray-50 to-gray-100 border-gray-300'
+              }`}>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    {projectPlan === 'pro' && (
+                      <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                        <FaRocket className="text-3xl text-white" />
+                      </div>
+                    )}
+                    {projectPlan === 'premium' && (
+                      <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                        <FaCrown className="text-3xl text-white" />
+                      </div>
+                    )}
+                    {projectPlan === 'free' && (
+                      <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
+                        <FaUser className="text-3xl text-gray-600" />
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-800">
+                        Plan {planConfig.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {planConfig.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-3xl font-bold text-gray-800">
+                      {planConfig.price > 0 ? `${planConfig.price}€` : 'Gratuit'}
+                    </p>
+                    {planConfig.price > 0 && (
+                      <p className="text-sm text-gray-500">par mois</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Explication */}
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    💡 <strong>Comment ça marche ?</strong> Le plan du projet est déterminé par le <strong>meilleur abonnement</strong> parmi tous les membres. Si au moins un membre a Premium/Pro, tout le projet en bénéficie !
+                  </p>
+                </div>
+
+                {/* Limites actuelles */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                  <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                    <p className="text-2xl font-bold text-gray-800">
+                      {planConfig.features.maxMembersPerProject === -1 ? <FaInfinity className="inline" /> : planConfig.features.maxMembersPerProject}
+                    </p>
+                    <p className="text-xs text-gray-600">Membres max</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                    <p className="text-2xl font-bold text-gray-800">
+                      {planConfig.features.maxAppartements === -1 ? <FaInfinity className="inline" /> : planConfig.features.maxAppartements}
+                    </p>
+                    <p className="text-xs text-gray-600">Appartements</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                    <p className="text-2xl font-bold text-gray-800">
+                      {planConfig.features.maxEmplacements === -1 ? <FaInfinity className="inline" /> : planConfig.features.maxEmplacements}
+                    </p>
+                    <p className="text-xs text-gray-600">Emplacements</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                    <p className="text-2xl font-bold text-gray-800">
+                      <FaInfinity className="inline" />
+                    </p>
+                    <p className="text-xs text-gray-600">Envies</p>
+                  </div>
+                </div>
+
+                {/* Votre contribution */}
+                <div className="mt-4 pt-4 border-t border-gray-300">
+                  <p className="text-sm text-gray-700 mb-2">
+                    <strong>Votre abonnement personnel :</strong> {currentPlan === 'free' ? 'Gratuit' : currentPlan === 'premium' ? 'Premium' : 'Pro'}
+                    {currentPlan !== projectPlan && projectPlan !== 'free' && (
+                      <span className="ml-2 text-green-600">
+                        (Un autre membre contribue au plan {projectPlan === 'premium' ? 'Premium' : 'Pro'} 🎉)
+                      </span>
+                    )}
+                    {currentPlan === projectPlan && currentPlan !== 'free' && (
+                      <span className="ml-2 text-blue-600">
+                        (Vous contribuez au plan {projectPlan === 'premium' ? 'Premium' : 'Pro'} du projet 👑)
+                      </span>
+                    )}
+                  </p>
+
+                  {projectPlan === 'free' && (
+                    <div className="mt-3">
+                      <Link
+                        href="/abonnement"
+                        className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-lg font-bold hover:from-yellow-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl"
+                      >
+                        <FaCrown />
+                        Passer à Premium pour débloquer le projet
+                      </Link>
+                      <p className="text-xs text-gray-600 mt-2">
+                        ✨ Essai gratuit 14 jours • Débloque immédiatement tout le projet
+                      </p>
+                    </div>
+                  )}
+
+                  {projectPlan === 'premium' && currentPlan === 'premium' && (
+                    <div className="mt-3">
+                      <Link
+                        href="/abonnement"
+                        className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-bold hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl"
+                      >
+                        <FaRocket />
+                        Passer à Pro pour tout débloquer
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+{/* Code d'invitation */}
+<div className="mb-8 pb-8 border-b">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <FaUsers className="text-blue-600" />
+              Code d'Invitation
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Partagez ce code avec les personnes que vous souhaitez inviter au projet
+            </p>
+            <div className="flex gap-3 items-center">
+              <div className="flex-1 bg-gray-50 border-2 border-gray-200 rounded-lg p-4 text-center">
+                <p className="text-3xl font-mono font-bold text-gray-800 tracking-widest">
+                  {currentProject.inviteCode}
+                </p>
+              </div>
+              <button
+                onClick={handleCopyCode}
+                className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium"
+              >
+                {copied ? (
+                  <>
+                    <FaCheckCircle />
+                    Copié !
+                  </>
+                ) : (
+                  <>
+                    <FaCopy />
+                    Copier
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+		  
           {/* Actions dangereuses */}
           <div>
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">

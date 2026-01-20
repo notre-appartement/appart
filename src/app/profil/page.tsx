@@ -1,13 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import AuthGuard from '@/components/AuthGuard';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/hooks/useSubscription';
 import { BudgetCategory } from '@/types';
-import { FaSave, FaPlus, FaTrash, FaCalculator, FaPiggyBank, FaWallet, FaUser, FaEdit } from 'react-icons/fa';
+import { FaSave, FaPlus, FaTrash, FaCalculator, FaPiggyBank, FaWallet, FaUser, FaEdit, FaCrown, FaRocket, FaArrowRight } from 'react-icons/fa';
 
 export default function ProfilPage() {
   const { profile, loading, updateProfile } = useAuth();
+  const { currentPlan, planConfig, isOnTrial, trialDaysRemaining, getPlanColor } = useSubscription();
   const [displayName, setDisplayName] = useState<string>('');
   const [prenom, setPrenom] = useState<string>('');
   const [nom, setNom] = useState<string>('');
@@ -222,22 +225,112 @@ export default function ProfilPage() {
                   <span className="text-gray-800">{profile.telephone}</span>
                 </div>
               )}
-              {profile?.subscription && (
-                <div className="flex items-center gap-3 pt-2 border-t mt-4">
-                  <span className="text-sm font-medium text-gray-500 w-32">Abonnement:</span>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    profile.subscription.plan === 'premium'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : profile.subscription.plan === 'pro'
-                      ? 'bg-purple-100 text-purple-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {profile.subscription.plan.toUpperCase()}
-                  </span>
-                </div>
-              )}
+              {/* Section abonnement déplacée ci-dessous */}
             </div>
           )}
+        </div>
+
+        {/* Abonnement */}
+        <div className="mb-8">
+          <div className={`bg-gradient-to-br ${
+            currentPlan === 'pro' ? 'from-purple-50 to-pink-50 border-purple-300' :
+            currentPlan === 'premium' ? 'from-yellow-50 to-orange-50 border-orange-300' :
+            'from-gray-50 to-gray-100 border-gray-300'
+          } rounded-xl shadow-md p-6 border-2`}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                {currentPlan === 'pro' && <FaRocket className="text-3xl text-purple-600" />}
+                {currentPlan === 'premium' && <FaCrown className="text-3xl text-yellow-600" />}
+                {currentPlan === 'free' && <FaUser className="text-3xl text-gray-600" />}
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    {planConfig.name}
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    {planConfig.description}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-3xl font-bold text-gray-800">
+                  {planConfig.price > 0 ? `${planConfig.price}€` : 'Gratuit'}
+                </p>
+                {planConfig.price > 0 && (
+                  <p className="text-sm text-gray-500">par mois</p>
+                )}
+              </div>
+            </div>
+
+            {/* Badge période d'essai */}
+            {isOnTrial() && (
+              <div className="mb-4 bg-green-100 border border-green-300 rounded-lg p-3 flex items-center gap-2">
+                <span className="text-green-700 font-medium">
+                  🎁 Période d'essai active
+                </span>
+                <span className="text-sm text-green-600">
+                  ({trialDaysRemaining()} jours restants)
+                </span>
+              </div>
+            )}
+
+            {/* Features */}
+            <div className="mb-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">Vos avantages :</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {planConfig.featuresList.slice(0, 6).map((feature, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm text-gray-700">
+                    <span className="text-green-500">✓</span>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <Link
+                href="/abonnement"
+                className={`flex-1 text-center py-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2 ${
+                  currentPlan === 'free'
+                    ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 shadow-lg hover:shadow-xl'
+                    : currentPlan === 'premium'
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {currentPlan === 'free' ? (
+                  <>
+                    <FaCrown />
+                    Passer à Premium
+                  </>
+                ) : currentPlan === 'premium' ? (
+                  <>
+                    <FaRocket />
+                    Passer à Pro
+                  </>
+                ) : (
+                  <>
+                    Gérer mon abonnement
+                  </>
+                )}
+                <FaArrowRight className="text-sm" />
+              </Link>
+              {currentPlan === 'free' && (
+                <Link
+                  href="/analytics"
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  Voir Analytics Premium
+                </Link>
+              )}
+            </div>
+
+            {currentPlan === 'free' && (
+              <p className="text-xs text-gray-500 text-center mt-3">
+                ✨ Essai gratuit de 14 jours • Sans engagement
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Budget */}

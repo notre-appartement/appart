@@ -2,19 +2,25 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useProjects } from '@/hooks/useProjects';
 import { useProject } from '@/contexts/ProjectContext';
+import { useSubscription } from '@/hooks/useSubscription';
 import AuthGuard from '@/components/AuthGuard';
-import { FaPlus, FaUsers, FaArrowRight, FaCalendar, FaUserPlus } from 'react-icons/fa';
+import { FaPlus, FaUsers, FaArrowRight, FaCalendar, FaUserPlus, FaCrown, FaLock } from 'react-icons/fa';
 
 export default function ProjetsPage() {
   const router = useRouter();
   const { projets, loading, createProjet } = useProjects();
   const { setCurrentProject } = useProject();
+  const { canCreateProject, getLimitMessage, planConfig, currentPlan } = useSubscription();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDescription, setNewProjectDescription] = useState('');
   const [creating, setCreating] = useState(false);
+
+  // Vérifier si l'utilisateur peut créer un nouveau projet
+  const canCreate = canCreateProject(projets.length);
 
   const handleSelectProject = (projet: any) => {
     setCurrentProject(projet);
@@ -68,22 +74,56 @@ export default function ProjetsPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {/* Carte Créer un nouveau projet */}
             {!showCreateForm ? (
-              <button
-                onClick={() => setShowCreateForm(true)}
-                className="bg-white border-2 border-dashed border-blue-300 rounded-xl p-8 hover:border-blue-500 hover:bg-blue-50 transition-all group"
-              >
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
-                    <FaPlus className="text-3xl text-blue-600" />
+              canCreate ? (
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="bg-white border-2 border-dashed border-blue-300 rounded-xl p-8 hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                >
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
+                      <FaPlus className="text-3xl text-blue-600" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-800 mb-2">
+                      Nouveau Projet
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Créez un projet et invitez vos collaborateurs
+                    </p>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-800 mb-2">
-                    Nouveau Projet
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Créez un projet et invitez vos collaborateurs
-                  </p>
+                </button>
+              ) : (
+                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-orange-300 rounded-xl p-8 relative overflow-hidden">
+                  {/* Badge limite */}
+                  <div className="absolute top-3 right-3">
+                    <FaLock className="text-orange-400 text-xl" />
+                  </div>
+
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <FaCrown className="text-3xl text-white" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-800 mb-2">
+                      Limite atteinte
+                    </h3>
+                    <p className="text-sm text-gray-700 mb-4">
+                      {getLimitMessage('projects')}
+                    </p>
+                    <p className="text-xs text-gray-600 mb-4">
+                      Vous avez <strong>{projets.length}/{planConfig.features.maxProjects}</strong> projet{projets.length > 1 ? 's' : ''}
+                    </p>
+                    <Link
+                      href="/abonnement"
+                      className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-lg font-bold hover:from-yellow-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl"
+                    >
+                      <FaCrown />
+                      Passer à {currentPlan === 'free' ? 'Premium' : 'Pro'}
+                    </Link>
+                    <p className="text-xs text-gray-500 mt-3">
+                      ✨ Essai gratuit de 14 jours
+                    </p>
+                  </div>
                 </div>
-              </button>
+              )
             ) : (
               <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-blue-500">
                 <form onSubmit={handleCreateProject} className="space-y-4">
