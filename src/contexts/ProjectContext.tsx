@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Projet } from '@/types';
 import { useProjects } from '@/hooks/useProjects';
+import { User } from 'firebase/auth';
 
 interface ProjectContextType {
   currentProject: Projet | null;
@@ -22,7 +23,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
 
     // Récupérer le projet stocké localement
     const storedProjectId = localStorage.getItem('currentProjectId');
-    
+
     if (storedProjectId && projets.length > 0) {
       const projet = projets.find(p => p.id === storedProjectId);
       if (projet) {
@@ -63,4 +64,10 @@ export function useProject() {
     throw new Error('useProject doit être utilisé dans un ProjectProvider');
   }
   return context;
+}
+
+export function getAllProjects(user: User | null) {
+  const { projets } = useProjects();
+  if (!user) return [];
+  return projets.filter(p => p.membres.some(m => m.uid === user.uid));
 }
