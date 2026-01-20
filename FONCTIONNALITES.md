@@ -32,6 +32,16 @@
   - [x] Suppression de membres (admin uniquement)
   - [x] Possibilité de quitter un projet
   - [x] Suppression du projet (admin uniquement)
+  - [x] **Affichage du plan d'abonnement du projet**
+    - [x] Plan actuel calculé (meilleur plan parmi les membres)
+    - [x] Limites en temps réel
+    - [x] Indication de qui contribue au plan
+    - [x] Boutons d'upgrade contextuels
+  - [x] **Système de suppression intelligent** :
+    - [x] Archivage (30 jours de grâce, restauration possible)
+    - [x] Anonymisation des appartements (conservation pour stats de marché)
+    - [x] Suppression définitive (irréversible)
+    - [x] Modal de confirmation avec choix du mode
 
 ## ✅ Phase 1 : Base (Terminé)
 - [x] Structure du projet Next.js avec App Router
@@ -194,14 +204,36 @@
 
 ## 🔐 Phase 4 : Collaboration et Sécurité
 
-### Authentification
+### Authentification & Profils
 - [x] Connexion Google
 - [x] Connexion Email/Mot de passe
-- [x] Profils utilisateurs (Aymeric + Sarah)
-- [x] Liste blanche d'emails autorisés
+- [x] Collection `profiles` avec création automatique à la première connexion
+- [x] Sauvegarde des informations utilisateur (displayName, prénom, nom, téléphone)
+- [x] Modification du profil utilisateur
 - [x] Affichage du nom utilisateur dans la navigation
-- [ ] Photos de profil
-- [ ] Modification du profil
+- [x] **Système d'abonnement complet (free/premium/pro)**
+  - [x] 3 plans : Gratuit, Premium (9.99€), Pro (19.99€)
+  - [x] Configuration des features par plan
+  - [x] Hook `useSubscription` pour vérifier les permissions
+  - [x] Hook `useProjectLimits` pour limites basées sur le meilleur plan du projet
+  - [x] Page `/abonnement` avec comparaison des plans
+  - [x] Composant `PremiumFeature` (paywall par section)
+  - [x] Composant `PremiumGuard` (paywall page entière)
+  - [x] Intégration Stripe (préparée, à activer)
+- [x] **Limitations par plan implémentées** :
+  - [x] Projets (Free: 1, Premium: 3, Pro: illimité)
+  - [x] Membres par projet (Free: 2, Premium: 20, Pro: illimité)
+  - [x] Appartements (Free: 20, Premium/Pro: illimité)
+  - [x] Emplacements (Free: 10, Premium/Pro: illimité)
+  - [x] Envies (illimité pour tous)
+  - [x] Vérifications côté client avec paywalls élégants
+  - [x] Logique "meilleur plan du projet" (collaboratif)
+- [x] Section abonnement dans la page Profil
+- [x] Préférences utilisateur (thème, notifications, langue)
+- [x] Tracking de la dernière connexion
+- [ ] Photos de profil (upload)
+- [ ] Règles Firebase pour sécurité serveur
+- [ ] Cloud Functions pour validation des limites
 
 ### Collaboration
 - [x] Voir qui a ajouté quoi (auteur affiché sur chaque item)
@@ -255,10 +287,148 @@
 
 ---
 
-## 💡 Idées futures (Nice to have)
+## 💎 Features Premium (Monétisation)
 
-- [ ] Export des données complètes
-- [ ] Import depuis sites d'annonces
+### 🔐 Système d'Abonnement
+- [x] **Plan Free** : Fonctionnalités de base (1 projet, 2 membres, 20 apparts, 10 emplacements)
+- [x] **Plan Premium** (9.99€/mois) : 3 projets, 20 membres, illimité
+- [x] **Plan Pro** (19.99€/mois) : Tout illimité + API
+- [x] **Période d'essai** 14 jours gratuits (préparée)
+- [x] **Logique collaborative** : Meilleur plan du projet s'applique à tous
+- [x] **Page `/analytics`** (démo Premium)
+- [ ] **Intégration Stripe active** pour paiements réels
+- [ ] **Webhooks Stripe** pour gestion automatique
+- [ ] **Gestion des annulations** et downgrades
+
+### 📊 Statistiques de Marché (Premium/Pro)
+- [ ] **Prix moyen par quartier** (basé sur appartements anonymisés)
+- [ ] **Évolution des prix dans le temps**
+- [ ] **Tendances du marché locatif**
+- [ ] **Score de quartier** (commerces, transports, sécurité)
+- [ ] **Heatmap des prix** sur la carte
+- [ ] **Cloud Function** pour générer les stats quotidiennes
+
+### 💡 Recommandations Intelligentes (Premium/Pro)
+- [ ] **Appartements similaires disponibles**
+- [ ] **Alertes prix** (appartement sous-évalué détecté)
+- [ ] **Suggestions basées sur vos envies**
+- [ ] **Score de compatibilité** avec vos critères
+- [ ] **Machine learning** pour recommandations personnalisées
+
+### 📈 Analytics Avancés (Premium/Pro)
+- [x] **Page Analytics** (structure de base)
+- [ ] **Graphiques réels** (Chart.js/Recharts)
+- [ ] **Rapports personnalisés** en PDF
+- [ ] **Graphiques de comparaison** (radar charts, histogrammes)
+- [ ] **Export complet des données** (Excel, CSV, JSON)
+- [ ] **Historique des recherches**
+- [ ] **Dashboard analytics** complet
+
+### 🎯 Features Pro
+- [x] **Multi-projets illimités**
+- [x] **Membres illimités** par projet
+- [ ] **API REST** pour intégrations
+- [ ] **Import automatique** depuis sites d'annonces (voir ci-dessous)
+- [ ] **Intégration Street View**
+- [ ] **Calcul d'itinéraires** optimisés
+- [ ] **Notifications push** personnalisées
+- [ ] **Support prioritaire**
+
+**💰 Données anonymisées** : Les appartements anonymisés lors de la suppression de projets alimentent les statistiques de marché, créant ainsi de la valeur pour les utilisateurs premium.
+
+---
+
+## 🤖 Phase 7 : Import Automatique depuis Sites d'Annonces
+
+### Import depuis lien web (Feature Pro)
+Cette fonctionnalité permettrait d'extraire automatiquement les informations d'un appartement depuis un lien web.
+
+#### Sites supportés (à implémenter)
+- [ ] **LeBonCoin** (le plus populaire en France)
+- [ ] **SeLoger**
+- [ ] **PAP (De Particulier à Particulier)**
+- [ ] **Bien'ici**
+- [ ] **Logic-Immo**
+- [ ] **Avendrealouer**
+
+#### Données extraites automatiquement
+- [ ] Titre de l'annonce
+- [ ] Prix du loyer
+- [ ] Charges (si mentionnées)
+- [ ] Surface
+- [ ] Nombre de pièces
+- [ ] Nombre de chambres
+- [ ] Adresse complète ou ville + code postal
+- [ ] Description
+- [ ] Photos (téléchargement automatique)
+- [ ] Étage, ascenseur, meublé
+- [ ] Contact agence
+- [ ] Lien vers l'annonce originale
+
+#### Approches techniques possibles
+
+**Option 1 : Extension navigateur (Recommandée)**
+- ✅ Extension Chrome/Firefox
+- ✅ Bouton "Importer dans Notre Appart" sur les sites d'annonces
+- ✅ Extraction directe depuis le DOM
+- ✅ Pas de problèmes CORS
+- ❌ Nécessite installation de l'extension
+
+**Option 2 : API tierce de scraping**
+- Services comme ScraperAPI, Bright Data, Apify
+- ✅ Fonctionne côté serveur
+- ✅ Gère les anti-bots automatiquement
+- ❌ Coût mensuel
+- ❌ Peut violer les CGU des sites
+
+**Option 3 : Cloud Function personnalisée**
+- Puppeteer/Playwright dans Cloud Function
+- ✅ Contrôle total
+- ✅ Gratuit (jusqu'à un certain volume)
+- ❌ Maintenance des sélecteurs CSS si le site change
+- ❌ Peut être bloqué par anti-bots
+
+#### Implémentation proposée
+
+```typescript
+// API endpoint
+POST /api/import-appartement
+Body: { url: string }
+
+// Retour
+{
+  success: boolean,
+  data: {
+    titre: string,
+    prix: number,
+    surface: number,
+    // ... tous les champs
+    photos: string[], // URLs téléchargées
+    source: 'leboncoin' | 'seloger' | ...,
+    sourceUrl: string
+  }
+}
+```
+
+#### UX proposée
+1. Bouton "➕ Importer depuis un lien" sur `/appartements`
+2. Modal avec input pour coller le lien
+3. Détection automatique du site (leboncoin, seloger, etc.)
+4. Extraction et affichage d'un aperçu
+5. Possibilité de modifier avant sauvegarde
+6. Sauvegarde dans Firebase
+
+#### Limitations à prévoir
+- ⚠️ Les sites peuvent changer leur structure HTML
+- ⚠️ Certains sites bloquent le scraping (CGU)
+- ⚠️ Nécessite maintenance régulière des extracteurs
+- 💡 Limiter à X imports/jour en Free, illimité en Pro
+
+---
+
+## 💡 Autres idées futures (Nice to have)
+
+- [ ] Export des données complètes (PDF, Excel)
 - [ ] Partage d'appartements par lien
 - [ ] Intégration Street View
 - [ ] Calcul d'itinéraires
@@ -267,6 +437,11 @@
 - [ ] Machine learning pour recommandations
 - [ ] Historique des prix du marché
 - [ ] Comparaison avec le marché local
+- [ ] Mode hors ligne (PWA)
+- [ ] Application mobile (React Native)
+- [ ] Intégration calendrier pour visites
+- [ ] Chatbot IA pour conseils
+- [ ] Générateur de dossier locataire automatique
 
 ---
 
