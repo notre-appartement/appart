@@ -290,49 +290,49 @@
 ## 💎 Features Premium (Monétisation)
 
 ### 🔐 Système d'Abonnement
-- [x] **Plan Free** : Fonctionnalités de base (1 projet, 2 membres, 20 apparts, 10 emplacements)
-- [x] **Plan Premium** (9.99€/mois) : 3 projets, 20 membres, illimité
-- [x] **Plan Pro** (19.99€/mois) : Tout illimité + API
-- [x] **Période d'essai** 14 jours gratuits (préparée)
-- [x] **Logique collaborative** : Meilleur plan du projet s'applique à tous
-- [x] **Page `/analytics`** (démo Premium)
-- [ ] **Intégration Stripe active** pour paiements réels
-- [ ] **Webhooks Stripe** pour gestion automatique
-- [ ] **Gestion des annulations** et downgrades
+- [x] Plan Free : Fonctionnalités de base (1 projet, 2 membres, 20 apparts, 10 emplacements)
+- [x] Plan Premium (9.99€/mois) : 3 projets, 20 membres, illimité
+- [x] Plan Pro (19.99€/mois) : Tout illimité + API
+- [x] Période d'essai 14 jours gratuits (préparée)
+- [x] Logique collaborative : Meilleur plan du projet s'applique à tous
+- [x] Page `/analytics` (démo Premium)
+- [ ] Intégration Stripe active pour paiements réels
+- [ ] Webhooks Stripe pour gestion automatique
+- [ ] Gestion des annulations et downgrades
 
 ### 📊 Statistiques de Marché (Premium/Pro)
-- [ ] **Prix moyen par quartier** (basé sur appartements anonymisés)
-- [ ] **Évolution des prix dans le temps**
-- [ ] **Tendances du marché locatif**
-- [ ] **Score de quartier** (commerces, transports, sécurité)
-- [ ] **Heatmap des prix** sur la carte
-- [ ] **Cloud Function** pour générer les stats quotidiennes
+- [ ] Prix moyen par quartier (basé sur appartements anonymisés)
+- [ ] Évolution des prix dans le temps
+- [ ] Tendances du marché locatif
+- [ ] Score de quartier (commerces, transports, sécurité)
+- [ ] Heatmap des prix sur la carte
+- [ ] Cloud Function pour générer les stats quotidiennes
 
 ### 💡 Recommandations Intelligentes (Premium/Pro)
-- [ ] **Appartements similaires disponibles**
-- [ ] **Alertes prix** (appartement sous-évalué détecté)
-- [ ] **Suggestions basées sur vos envies**
-- [ ] **Score de compatibilité** avec vos critères
-- [ ] **Machine learning** pour recommandations personnalisées
+- [ ] Appartements similaires disponibles
+- [ ] Alertes prix (appartement sous-évalué détecté)
+- [ ] Suggestions basées sur vos envies
+- [ ] Score de compatibilité avec vos critères
+- [ ] Machine learning pour recommandations personnalisées
 
 ### 📈 Analytics Avancés (Premium/Pro)
-- [x] **Page Analytics** (structure de base)
-- [ ] **Graphiques réels** (Chart.js/Recharts)
-- [ ] **Rapports personnalisés** en PDF
-- [ ] **Graphiques de comparaison** (radar charts, histogrammes)
-- [ ] **Export complet des données** (Excel, CSV, JSON)
-- [ ] **Historique des recherches**
-- [ ] **Dashboard analytics** complet
+- [x] Page Analytics (structure de base)
+- [ ] Graphiques réels (Chart.js/Recharts)
+- [ ] Rapports personnalisés en PDF
+- [ ] Graphiques de comparaison (radar charts, histogrammes)
+- [ ] Export complet des données (Excel, CSV, JSON)
+- [ ] Historique des recherches
+- [ ] Dashboard analytics complet
 
 ### 🎯 Features Pro
-- [x] **Multi-projets illimités**
-- [x] **Membres illimités** par projet
-- [ ] **API REST** pour intégrations
-- [ ] **Import automatique** depuis sites d'annonces (voir ci-dessous)
-- [ ] **Intégration Street View**
-- [ ] **Calcul d'itinéraires** optimisés
-- [ ] **Notifications push** personnalisées
-- [ ] **Support prioritaire**
+- [x] Multi-projets illimités
+- [x] Membres illimités par projet
+- [ ] API REST pour intégrations
+- [ ] Import automatique depuis sites d'annonces (voir ci-dessous)
+- [ ] Intégration Street View
+- [ ] Calcul d'itinéraires optimisés
+- [ ] Notifications push personnalisées
+- [ ] Support prioritaire
 
 **💰 Données anonymisées** : Les appartements anonymisés lors de la suppression de projets alimentent les statistiques de marché, créant ainsi de la valeur pour les utilisateurs premium.
 
@@ -344,12 +344,12 @@
 Cette fonctionnalité permettrait d'extraire automatiquement les informations d'un appartement depuis un lien web.
 
 #### Sites supportés (à implémenter)
-- [ ] **LeBonCoin** (le plus populaire en France)
-- [ ] **SeLoger**
-- [ ] **PAP (De Particulier à Particulier)**
-- [ ] **Bien'ici**
-- [ ] **Logic-Immo**
-- [ ] **Avendrealouer**
+- [ ] LeBonCoin (le plus populaire en France)
+- [ ] SeLoger
+- [ ] PAP (De Particulier à Particulier)
+- [ ] Bien'ici
+- [ ] Logic-Immo
+- [ ] Avendrealouer
 
 #### Données extraites automatiquement
 - [ ] Titre de l'annonce
@@ -388,43 +388,6 @@ Cette fonctionnalité permettrait d'extraire automatiquement les informations d'
 - ❌ Maintenance des sélecteurs CSS si le site change
 - ❌ Peut être bloqué par anti-bots
 
-#### Implémentation proposée
-
-```typescript
-// API endpoint
-POST /api/import-appartement
-Body: { url: string }
-
-// Retour
-{
-  success: boolean,
-  data: {
-    titre: string,
-    prix: number,
-    surface: number,
-    // ... tous les champs
-    photos: string[], // URLs téléchargées
-    source: 'leboncoin' | 'seloger' | ...,
-    sourceUrl: string
-  }
-}
-```
-
-#### UX proposée
-1. Bouton "➕ Importer depuis un lien" sur `/appartements`
-2. Modal avec input pour coller le lien
-3. Détection automatique du site (leboncoin, seloger, etc.)
-4. Extraction et affichage d'un aperçu
-5. Possibilité de modifier avant sauvegarde
-6. Sauvegarde dans Firebase
-
-#### Limitations à prévoir
-- ⚠️ Les sites peuvent changer leur structure HTML
-- ⚠️ Certains sites bloquent le scraping (CGU)
-- ⚠️ Nécessite maintenance régulière des extracteurs
-- 💡 Limiter à X imports/jour en Free, illimité en Pro
-
----
 
 ## 💡 Autres idées futures (Nice to have)
 
