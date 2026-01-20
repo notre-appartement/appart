@@ -4,10 +4,19 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useProjects } from '@/hooks/useProjects';
+import { useAuth } from '@/contexts/AuthContext';
 import AuthGuard from '@/components/AuthGuard';
-import { FaDatabase, FaArrowRight, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { FaDatabase, FaArrowRight, FaCheckCircle, FaExclamationTriangle, FaLock } from 'react-icons/fa';
+
+// 🔐 LISTE BLANCHE DES ADMINS
+// Remplacez par vos propres emails d'administrateurs
+const ADMIN_EMAILS = [
+  'ssabatieraymeric@gmail.com', // Remplacez par votre email
+  // Ajoutez d'autres emails si nécessaire
+];
 
 export default function MigrationPage() {
+  const { user } = useAuth();
   const { projets } = useProjects();
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [migrating, setMigrating] = useState(false);
@@ -111,23 +120,46 @@ export default function MigrationPage() {
 
   const totalToMigrate = stats.appartements + stats.envies + stats.emplacements;
 
+  // 🔐 Vérification des permissions admin
+  const isAdmin = ADMIN_EMAILS.includes(user?.email || '');
+
   return (
     <AuthGuard>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="bg-white rounded-xl shadow-xl p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-              <FaDatabase className="text-2xl text-orange-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800">
-                Migration des Données
+        {!isAdmin ? (
+          // 🔒 ACCÈS REFUSÉ
+          <div className="bg-white rounded-xl shadow-xl p-8">
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
+                <FaLock className="text-4xl text-red-600" />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                Accès Refusé
               </h1>
-              <p className="text-gray-600">
-                Migrez vos données existantes vers un projet
+              <p className="text-gray-600 mb-6 max-w-md">
+                Cette page est réservée aux administrateurs de l'application.
+              </p>
+              <p className="text-sm text-gray-500">
+                Votre email : <span className="font-mono bg-gray-100 px-2 py-1 rounded">{user?.email}</span>
               </p>
             </div>
           </div>
+        ) : (
+          // ✅ ACCÈS AUTORISÉ
+          <div className="bg-white rounded-xl shadow-xl p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <FaDatabase className="text-2xl text-orange-600" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800">
+                  Migration des Données
+                </h1>
+                <p className="text-gray-600">
+                  Migrez vos données existantes vers un projet
+                </p>
+              </div>
+            </div>
 
           {totalToMigrate === 0 ? (
             <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
@@ -212,7 +244,8 @@ export default function MigrationPage() {
               </div>
             </>
           )}
-        </div>
+          </div>
+        )}
       </div>
     </AuthGuard>
   );

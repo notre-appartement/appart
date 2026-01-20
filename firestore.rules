@@ -1,0 +1,244 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ====================
+    // FONCTIONS UTILITAIRES
+    // ====================
+
+    // Vérifie si l'utilisateur est authentifié
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Vérifie si l'utilisateur est le propriétaire du document
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // Récupère le projet associé
+    function getProject(projectId) {
+      return get(/databases/$(database)/documents/projets/$(projectId));
+    }
+
+    // Vérifie si l'utilisateur est membre d'un projet
+    function isMemberOfProject(projectId) {
+      let projet = getProject(projectId);
+      return projet.data.membres.hasAny([request.auth.uid]);
+    }
+
+    // Vérifie si l'utilisateur est membre (avec vérification des UIDs dans le tableau)
+    function isProjectMember(projectId) {
+      let projet = getProject(projectId);
+      return request.auth.uid in projet.data.membres.map(m => m.uid);
+    }
+
+    // Vérifie si l'utilisateur est admin d'un projet
+    function isProjectAdmin(projectId) {
+      let projet = getProject(projectId);
+      let membre = projet.data.membres.filter(m => m.uid == request.auth.uid)[0];
+      return membre != null && membre.isAdmin == true;
+    }
+
+    // Récupère le profil de l'utilisateur
+    function getUserProfile() {
+      return get(/databases/$(database)/documents/profiles/$(request.auth.uid));
+    }
+
+    // Vérifie le plan d'abonnement de l'utilisateur
+    function getUserPlan() {
+      let profile = getUserProfile();
+      return profile.data.subscription.plan;
+    }
+
+    // Compte le nombre de projets d'un utilisateur
+    function countUserProjects() {
+      // Note: Cette fonction nécessiterait une requête,
+      // donc on ne peut pas l'implémenter directement dans les règles.
+      // À vérifier côté client ET via Cloud Functions
+      return true; // Placeholder - vérification client-side obligatoire
+    }
+
+
+    // ====================
+    // COLLECTION: profiles
+    // ====================
+    match /profiles/{userId} {
+      // Lecture : Seulement son propre profil
+      allow read: if isOwner(userId);
+
+      // Création : Seulement pour soi-même, à la première connexion
+      allow create: if isOwner(userId)
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.email == request.auth.token.email;
+
+      // Mise à jour : Seulement son propre profil
+      // + Ne pas modifier uid, email, createdAt
+      allow update: if isOwner(userId)
+                    && request.resource.data.uid == resource.data.uid
+                    && request.resource.data.email == resource.data.email
+                    && request.resource.data.createdAt == resource.data.createdAt;
+
+      // Suppression : Impossible (RGPD à gérer via Cloud Functions)
+      allow delete: if false;
+    }
+
+
+    // ====================
+    // COLLECTION: projets
+    // ====================
+    match /projets/{projetId} {
+      // Lecture : Seuls les membres du projet
+      allow read: if isAuthenticated()
+                  && request.auth.uid in resource.data.membres.map(m => m.uid);
+
+      // Création : Tout utilisateur authentifié
+      // Validation : le créateur doit être dans les membres et être admin
+      allow create: if isAuthenticated()
+                    && request.resource.data.createurId == request.auth.uid
+                    && request.auth.uid in request.resource.data.membres.map(m => m.uid)
+                    && request.resource.data.membres.filter(m => m.uid == request.auth.uid)[0].isAdmin == true;
+
+      // Mise à jour : Seuls les admins du projet
+      // Ne pas modifier : createurId, inviteCode, createdAt
+      allow update: if isAuthenticated()
+                    && request.auth.uid in resource.data.membres.map(m => m.uid)
+                    && resource.data.membres.filter(m => m.uid == request.auth.uid)[0].isAdmin == true
+                    && request.resource.data.createurId == resource.data.createurId
+                    && request.resource.data.inviteCode == resource.data.inviteCode
+                    && request.resource.data.createdAt == resource.data.createdAt;
+
+      // Suppression : Seuls les admins du projet
+      allow delete: if isAuthenticated()
+                    && request.auth.uid in resource.data.membres.map(m => m.uid)
+                    && resource.data.membres.filter(m => m.uid == request.auth.uid)[0].isAdmin == true;
+    }
+
+
+    // ====================
+    // COLLECTION: envies
+    // ====================
+    match /envies/{envieId} {
+      // Lecture : Seuls les membres du projet
+      allow read: if isAuthenticated() && isProjectMember(resource.data.projectId);
+
+      // Création : Seuls les membres du projet
+      // Validation : createdBy doit être l'utilisateur actuel
+      allow create: if isAuthenticated()
+                    && isProjectMember(request.resource.data.projectId)
+                    && request.resource.data.createdBy == request.auth.uid;
+
+      // Mise à jour : Seul le créateur de l'envie
+      // Ne pas modifier : projectId, createdBy, createdAt
+      allow update: if isAuthenticated()
+                    && isOwner(resource.data.createdBy)
+                    && request.resource.data.projectId == resource.data.projectId
+                    && request.resource.data.createdBy == resource.data.createdBy
+                    && request.resource.data.createdAt == resource.data.createdAt;
+
+      // Suppression : Créateur ou admin du projet
+      allow delete: if isAuthenticated()
+                    && (isOwner(resource.data.createdBy)
+                        || isProjectAdmin(resource.data.projectId));
+    }
+
+
+    // ====================
+    // COLLECTION: appartements
+    // ====================
+    match /appartements/{appartementId} {
+      // Lecture : Membres du projet OU données anonymisées pour stats publiques
+      allow read: if isAuthenticated()
+                  && (isProjectMember(resource.data.projectId)
+                      || (resource.data.anonymized == true
+                          && resource.data.availableForStats == true));
+
+      // Création : Seuls les membres du projet
+      // Note: Les limites d'abonnement doivent être vérifiées côté client
+      // et idéalement via Cloud Functions
+      allow create: if isAuthenticated()
+                    && isProjectMember(request.resource.data.projectId)
+                    && request.resource.data.createdBy == request.auth.uid;
+
+      // Mise à jour : Seuls les membres du projet
+      // Ne pas modifier : projectId, createdBy, createdAt
+      // Exception : Anonymisation possible par les admins
+      allow update: if isAuthenticated()
+                    && isProjectMember(resource.data.projectId)
+                    && request.resource.data.projectId == resource.data.projectId
+                    && request.resource.data.createdBy == resource.data.createdBy
+                    && request.resource.data.createdAt == resource.data.createdAt;
+
+      // Suppression : Créateur ou admin du projet
+      allow delete: if isAuthenticated()
+                    && (isOwner(resource.data.createdBy)
+                        || isProjectAdmin(resource.data.projectId));
+    }
+
+
+    // ====================
+    // COLLECTION: emplacements
+    // ====================
+    match /emplacements/{emplacementId} {
+      // Lecture : Seuls les membres du projet
+      allow read: if isAuthenticated() && isProjectMember(resource.data.projectId);
+
+      // Création : Seuls les membres du projet
+      // Note: Les limites d'abonnement doivent être vérifiées côté client
+      allow create: if isAuthenticated()
+                    && isProjectMember(request.resource.data.projectId)
+                    && request.resource.data.createdBy == request.auth.uid;
+
+      // Mise à jour : Seul le créateur
+      // Ne pas modifier : projectId, createdBy, createdAt
+      allow update: if isAuthenticated()
+                    && isOwner(resource.data.createdBy)
+                    && request.resource.data.projectId == resource.data.projectId
+                    && request.resource.data.createdBy == resource.data.createdBy
+                    && request.resource.data.createdAt == resource.data.createdAt;
+
+      // Suppression : Créateur ou admin du projet
+      allow delete: if isAuthenticated()
+                    && (isOwner(resource.data.createdBy)
+                        || isProjectAdmin(resource.data.projectId));
+    }
+
+
+    // ====================
+    // COLLECTION: checklists
+    // ====================
+    match /checklists/{checklistId} {
+      // Récupère l'appartement associé
+      function getAppartement() {
+        return get(/databases/$(database)/documents/appartements/$(resource.data.appartementId));
+      }
+
+      // Lecture : Membres du projet propriétaire de l'appartement
+      allow read: if isAuthenticated() && isProjectMember(getAppartement().data.projectId);
+
+      // Création : Membres du projet propriétaire de l'appartement
+      allow create: if isAuthenticated()
+                    && isProjectMember(getAppartement().data.projectId);
+
+      // Mise à jour : Membres du projet propriétaire de l'appartement
+      // Ne pas modifier : appartementId, createdAt
+      allow update: if isAuthenticated()
+                    && isProjectMember(getAppartement().data.projectId)
+                    && request.resource.data.appartementId == resource.data.appartementId
+                    && request.resource.data.createdAt == resource.data.createdAt;
+
+      // Suppression : Admin du projet ou créateur de l'appartement
+      allow delete: if isAuthenticated()
+                    && (isProjectAdmin(getAppartement().data.projectId)
+                        || isOwner(getAppartement().data.createdBy));
+    }
+
+
+    // ====================
+    // BLOQUER TOUT LE RESTE
+    // ====================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

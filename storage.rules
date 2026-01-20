@@ -1,0 +1,142 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ====================
+    // FONCTIONS UTILITAIRES
+    // ====================
+
+    // Vérifie si l'utilisateur est authentifié
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Vérifie si l'utilisateur est le propriétaire du fichier
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // Vérifie la taille du fichier (max 5MB)
+    function isValidSize() {
+      return request.resource.size <= 5 * 1024 * 1024; // 5MB
+    }
+
+    // Vérifie que c'est une image valide
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    // Vérifie que c'est un PDF
+    function isPDF() {
+      return request.resource.contentType == 'application/pdf';
+    }
+
+    // Récupère le projet associé à un appartement
+    function getAppartementProject(appartementId) {
+      return firestore.get(/databases/(default)/documents/appartements/$(appartementId)).data.projectId;
+    }
+
+    // Vérifie si l'utilisateur est membre d'un projet
+    function isProjectMember(projectId) {
+      let projet = firestore.get(/databases/(default)/documents/projets/$(projectId)).data;
+      return request.auth.uid in projet.membres.map(m => m.uid);
+    }
+
+
+    // ====================
+    // PHOTOS D'APPARTEMENTS
+    // Structure: appartements/{appartementId}/{filename}
+    // ====================
+    match /appartements/{appartementId}/{filename} {
+      // Lecture : Membres du projet propriétaire de l'appartement
+      allow read: if isAuthenticated()
+                  && isProjectMember(getAppartementProject(appartementId));
+
+      // Upload :
+      // - Utilisateur authentifié
+      // - Membre du projet
+      // - Fichier est une image
+      // - Taille max 5MB
+      allow create: if isAuthenticated()
+                    && isProjectMember(getAppartementProject(appartementId))
+                    && isImage()
+                    && isValidSize();
+
+      // Mise à jour : Même règles que création
+      allow update: if isAuthenticated()
+                    && isProjectMember(getAppartementProject(appartementId))
+                    && isImage()
+                    && isValidSize();
+
+      // Suppression : Membres du projet
+      allow delete: if isAuthenticated()
+                    && isProjectMember(getAppartementProject(appartementId));
+    }
+
+
+    // ====================
+    // DOCUMENTS D'APPARTEMENTS (PDFs)
+    // Structure: appartements/{appartementId}/documents/{filename}
+    // ====================
+    match /appartements/{appartementId}/documents/{filename} {
+      // Lecture : Membres du projet propriétaire de l'appartement
+      allow read: if isAuthenticated()
+                  && isProjectMember(getAppartementProject(appartementId));
+
+      // Upload :
+      // - Utilisateur authentifié
+      // - Membre du projet
+      // - Fichier est un PDF
+      // - Taille max 5MB
+      allow create: if isAuthenticated()
+                    && isProjectMember(getAppartementProject(appartementId))
+                    && isPDF()
+                    && isValidSize();
+
+      // Mise à jour : Même règles que création
+      allow update: if isAuthenticated()
+                    && isProjectMember(getAppartementProject(appartementId))
+                    && isPDF()
+                    && isValidSize();
+
+      // Suppression : Membres du projet
+      allow delete: if isAuthenticated()
+                    && isProjectMember(getAppartementProject(appartementId));
+    }
+
+
+    // ====================
+    // PHOTOS DE PROFIL
+    // Structure: profiles/{userId}/avatar.{ext}
+    // ====================
+    match /profiles/{userId}/{filename} {
+      // Lecture : Tout le monde (si on veut afficher les avatars)
+      // Ou seulement l'utilisateur : if isOwner(userId)
+      allow read: if isAuthenticated();
+
+      // Upload :
+      // - Seulement son propre profil
+      // - Fichier est une image
+      // - Taille max 2MB (avatar plus petit)
+      allow create: if isOwner(userId)
+                    && isImage()
+                    && request.resource.size <= 2 * 1024 * 1024;
+
+      // Mise à jour : Même règles que création
+      allow update: if isOwner(userId)
+                    && isImage()
+                    && request.resource.size <= 2 * 1024 * 1024;
+
+      // Suppression : Seulement son propre profil
+      allow delete: if isOwner(userId);
+    }
+
+
+    // ====================
+    // BLOQUER TOUT LE RESTE
+    // ====================
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
