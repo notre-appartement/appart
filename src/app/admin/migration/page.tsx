@@ -3,10 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { useProjects } from '@/hooks/useProjects';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthGuard from '@/components/AuthGuard';
-import { FaDatabase, FaArrowRight, FaCheckCircle, FaExclamationTriangle, FaLock } from 'react-icons/fa';
+import { FaDatabase, FaArrowRight, FaCheckCircle, FaExclamationTriangle, FaLock, FaUsers } from 'react-icons/fa';
 
 // 🔐 LISTE BLANCHE DES ADMINS
 // Remplacez par vos propres emails d'administrateurs
@@ -17,19 +16,33 @@ const ADMIN_EMAILS = [
 
 export default function MigrationPage() {
   const { user } = useAuth();
-  const { projets } = useProjects();
+  const [projets, setProjets] = useState<any[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [migrating, setMigrating] = useState(false);
+  const [migratingProjets, setMigratingProjets] = useState(false);
   const [stats, setStats] = useState({
     appartements: 0,
     envies: 0,
     emplacements: 0,
   });
+  const [projetsToMigrate, setProjetsToMigrate] = useState(0);
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
     const loadStats = async () => {
       try {
+        // Charger tous les projets (sans filtre, car les règles bloquent sinon)
+        const projetsSnap = await getDocs(collection(db, 'projets'));
+        const allProjets = projetsSnap.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setProjets(allProjets);
+
+        // Compter les projets sans membresUids
+        const projetsWithoutUids = allProjets.filter(p => !p.membresUids || !p.adminsUids);
+        setProjetsToMigrate(projetsWithoutUids.length);
+
         // Compter les documents sans projectId
         const appartQuery = query(
           collection(db, 'appartements'),
@@ -62,6 +75,45 @@ export default function MigrationPage() {
 
     loadStats();
   }, [completed]);
+
+  // Migration des projets pour ajouter membresUids et adminsUids
+  const handleMigrateProjets = async () => {
+    if (!confirm('Voulez-vous migrer tous les projets pour ajouter les champs membresUids et adminsUids ?')) {
+      return;
+    }
+
+    setMigratingProjets(true);
+
+    try {
+      const projetsSnap = await getDocs(collection(db, 'projets'));
+      let migratedCount = 0;
+
+      for (const docSnap of projetsSnap.docs) {
+        const data = docSnap.data();
+
+        // Si membresUids ou adminsUids n'existe pas, les créer
+        if (!data.membresUids || !data.adminsUids) {
+          const membres = data.membres || [];
+          const membresUids = membres.map((m: any) => m.uid);
+          const adminsUids = membres.filter((m: any) => m.isAdmin).map((m: any) => m.uid);
+
+          await updateDoc(doc(db, 'projets', docSnap.id), {
+            membresUids,
+            adminsUids,
+          });
+          migratedCount++;
+        }
+      }
+
+      alert(`Migration réussie ! ${migratedCount} projet(s) migré(s).`);
+      setCompleted(!completed); // Recharger les stats
+    } catch (err) {
+      console.error('Erreur lors de la migration des projets:', err);
+      alert('Erreur lors de la migration des projets');
+    } finally {
+      setMigratingProjets(false);
+    }
+  };
 
   const handleMigration = async () => {
     if (!selectedProjectId) {
@@ -161,6 +213,52 @@ export default function MigrationPage() {
               </div>
             </div>
 
+          {/* Section Migration Projets (membresUids/adminsUids) */}
+          {projetsToMigrate > 0 && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-6">
+              <div className="flex items-start gap-3">
+                <FaUsers className="text-2xl text-red-600 mt-1" />
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-red-800 mb-2">
+                    ⚠️ Migration urgente : {projetsToMigrate} projet(s) à mettre à jour
+                  </h3>
+                  <p className="text-red-700 text-sm mb-4">
+                    Ces projets n'ont pas les champs <code className="bg-red-100 px-1 rounded">membresUids</code> et <code className="bg-red-100 px-1 rounded">adminsUids</code> nécessaires aux nouvelles règles de sécurité Firestore.
+                  </p>
+                  <button
+                    onClick={handleMigrateProjets}
+                    disabled={migratingProjets}
+                    className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {migratingProjets ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                        Migration en cours...
+                      </>
+                    ) : (
+                      <>
+                        <FaArrowRight />
+                        Migrer les projets maintenant
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {projetsToMigrate === 0 && (
+            <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg mb-6">
+              <div className="flex items-center gap-3">
+                <FaCheckCircle className="text-xl text-green-600" />
+                <p className="text-green-800 font-medium">
+                  Tous les projets ont les champs membresUids et adminsUids ✓
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Section Migration Données */}
           {totalToMigrate === 0 ? (
             <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
               <div className="flex items-center gap-3">

@@ -10,6 +10,7 @@
     "deploy": "npm run export && gh-pages -d out"
   },
   "dependencies": {
+    "@dataconnect/generated": "file:src/dataconnect-generated",
     "date-fns": "^2.30.0",
     "firebase": "^10.7.0",
     "leaflet": "^1.9.4",

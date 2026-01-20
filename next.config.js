@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Désactiver React Strict Mode pour éviter les erreurs Firebase transitoires en dev
+  reactStrictMode: false,
   // Désactivé temporairement pour supporter les routes dynamiques [id]
   // À réactiver pour le déploiement sur GitHub Pages (sans routes dynamiques)
   // output: 'export',

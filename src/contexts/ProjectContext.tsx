@@ -28,7 +28,7 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
       const projet = projets.find(p => p.id === storedProjectId);
       if (projet) {
         setCurrentProjectState(projet);
-      } else if (projets.length > 0) {
+      } else {
         // Si le projet stocké n'existe plus, prendre le premier
         setCurrentProjectState(projets[0]);
         localStorage.setItem('currentProjectId', projets[0].id);

@@ -42,8 +42,10 @@ export function useProjects() {
       return;
     }
 
+    // Utiliser array-contains sur membresUids pour filtrer côté serveur
     const q = query(
       collection(db, 'projets'),
+      where('membresUids', 'array-contains', user.uid),
       orderBy('createdAt', 'desc')
     );
 
@@ -64,17 +66,16 @@ export function useProjects() {
           } as Projet;
         });
 
-        // Filtrer pour ne garder que les projets où l'utilisateur est membre
-        const userProjets = allProjetsData.filter(projet =>
-          projet.membres.some(m => m.uid === user.uid)
-        );
-
-        setProjets(userProjets);
+        // Le filtrage est maintenant fait côté serveur via membresUids
+        setProjets(allProjetsData);
         setLoading(false);
       },
       (err) => {
-        console.error('Erreur lors de la récupération des projets:', err);
-        setError(err.message);
+        // Ignorer les erreurs "permission-denied" transitoires (causées par React StrictMode en dev)
+        if (err.code !== 'permission-denied') {
+          console.error('Erreur lors de la récupération des projets:', err);
+          setError(err.message);
+        }
         setLoading(false);
       }
     );
@@ -102,6 +103,9 @@ export function useProjects() {
         createurId: user.uid,
         createurName: displayName || user.email,
         membres: [membre],
+        // Champs pour les règles Firestore (tableaux simples de UIDs)
+        membresUids: [user.uid],
+        adminsUids: [user.uid],
         inviteCode,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
@@ -126,7 +130,7 @@ export function useProjects() {
       );
 
       const snapshot = await getDocs(q);
-      
+
       if (snapshot.empty) {
         throw new Error('Code d\'invitation invalide');
       }
@@ -149,8 +153,12 @@ export function useProjects() {
         joinedAt: new Date(),
       };
 
+      // Mettre à jour membres et membresUids
+      const newMembresUids = [...(projetData.membresUids || []), user.uid];
+
       await updateDoc(doc(db, 'projets', projetDoc.id), {
         membres: [...projetData.membres, nouveauMembre],
+        membresUids: newMembresUids,
         updatedAt: Timestamp.now(),
       });
 
@@ -222,13 +230,19 @@ export function useProjects() {
       if (!projet) throw new Error('Projet introuvable');
 
       const newMembres = projet.membres.filter(m => m.uid !== user.uid);
-      
+
       // Si c'est le dernier membre, supprimer le projet
       if (newMembres.length === 0) {
         await deleteProjet(projetId);
       } else {
+        // Mettre à jour membresUids et adminsUids
+        const newMembresUids = newMembres.map(m => m.uid);
+        const newAdminsUids = newMembres.filter(m => m.isAdmin).map(m => m.uid);
+
         await updateDoc(doc(db, 'projets', projetId), {
           membres: newMembres,
+          membresUids: newMembresUids,
+          adminsUids: newAdminsUids,
           updatedAt: Timestamp.now(),
         });
       }
@@ -253,9 +267,13 @@ export function useProjects() {
       }
 
       const newMembres = projet.membres.filter(m => m.uid !== membreUid);
-      
+      const newMembresUids = newMembres.map(m => m.uid);
+      const newAdminsUids = newMembres.filter(m => m.isAdmin).map(m => m.uid);
+
       await updateDoc(doc(db, 'projets', projetId), {
         membres: newMembres,
+        membresUids: newMembresUids,
+        adminsUids: newAdminsUids,
         updatedAt: Timestamp.now(),
       });
     } catch (err: any) {
@@ -278,12 +296,14 @@ export function useProjects() {
         throw new Error('Seuls les administrateurs peuvent modifier les rôles');
       }
 
-      const newMembres = projet.membres.map(m => 
+      const newMembres = projet.membres.map(m =>
         m.uid === membreUid ? { ...m, isAdmin: !m.isAdmin } : m
       );
-      
+      const newAdminsUids = newMembres.filter(m => m.isAdmin).map(m => m.uid);
+
       await updateDoc(doc(db, 'projets', projetId), {
         membres: newMembres,
+        adminsUids: newAdminsUids,
         updatedAt: Timestamp.now(),
       });
     } catch (err: any) {

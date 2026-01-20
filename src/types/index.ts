@@ -123,6 +123,9 @@ export interface Projet {
     isAdmin: boolean;
     joinedAt: Date;
   }[];
+  // Champs pour les règles Firestore (tableaux simples de UIDs)
+  membresUids: string[];
+  adminsUids: string[];
   inviteCode: string;
 
   // Suppression douce

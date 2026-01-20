@@ -37,9 +37,10 @@ service firebase.storage {
     }
 
     // Vérifie si l'utilisateur est membre d'un projet
+    // Note: On vérifie via le champ membresUids qui est un array de strings
     function isProjectMember(projectId) {
       let projet = firestore.get(/databases/(default)/documents/projets/$(projectId)).data;
-      return request.auth.uid in projet.membres.map(m => m.uid);
+      return request.auth.uid in projet.membresUids;
     }
 
 

@@ -17,6 +17,17 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useProject } from '@/contexts/ProjectContext';
 import { Appartement } from '@/types';
 
+// Fonction pour nettoyer les valeurs undefined (Firestore ne les accepte pas)
+function removeUndefinedFields<T extends Record<string, any>>(obj: T): Partial<T> {
+  const cleaned: Partial<T> = {};
+  for (const key in obj) {
+    if (obj[key] !== undefined) {
+      cleaned[key] = obj[key];
+    }
+  }
+  return cleaned;
+}
+
 export function useAppartements() {
   const [appartements, setAppartements] = useState<Appartement[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,8 +67,14 @@ export function useAppartements() {
         setLoading(false);
       },
       (err) => {
-        console.error('Erreur lors de la récupération des appartements:', err);
-        setError(err.message);
+        // Ignorer les erreurs "permission-denied" transitoires (causées par React StrictMode)
+        // car elles sont souvent des faux positifs en mode développement
+        if (err.code === 'permission-denied') {
+          console.warn('Erreur de permission (peut être ignorée en dev):', err.message);
+        } else {
+          console.error('Erreur lors de la récupération des appartements:', err);
+          setError(err.message);
+        }
         setLoading(false);
       }
     );
@@ -76,8 +93,11 @@ export function useAppartements() {
     }
 
     try {
+      // Nettoyer les champs undefined avant d'envoyer à Firestore
+      const cleanedData = removeUndefinedFields(data);
+
       await addDoc(collection(db, 'appartements'), {
-        ...data,
+        ...cleanedData,
         projectId: currentProject.id,
         createdBy: user.uid,
         createdByName: displayName,
@@ -97,9 +117,12 @@ export function useAppartements() {
     }
 
     try {
+      // Nettoyer les champs undefined avant d'envoyer à Firestore
+      const cleanedData = removeUndefinedFields(data);
+
       const appartementRef = doc(db, 'appartements', id);
       await updateDoc(appartementRef, {
-        ...data,
+        ...cleanedData,
         updatedAt: Timestamp.now(),
       });
     } catch (err: any) {

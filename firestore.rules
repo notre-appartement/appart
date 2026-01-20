@@ -21,42 +21,21 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/projets/$(projectId));
     }
 
-    // Vérifie si l'utilisateur est membre d'un projet
-    function isMemberOfProject(projectId) {
-      let projet = getProject(projectId);
-      return projet.data.membres.hasAny([request.auth.uid]);
-    }
-
-    // Vérifie si l'utilisateur est membre (avec vérification des UIDs dans le tableau)
+    // Vérifie si l'utilisateur est membre d'un projet (via membresUids)
     function isProjectMember(projectId) {
       let projet = getProject(projectId);
-      return request.auth.uid in projet.data.membres.map(m => m.uid);
+      return request.auth.uid in projet.data.membresUids;
     }
 
-    // Vérifie si l'utilisateur est admin d'un projet
+    // Vérifie si l'utilisateur est admin d'un projet (via adminsUids)
     function isProjectAdmin(projectId) {
       let projet = getProject(projectId);
-      let membre = projet.data.membres.filter(m => m.uid == request.auth.uid)[0];
-      return membre != null && membre.isAdmin == true;
+      return request.auth.uid in projet.data.adminsUids;
     }
 
     // Récupère le profil de l'utilisateur
     function getUserProfile() {
       return get(/databases/$(database)/documents/profiles/$(request.auth.uid));
-    }
-
-    // Vérifie le plan d'abonnement de l'utilisateur
-    function getUserPlan() {
-      let profile = getUserProfile();
-      return profile.data.subscription.plan;
-    }
-
-    // Compte le nombre de projets d'un utilisateur
-    function countUserProjects() {
-      // Note: Cette fonction nécessiterait une requête,
-      // donc on ne peut pas l'implémenter directement dans les règles.
-      // À vérifier côté client ET via Cloud Functions
-      return true; // Placeholder - vérification client-side obligatoire
     }
 
 
@@ -67,17 +46,11 @@ service cloud.firestore {
       // Lecture : Seulement son propre profil
       allow read: if isOwner(userId);
 
-      // Création : Seulement pour soi-même, à la première connexion
-      allow create: if isOwner(userId)
-                    && request.resource.data.uid == request.auth.uid
-                    && request.resource.data.email == request.auth.token.email;
+      // Création : Seulement pour soi-même
+      allow create: if isOwner(userId);
 
       // Mise à jour : Seulement son propre profil
-      // + Ne pas modifier uid, email, createdAt
-      allow update: if isOwner(userId)
-                    && request.resource.data.uid == resource.data.uid
-                    && request.resource.data.email == resource.data.email
-                    && request.resource.data.createdAt == resource.data.createdAt;
+      allow update: if isOwner(userId);
 
       // Suppression : Impossible (RGPD à gérer via Cloud Functions)
       allow delete: if false;
@@ -88,30 +61,28 @@ service cloud.firestore {
     // COLLECTION: projets
     // ====================
     match /projets/{projetId} {
-      // Lecture : Seuls les membres du projet
+      // Lecture : Seuls les membres du projet (via membresUids)
       allow read: if isAuthenticated()
-                  && request.auth.uid in resource.data.membres.map(m => m.uid);
+                  && request.auth.uid in resource.data.membresUids;
 
       // Création : Tout utilisateur authentifié
-      // Validation : le créateur doit être dans les membres et être admin
+      // Validation : le créateur doit être dans membresUids et adminsUids
       allow create: if isAuthenticated()
                     && request.resource.data.createurId == request.auth.uid
-                    && request.auth.uid in request.resource.data.membres.map(m => m.uid)
-                    && request.resource.data.membres.filter(m => m.uid == request.auth.uid)[0].isAdmin == true;
+                    && request.auth.uid in request.resource.data.membresUids
+                    && request.auth.uid in request.resource.data.adminsUids;
 
       // Mise à jour : Seuls les admins du projet
       // Ne pas modifier : createurId, inviteCode, createdAt
       allow update: if isAuthenticated()
-                    && request.auth.uid in resource.data.membres.map(m => m.uid)
-                    && resource.data.membres.filter(m => m.uid == request.auth.uid)[0].isAdmin == true
+                    && request.auth.uid in resource.data.adminsUids
                     && request.resource.data.createurId == resource.data.createurId
                     && request.resource.data.inviteCode == resource.data.inviteCode
                     && request.resource.data.createdAt == resource.data.createdAt;
 
       // Suppression : Seuls les admins du projet
       allow delete: if isAuthenticated()
-                    && request.auth.uid in resource.data.membres.map(m => m.uid)
-                    && resource.data.membres.filter(m => m.uid == request.auth.uid)[0].isAdmin == true;
+                    && request.auth.uid in resource.data.adminsUids;
     }
 
 
@@ -147,11 +118,9 @@ service cloud.firestore {
     // COLLECTION: appartements
     // ====================
     match /appartements/{appartementId} {
-      // Lecture : Membres du projet OU données anonymisées pour stats publiques
+      // Lecture : Membres du projet
       allow read: if isAuthenticated()
-                  && (isProjectMember(resource.data.projectId)
-                      || (resource.data.anonymized == true
-                          && resource.data.availableForStats == true));
+                  && isProjectMember(resource.data.projectId);
 
       // Création : Seuls les membres du projet
       // Note: Les limites d'abonnement doivent être vérifiées côté client
