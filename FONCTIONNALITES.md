@@ -232,8 +232,8 @@
 - [x] Préférences utilisateur (thème, notifications, langue)
 - [x] Tracking de la dernière connexion
 - [ ] Photos de profil (upload)
-- [ ] Règles Firebase pour sécurité serveur
-- [ ] Cloud Functions pour validation des limites
+- [x] Règles Firebase pour sécurité serveur (Firestore + Storage déployées)
+- [ ] Cloud Functions pour validation des limites (optionnel, validation client actuelle)
 
 ### Collaboration
 - [x] Voir qui a ajouté quoi (auteur affiché sur chaque item)
@@ -244,8 +244,23 @@
 - [ ] Historique des modifications
 
 ### Sécurité
-- [ ] Règles Firebase sécurisées
-- [ ] Gestion des permissions
+- [x] **Règles Firestore sécurisées** (déployées)
+  - [x] Protection complète des 6 collections (profiles, projets, envies, appartements, emplacements, checklists)
+  - [x] Isolation des données par projectId
+  - [x] Permissions granulaires (Admin/Membre/Créateur)
+  - [x] Validation des champs critiques
+  - [x] Optimisation avec membresUids et adminsUids
+- [x] **Règles Storage sécurisées** (déployées)
+  - [x] Protection des photos d'appartements (max 5MB)
+  - [x] Protection des documents PDF (max 5MB)
+  - [x] Protection des avatars (max 2MB)
+- [x] **Index Firestore optimisés**
+  - [x] Index sur projectId + createdAt
+  - [x] Index sur membresUids (CONTAINS)
+- [x] **Page admin protégée**
+  - [x] Liste blanche d'emails pour /admin/migration
+  - [x] Migration des projets (ajout membresUids/adminsUids)
+- [x] Gestion des permissions via règles serveur
 - [ ] Sauvegarde automatique
 - [ ] Mode hors ligne
 
@@ -280,10 +295,44 @@
 
 - [ ] Configuration GitHub Pages
 - [ ] CI/CD automatique
+- [x] **Configuration Firebase**
+  - [x] firebase.json (Firestore, Storage, Functions, Emulators)
+  - [x] firestore.rules déployées
+  - [x] storage.rules déployées
+  - [x] firestore.indexes.json déployés
 - [ ] Tests unitaires
 - [ ] Tests d'intégration
 - [ ] Documentation complète
 - [ ] Guide utilisateur
+
+---
+
+## 🔐 Sécurisation Firebase (Implémenté)
+
+### Règles Firestore
+- ✅ **6 collections protégées** : profiles, projets, envies, appartements, emplacements, checklists
+- ✅ **Isolation par projet** : Les données sont filtrées par projectId
+- ✅ **Permissions granulaires** :
+  - Admins : Gestion membres, suppression projet
+  - Membres : Lecture/écriture données du projet
+  - Créateurs : Modification/suppression de leurs items
+- ✅ **Optimisation** : Ajout de membresUids et adminsUids pour performances
+- ✅ **Validation** : Champs critiques non modifiables (projectId, createdBy, createdAt)
+
+### Règles Storage
+- ✅ **Photos d'appartements** : Max 5MB, formats image/*, accès membres projet
+- ✅ **Documents PDF** : Max 5MB, format application/pdf, accès membres projet
+- ✅ **Avatars** : Max 2MB, formats image/*, accès propriétaire
+
+### Index Firestore
+- ✅ **Index optimisés** pour requêtes par projectId + createdAt
+- ✅ **Index CONTAINS** sur membresUids pour requêtes de projets
+
+### Protection Admin
+- ✅ **Page /admin/migration** protégée par liste blanche d'emails
+- ✅ **Migration automatique** des projets (ajout membresUids/adminsUids)
+
+**📝 Note** : Les limites d'abonnement sont vérifiées côté client. Pour une sécurité maximale en production, implémenter des Cloud Functions de validation (optionnel).
 
 ---
 
