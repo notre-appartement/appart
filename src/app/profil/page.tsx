@@ -2,25 +2,55 @@
 
 import React, { useState, useEffect } from 'react';
 import AuthGuard from '@/components/AuthGuard';
-import { useUserProfile } from '@/hooks/useUserProfile';
+import { useAuth } from '@/contexts/AuthContext';
 import { BudgetCategory } from '@/types';
-import { FaSave, FaPlus, FaTrash, FaCalculator, FaPiggyBank, FaWallet, FaUser } from 'react-icons/fa';
+import { FaSave, FaPlus, FaTrash, FaCalculator, FaPiggyBank, FaWallet, FaUser, FaEdit } from 'react-icons/fa';
 
 export default function ProfilPage() {
-  const { profile, loading, error, updateProfile } = useUserProfile();
+  const { profile, loading, updateProfile } = useAuth();
+  const [displayName, setDisplayName] = useState<string>('');
+  const [prenom, setPrenom] = useState<string>('');
+  const [nom, setNom] = useState<string>('');
+  const [telephone, setTelephone] = useState<string>('');
   const [salaire, setSalaire] = useState<number>(0);
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [editingProfile, setEditingProfile] = useState(false);
 
   useEffect(() => {
     if (profile) {
-      setSalaire(profile.salaireMensuel);
-      setCategories(profile.categoriesBudget);
+      setDisplayName(profile.displayName || '');
+      setPrenom(profile.prenom || '');
+      setNom(profile.nom || '');
+      setTelephone(profile.telephone || '');
+      setSalaire(profile.salaireMensuel || 0);
+      setCategories(profile.categoriesBudget || []);
     }
   }, [profile]);
 
-  const handleSave = async () => {
+  const handleSaveProfile = async () => {
+    setIsSaving(true);
+    setSaveSuccess(false);
+    try {
+      await updateProfile({
+        displayName,
+        prenom,
+        nom,
+        telephone,
+      });
+      setSaveSuccess(true);
+      setEditingProfile(false);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      console.error(err);
+      alert('Erreur lors de la sauvegarde du profil');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveBudget = async () => {
     setIsSaving(true);
     setSaveSuccess(false);
     try {
@@ -32,7 +62,7 @@ export default function ProfilPage() {
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
       console.error(err);
-      alert('Erreur lors de la sauvegarde');
+      alert('Erreur lors de la sauvegarde du budget');
     } finally {
       setIsSaving(false);
     }
@@ -53,7 +83,7 @@ export default function ProfilPage() {
   };
 
   const handleCategoryChange = (id: string, field: keyof BudgetCategory, value: string | number) => {
-    setCategories(categories.map(c => 
+    setCategories(categories.map(c =>
       c.id === id ? { ...c, [field]: value } : c
     ));
   };
@@ -64,10 +94,156 @@ export default function ProfilPage() {
 
   return (
     <AuthGuard>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         <h1 className="text-3xl font-bold mb-8 flex items-center gap-3 text-gray-800">
           <FaUser className="text-blue-600" /> Profil & Gestion du Budget
         </h1>
+
+        {/* Informations de profil */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-100">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold text-gray-700 flex items-center gap-2">
+              <FaUser className="text-blue-500" /> Informations personnelles
+            </h2>
+            <button
+              onClick={() => setEditingProfile(!editingProfile)}
+              className="text-blue-600 hover:text-blue-700 flex items-center gap-2 text-sm font-medium"
+            >
+              <FaEdit /> {editingProfile ? 'Annuler' : 'Modifier'}
+            </button>
+          </div>
+
+          {editingProfile ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nom d'affichage *
+                  </label>
+                  <input
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Votre nom d'affichage"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={profile?.email || ''}
+                    disabled
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Prénom
+                  </label>
+                  <input
+                    type="text"
+                    value={prenom}
+                    onChange={(e) => setPrenom(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Votre prénom"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nom
+                  </label>
+                  <input
+                    type="text"
+                    value={nom}
+                    onChange={(e) => setNom(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Votre nom"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Téléphone
+                </label>
+                <input
+                  type="tel"
+                  value={telephone}
+                  onChange={(e) => setTelephone(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="+33 6 12 34 56 78"
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  onClick={() => setEditingProfile(false)}
+                  className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleSaveProfile}
+                  disabled={isSaving || !displayName}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <FaSave /> {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-gray-500 w-32">Nom d'affichage:</span>
+                <span className="text-gray-800 font-medium">{profile?.displayName || 'Non défini'}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-gray-500 w-32">Email:</span>
+                <span className="text-gray-800">{profile?.email}</span>
+              </div>
+              {profile?.prenom && (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-gray-500 w-32">Prénom:</span>
+                  <span className="text-gray-800">{profile.prenom}</span>
+                </div>
+              )}
+              {profile?.nom && (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-gray-500 w-32">Nom:</span>
+                  <span className="text-gray-800">{profile.nom}</span>
+                </div>
+              )}
+              {profile?.telephone && (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-gray-500 w-32">Téléphone:</span>
+                  <span className="text-gray-800">{profile.telephone}</span>
+                </div>
+              )}
+              {profile?.subscription && (
+                <div className="flex items-center gap-3 pt-2 border-t mt-4">
+                  <span className="text-sm font-medium text-gray-500 w-32">Abonnement:</span>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    profile.subscription.plan === 'premium'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : profile.subscription.plan === 'pro'
+                      ? 'bg-purple-100 text-purple-800'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {profile.subscription.plan.toUpperCase()}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Budget */}
+        <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+          <FaPiggyBank className="text-green-500" /> Gestion du budget
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Section Salaire */}
@@ -212,7 +388,7 @@ export default function ProfilPage() {
                   </span>
                 )}
                 <button
-                  onClick={handleSave}
+                  onClick={handleSaveBudget}
                   disabled={isSaving}
                   className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-white transition-all ${
                     isSaving ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl active:transform active:scale-95'

@@ -141,8 +141,37 @@ export interface BudgetCategory {
 
 export interface UserProfile {
   uid: string;
+  email: string;
   displayName: string;
-  salaireMensuel: number;
-  categoriesBudget: BudgetCategory[];
+  photoURL?: string;
+
+  // Informations personnelles
+  prenom?: string;
+  nom?: string;
+  telephone?: string;
+
+  // Budget
+  salaireMensuel?: number;
+  categoriesBudget?: BudgetCategory[];
+
+  // Abonnement (pour le futur)
+  subscription?: {
+    plan: 'free' | 'premium' | 'pro';
+    status: 'active' | 'inactive' | 'trial' | 'cancelled';
+    startDate?: Date;
+    endDate?: Date;
+    trialEndDate?: Date;
+  };
+
+  // Préférences
+  preferences?: {
+    theme?: 'light' | 'dark' | 'auto';
+    notifications?: boolean;
+    language?: 'fr' | 'en';
+  };
+
+  // Métadonnées
+  createdAt: Date;
   updatedAt: Date;
+  lastLoginAt: Date;
 }
