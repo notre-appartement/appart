@@ -7,12 +7,13 @@ import { useProject } from '@/contexts/ProjectContext';
 import { useProjects } from '@/hooks/useProjects';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthGuard from '@/components/AuthGuard';
-import { 
-  FaArrowLeft, 
-  FaCopy, 
-  FaCheckCircle, 
-  FaUsers, 
-  FaUserShield, 
+import DeleteProjectModal from '@/components/DeleteProjectModal';
+import {
+  FaArrowLeft,
+  FaCopy,
+  FaCheckCircle,
+  FaUsers,
+  FaUserShield,
   FaUser,
   FaTrash,
   FaSignOutAlt,
@@ -26,6 +27,7 @@ export default function ParametresProjetPage() {
   const { user } = useAuth();
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   if (!currentProject) {
     return (
@@ -96,19 +98,9 @@ export default function ParametresProjetPage() {
     }
   };
 
-  const handleDeleteProject = async () => {
-    if (!confirm(`Voulez-vous vraiment SUPPRIMER DÉFINITIVEMENT le projet "${currentProject.nom}" ?`)) return;
-    if (!confirm('Cette action est IRRÉVERSIBLE. Tous les appartements, envies et emplacements de ce projet seront perdus. Continuer ?')) return;
-
-    setLoading(true);
-    try {
-      await deleteProjet(currentProject.id);
-      setCurrentProject(null);
-      router.push('/projets');
-    } catch (err: any) {
-      alert(err.message || 'Erreur lors de la suppression');
-      setLoading(false);
-    }
+  const handleDeleteSuccess = () => {
+    setCurrentProject(null);
+    router.push('/projets');
   };
 
   return (
@@ -272,11 +264,11 @@ export default function ParametresProjetPage() {
                     <div>
                       <p className="font-bold text-gray-800 mb-1">Supprimer le projet</p>
                       <p className="text-sm text-gray-600">
-                        ⚠️ Action irréversible. Toutes les données seront perdues.
+                        Plusieurs options disponibles : archivage, anonymisation ou suppression définitive.
                       </p>
                     </div>
                     <button
-                      onClick={handleDeleteProject}
+                      onClick={() => setShowDeleteModal(true)}
                       disabled={loading}
                       className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 font-medium disabled:opacity-50"
                     >
@@ -290,6 +282,14 @@ export default function ParametresProjetPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal de suppression */}
+      <DeleteProjectModal
+        projet={currentProject}
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onSuccess={handleDeleteSuccess}
+      />
     </AuthGuard>
   );
 }

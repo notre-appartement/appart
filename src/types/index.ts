@@ -82,6 +82,11 @@ export interface Appartement {
   createdBy: string;        // UID Firebase de l'auteur
   createdByName: string;    // Nom de l'auteur
 
+  // Anonymisation (pour statistiques de marché)
+  anonymized?: boolean;
+  anonymizedAt?: Date;
+  availableForStats?: boolean;
+
   // Timestamps
   createdAt: Date;
   updatedAt: Date;
@@ -119,6 +124,13 @@ export interface Projet {
     joinedAt: Date;
   }[];
   inviteCode: string;
+
+  // Suppression douce
+  archived?: boolean;
+  archivedAt?: Date;
+  archivedBy?: string;
+  deleteAfter?: Date; // Date après laquelle supprimer définitivement
+
   createdAt: Date;
   updatedAt: Date;
 }
