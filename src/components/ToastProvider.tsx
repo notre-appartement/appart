@@ -9,9 +9,10 @@ export default function ToastProvider() {
       reverseOrder={false}
       toastOptions={{
         duration: 3000,
+        className: '',
         style: {
-          background: '#fff',
-          color: '#363636',
+          background: 'var(--toast-bg, #fff)',
+          color: 'var(--toast-text, #363636)',
           padding: '16px',
           borderRadius: '8px',
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',

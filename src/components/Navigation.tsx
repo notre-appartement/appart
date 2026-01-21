@@ -14,15 +14,19 @@ import {
   FaFolderOpen,
   FaChevronDown,
   FaCog,
-  FaWallet
+  FaWallet,
+  FaMoon,
+  FaSun
 } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProject, getAllProjects } from '@/contexts/ProjectContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { FaPlus, FaCheck } from 'react-icons/fa';
 
 export default function Navigation() {
   const { displayName, signOut, user } = useAuth();
   const { currentProject, setCurrentProject } = useProject();
+  const { theme, toggleTheme } = useTheme();
   const projects = getAllProjects(user);
   const pathname = usePathname();
   const router = useRouter();
@@ -70,7 +74,7 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="bg-gradient-to-r from-blue-600 to-indigo-700 shadow-lg">
+    <nav className="bg-gradient-to-r from-blue-600 to-indigo-700 dark:from-gray-800 dark:to-gray-900 shadow-lg transition-colors duration-300">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo + Projet actif */}
@@ -192,6 +196,19 @@ export default function Navigation() {
                 <span className="hidden lg:inline text-sm font-medium">Mes Projets</span>
               </Link>
             )}
+
+            {/* Toggle Thème */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+              title={theme === 'light' ? 'Activer le mode sombre' : 'Activer le mode clair'}
+            >
+              {theme === 'light' ? (
+                <FaMoon className="text-lg text-white" />
+              ) : (
+                <FaSun className="text-lg text-yellow-300" />
+              )}
+            </button>
 
             {/* Menu Utilisateur (Dropdown) */}
             <div className="relative ml-3 pl-3 border-l border-white/30" ref={menuRef}>

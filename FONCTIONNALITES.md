@@ -267,7 +267,16 @@
 ## 🎨 Phase 5 : Expérience Utilisateur
 
 ### Design
-- [ ] Mode sombre
+- [x] **Mode sombre** 🌙
+  - [x] ThemeContext pour gérer light/dark
+  - [x] Persistance dans localStorage
+  - [x] Détection préférence système
+  - [x] Toggle avec bouton lune/soleil dans navigation
+  - [x] Classes Tailwind dark: configurées
+  - [x] Variables CSS pour couleurs adaptatives
+  - [x] Transitions fluides entre thèmes (300ms)
+  - [x] Toasts adaptés au mode sombre
+  - [x] Navigation adaptée au mode sombre
 - [ ] Thèmes personnalisables
 - [ ] Animations fluides
 - [ ] Skeleton loaders
