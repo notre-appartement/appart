@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEmplacements } from '@/hooks/useEmplacements';
 import { useProject } from '@/contexts/ProjectContext';
 import { SkeletonList } from '@/components/SkeletonLoader';
+import { AnimatedList, AnimatedListItem, AnimatedPage } from '@/components/AnimatedCard';
 
 const typeConfig = {
   travail: { icon: FaBriefcase, color: 'blue', label: 'Travail' },
@@ -60,7 +61,7 @@ export default function EmplacementsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <AnimatedPage className="container mx-auto px-4 py-8">
       <div className="max-w-5xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
@@ -89,15 +90,15 @@ export default function EmplacementsPage() {
               <p className="text-sm mt-2">Ajoutez vos lieux importants (travail, famille, commerces...)</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <AnimatedList className="space-y-4">
               {emplacements.map((emplacement) => {
                 const config = typeConfig[emplacement.type];
                 const Icon = config.icon;
 
                 return (
-                  <div
+                  <AnimatedListItem
                     key={emplacement.id}
-                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-5 hover:shadow-md transition-shadow"
+                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-5 transition-shadow"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-4 flex-1">
@@ -144,10 +145,10 @@ export default function EmplacementsPage() {
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </AnimatedListItem>
                 );
               })}
-            </div>
+            </AnimatedList>
           )}
         </div>
 
@@ -199,6 +200,6 @@ export default function EmplacementsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 }

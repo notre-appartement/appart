@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useEnvies } from '@/hooks/useEnvies';
 import { useProject } from '@/contexts/ProjectContext';
 import { SkeletonList } from '@/components/SkeletonLoader';
+import { AnimatedList, AnimatedListItem, AnimatedPage } from '@/components/AnimatedCard';
 
 export default function EnviesPage() {
   const { displayName } = useAuth();
@@ -122,7 +123,7 @@ export default function EnviesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <AnimatedPage className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-6 transition-colors duration-300">
           <div className="flex justify-between items-center mb-6">
@@ -238,11 +239,11 @@ export default function EnviesPage() {
               <p className="text-sm mt-2">Cliquez sur "Ajouter une envie" pour commencer</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <AnimatedList className="space-y-3">
               {envies.map((envie) => (
-                <div
+                <AnimatedListItem
                   key={envie.id}
-                  className="border border-gray-200 dark:border-gray-700 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-all"
+                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-4 transition-all"
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
@@ -281,9 +282,9 @@ export default function EnviesPage() {
                       </button>
                     </div>
                   </div>
-                </div>
+                </AnimatedListItem>
               ))}
-            </div>
+            </AnimatedList>
           )}
         </div>
 
@@ -317,6 +318,6 @@ export default function EnviesPage() {
           </div>
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 }

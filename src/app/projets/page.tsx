@@ -10,6 +10,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import AuthGuard from '@/components/AuthGuard';
 import { FaPlus, FaUsers, FaArrowRight, FaCalendar, FaUserPlus, FaCrown, FaLock } from 'react-icons/fa';
 import { SkeletonList } from '@/components/SkeletonLoader';
+import { AnimatedGrid, AnimatedGridItem, AnimatedPage } from '@/components/AnimatedCard';
 
 export default function ProjetsPage() {
   const router = useRouter();
@@ -68,7 +69,7 @@ export default function ProjetsPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 md:p-8 transition-colors duration-300">
+      <AnimatedPage className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 md:p-8 transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-3">
@@ -79,7 +80,7 @@ export default function ProjetsPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <AnimatedGrid className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {/* Carte Créer un nouveau projet */}
             {!showCreateForm ? (
               canCreate ? (
@@ -187,9 +188,9 @@ export default function ProjetsPage() {
 
             {/* Liste des projets existants */}
             {projets.map((projet) => (
-              <div
+              <AnimatedGridItem
                 key={projet.id}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all border border-gray-100 cursor-pointer group"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-all border border-gray-100 dark:border-gray-700 cursor-pointer group"
                 onClick={() => handleSelectProject(projet)}
               >
                 <div className="flex justify-between items-start mb-4">
@@ -229,9 +230,9 @@ export default function ProjetsPage() {
                     ))}
                   </div>
                 </div>
-              </div>
+              </AnimatedGridItem>
             ))}
-          </div>
+          </AnimatedGrid>
 
           {/* Rejoindre un projet avec un code */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-2xl mx-auto border border-gray-100 dark:border-gray-700">
@@ -256,7 +257,7 @@ export default function ProjetsPage() {
             </button>
           </div>
         </div>
-      </div>
+      </AnimatedPage>
     </AuthGuard>
   );
 }

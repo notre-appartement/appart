@@ -9,6 +9,7 @@ import { useAppartements } from '@/hooks/useAppartements';
 import { useSharedBudget } from '@/hooks/useSharedBudget';
 import { useProject } from '@/contexts/ProjectContext';
 import { SkeletonList } from '@/components/SkeletonLoader';
+import { AnimatedGrid, AnimatedGridItem, AnimatedPage } from '@/components/AnimatedCard';
 
 export default function AppartementsPage() {
   const router = useRouter();
@@ -106,7 +107,7 @@ export default function AppartementsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <AnimatedPage className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-6 transition-colors duration-300">
           <div className="flex justify-between items-center mb-6">
@@ -244,11 +245,11 @@ export default function AppartementsPage() {
               </button>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatedGrid className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredAppartements.map((appart) => (
-                <div
+                <AnimatedGridItem
                   key={appart.id}
-                  className={`border rounded-lg overflow-hidden hover:shadow-lg transition-all bg-white dark:bg-gray-800 ${
+                  className={`border rounded-lg overflow-hidden transition-all bg-white dark:bg-gray-800 ${
                     selectedForComparison.includes(appart.id)
                       ? 'border-purple-500 dark:border-purple-400 border-2 shadow-lg'
                       : 'border-gray-200 dark:border-gray-700'
@@ -365,12 +366,12 @@ export default function AppartementsPage() {
                       </button>
                     </div>
                   </div>
-                </div>
+                </AnimatedGridItem>
               ))}
-            </div>
+            </AnimatedGrid>
           )}
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 }
