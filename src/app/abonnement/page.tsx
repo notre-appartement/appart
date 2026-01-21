@@ -1,17 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaCheck, FaCrown, FaRocket, FaArrowLeft, FaSpinner } from 'react-icons/fa';
+import { useSearchParams } from 'next/navigation';
+import { FaCheck, FaCrown, FaRocket, FaArrowLeft, FaSpinner, FaTimes } from 'react-icons/fa';
 import AuthGuard from '@/components/AuthGuard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
 import { SUBSCRIPTION_PLANS, SubscriptionPlan } from '@/config/subscription-plans';
 
 export default function AbonnementPage() {
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const { currentPlan, isOnTrial, trialDaysRemaining } = useSubscription();
   const [loading, setLoading] = useState<SubscriptionPlan | null>(null);
+  const [showCanceledAlert, setShowCanceledAlert] = useState(false);
+
+  useEffect(() => {
+    // Afficher un message si l'utilisateur a annulé le paiement
+    if (searchParams.get('canceled') === 'true') {
+      setShowCanceledAlert(true);
+    }
+  }, [searchParams]);
 
   const handleSelectPlan = async (plan: SubscriptionPlan) => {
     if (plan === 'free') {
@@ -19,37 +29,51 @@ export default function AbonnementPage() {
       return;
     }
 
+    if (!user) {
+      alert('Vous devez être connecté pour souscrire à un abonnement');
+      return;
+    }
+
     setLoading(plan);
 
-    // TODO: Intégrer avec Stripe
-    // Pour l'instant, juste une alerte
-    alert(`🚧 Intégration Stripe en cours...\n\nVous avez sélectionné le plan ${SUBSCRIPTION_PLANS[plan].name}.\n\nL'intégration du paiement sera ajoutée prochainement avec :\n- Essai gratuit 14 jours\n- Paiement sécurisé Stripe\n- Annulation en 1 clic`);
-
-    setLoading(null);
-
-    // Code pour Stripe (à implémenter) :
-    /*
     try {
-      const response = await fetch('/api/create-checkout-session', {
+      // Déterminer le Price ID en fonction du plan
+      const priceId = plan === 'premium'
+        ? process.env.NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY
+        : process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY;
+
+      if (!priceId) {
+        throw new Error('Price ID Stripe manquant dans la configuration');
+      }
+
+      // Créer une session Checkout Stripe
+      const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          plan,
-          userId: user?.uid,
-          userEmail: user?.email,
+          priceId,
+          userId: user.uid,
+          userEmail: user.email,
         }),
       });
 
-      const { sessionId } = await response.json();
-      const stripe = await getStripe();
-      await stripe?.redirectToCheckout({ sessionId });
-    } catch (error) {
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création de la session');
+      }
+
+      const { url } = await response.json();
+
+      if (!url) {
+        throw new Error('URL de checkout manquante');
+      }
+
+      // Rediriger vers Stripe Checkout (nouvelle méthode)
+      window.location.href = url;
+    } catch (error: any) {
       console.error('Erreur:', error);
-      alert('Erreur lors de la création de la session de paiement');
-    } finally {
+      alert(`Erreur lors de la création de la session de paiement: ${error.message}`);
       setLoading(null);
     }
-    */
   };
 
   return (
@@ -84,6 +108,27 @@ export default function AbonnementPage() {
               )}
             </div>
           </div>
+
+          {/* Alerte d'annulation */}
+          {showCanceledAlert && (
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8 rounded-lg max-w-2xl mx-auto">
+              <div className="flex items-start gap-3">
+                <FaTimes className="text-yellow-600 mt-1" />
+                <div className="flex-1">
+                  <h3 className="font-bold text-yellow-800 mb-1">Paiement annulé</h3>
+                  <p className="text-sm text-yellow-700 mb-2">
+                    Vous avez annulé le processus de paiement. Aucun montant n'a été débité.
+                  </p>
+                  <button
+                    onClick={() => setShowCanceledAlert(false)}
+                    className="text-sm text-yellow-800 underline hover:no-underline"
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Grille des plans */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
@@ -263,12 +308,12 @@ export default function AbonnementPage() {
             </div>
           </div>
 
-          {/* Note développement */}
+          {/* Note essai gratuit */}
           <div className="mt-8 text-center">
-            <p className="text-sm text-gray-500 bg-yellow-50 border border-yellow-200 rounded-lg p-4 inline-block">
-              🚧 <strong>Mode développement</strong> : L'intégration Stripe sera ajoutée prochainement.
+            <p className="text-sm text-gray-600 bg-green-50 border border-green-200 rounded-lg p-4 inline-block">
+              🎁 <strong>14 jours d'essai gratuit</strong> sur les plans Premium et Pro !
               <br />
-              Les plans premium fonctionneront une fois configurés dans Firebase.
+              Aucune carte bancaire requise pendant la période d'essai.
             </p>
           </div>
         </div>
