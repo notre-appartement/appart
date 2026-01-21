@@ -98,19 +98,19 @@ export default function ProfilPage() {
   return (
     <AuthGuard>
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <h1 className="text-3xl font-bold mb-8 flex items-center gap-3 text-gray-800">
-          <FaUser className="text-blue-600" /> Profil & Gestion du Budget
+        <h1 className="text-3xl font-bold mb-8 flex items-center gap-3 text-gray-800 dark:text-white">
+          <FaUser className="text-blue-600 dark:text-blue-400" /> Profil & Gestion du Budget
         </h1>
 
         {/* Informations de profil */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-100">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-gray-700 flex items-center gap-2">
-              <FaUser className="text-blue-500" /> Informations personnelles
+            <h2 className="text-2xl font-semibold text-gray-700 dark:text-white flex items-center gap-2">
+              <FaUser className="text-blue-500 dark:text-blue-400" /> Informations personnelles
             </h2>
             <button
               onClick={() => setEditingProfile(!editingProfile)}
-              className="text-blue-600 hover:text-blue-700 flex items-center gap-2 text-sm font-medium"
+              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-2 text-sm font-medium"
             >
               <FaEdit /> {editingProfile ? 'Annuler' : 'Modifier'}
             </button>
@@ -120,71 +120,71 @@ export default function ProfilPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Nom d'affichage *
                   </label>
                   <input
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Votre nom d'affichage"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Email
                   </label>
                   <input
                     type="email"
                     value={profile?.email || ''}
                     disabled
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Prénom
                   </label>
                   <input
                     type="text"
                     value={prenom}
                     onChange={(e) => setPrenom(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Votre prénom"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Nom
                   </label>
                   <input
                     type="text"
                     value={nom}
                     onChange={(e) => setNom(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Votre nom"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Téléphone
                 </label>
                 <input
                   type="tel"
                   value={telephone}
                   onChange={(e) => setTelephone(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="+33 6 12 34 56 78"
                 />
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <button
                   onClick={() => setEditingProfile(false)}
-                  className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                 >
                   Annuler
                 </button>
@@ -200,29 +200,29 @@ export default function ProfilPage() {
           ) : (
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-500 w-32">Nom d'affichage:</span>
-                <span className="text-gray-800 font-medium">{profile?.displayName || 'Non défini'}</span>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Nom d'affichage:</span>
+                <span className="text-gray-800 dark:text-white font-medium">{profile?.displayName || 'Non défini'}</span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-500 w-32">Email:</span>
-                <span className="text-gray-800">{profile?.email}</span>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Email:</span>
+                <span className="text-gray-800 dark:text-white">{profile?.email}</span>
               </div>
               {profile?.prenom && (
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-gray-500 w-32">Prénom:</span>
-                  <span className="text-gray-800">{profile.prenom}</span>
+                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Prénom:</span>
+                  <span className="text-gray-800 dark:text-white">{profile.prenom}</span>
                 </div>
               )}
               {profile?.nom && (
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-gray-500 w-32">Nom:</span>
-                  <span className="text-gray-800">{profile.nom}</span>
+                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Nom:</span>
+                  <span className="text-gray-800 dark:text-white">{profile.nom}</span>
                 </div>
               )}
               {profile?.telephone && (
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-gray-500 w-32">Téléphone:</span>
-                  <span className="text-gray-800">{profile.telephone}</span>
+                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Téléphone:</span>
+                  <span className="text-gray-800 dark:text-white">{profile.telephone}</span>
                 </div>
               )}
               {/* Section abonnement déplacée ci-dessous */}
@@ -233,30 +233,30 @@ export default function ProfilPage() {
         {/* Abonnement */}
         <div className="mb-8">
           <div className={`bg-gradient-to-br ${
-            currentPlan === 'pro' ? 'from-purple-50 to-pink-50 border-purple-300' :
-            currentPlan === 'premium' ? 'from-yellow-50 to-orange-50 border-orange-300' :
-            'from-gray-50 to-gray-100 border-gray-300'
-          } rounded-xl shadow-md p-6 border-2`}>
+            currentPlan === 'pro' ? 'from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-300 dark:border-purple-600' :
+            currentPlan === 'premium' ? 'from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-orange-300 dark:border-orange-600' :
+            'from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800 border-gray-300 dark:border-gray-600'
+          } rounded-xl shadow-md p-6 border-2 transition-colors duration-300`}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 {currentPlan === 'pro' && <FaRocket className="text-3xl text-purple-600" />}
                 {currentPlan === 'premium' && <FaCrown className="text-3xl text-yellow-600" />}
-                {currentPlan === 'free' && <FaUser className="text-3xl text-gray-600" />}
+                {currentPlan === 'free' && <FaUser className="text-3xl text-gray-600 dark:text-gray-300" />}
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
                     {planConfig.name}
                   </h2>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     {planConfig.description}
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-gray-800">
+                <p className="text-3xl font-bold text-gray-800 dark:text-white">
                   {planConfig.price > 0 ? `${planConfig.price}€` : 'Gratuit'}
                 </p>
                 {planConfig.price > 0 && (
-                  <p className="text-sm text-gray-500">par mois</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">par mois</p>
                 )}
               </div>
             </div>
@@ -275,10 +275,10 @@ export default function ProfilPage() {
 
             {/* Features */}
             <div className="mb-4">
-              <p className="text-sm font-medium text-gray-700 mb-2">Vos avantages :</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Vos avantages :</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {planConfig.featuresList.slice(0, 6).map((feature, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm text-gray-700">
+                  <div key={index} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
                     <span className="text-green-500">✓</span>
                     <span>{feature}</span>
                   </div>
@@ -295,7 +295,7 @@ export default function ProfilPage() {
                     ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 shadow-lg hover:shadow-xl'
                     : currentPlan === 'premium'
                     ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
                 }`}
               >
                 {currentPlan === 'free' ? (
@@ -326,7 +326,7 @@ export default function ProfilPage() {
             </div>
 
             {currentPlan === 'free' && (
-              <p className="text-xs text-gray-500 text-center mt-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-3">
                 ✨ Essai gratuit de 14 jours • Sans engagement
               </p>
             )}
@@ -334,54 +334,54 @@ export default function ProfilPage() {
         </div>
 
         {/* Budget */}
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-2">
           <FaPiggyBank className="text-green-500" /> Gestion du budget
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Section Salaire */}
           <div className="md:col-span-1">
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-700">
-                <FaWallet className="text-green-500" /> Mon Revenu
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-100 dark:border-gray-700">
+              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-700 dark:text-white">
+                <FaWallet className="text-green-500 dark:text-green-400" /> Mon Revenu
               </h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
                     Salaire mensuel net (€)
                   </label>
                   <input
                     type="number"
                     value={salaire}
                     onChange={(e) => setSalaire(Number(e.target.value))}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none text-gray-900"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
                     placeholder="Ex: 2500"
                   />
                 </div>
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-blue-800 font-medium">
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800">
+                  <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
                     Ce montant servira de base pour calculer vos capacités de loyer et d'épargne.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 bg-white rounded-xl shadow-md p-6 border border-gray-100">
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-700">
-                <FaCalculator className="text-blue-500" /> Récapitulatif
+            <div className="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-100 dark:border-gray-700">
+              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-700 dark:text-white">
+                <FaCalculator className="text-blue-500 dark:text-blue-400" /> Récapitulatif
               </h2>
               <div className="space-y-3">
                 {categories.map(cat => (
                   <div key={cat.id} className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">{cat.nom}</span>
-                    <span className="font-bold">
+                    <span className="text-gray-600 dark:text-gray-300">{cat.nom}</span>
+                    <span className="font-bold text-gray-800 dark:text-white">
                       {Math.round((salaire * (cat.pourcentage / 100)))} €
                     </span>
                   </div>
                 ))}
-                <div className="border-t pt-2 mt-2 flex justify-between items-center font-bold text-gray-800">
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2 flex justify-between items-center font-bold text-gray-800 dark:text-white">
                   <span>Total Alloué</span>
-                  <span className={totalPourcentage > 100 ? 'text-red-500' : 'text-green-600'}>
+                  <span className={totalPourcentage > 100 ? 'text-red-500 dark:text-red-400' : 'text-green-600 dark:text-green-400'}>
                     {totalPourcentage}%
                   </span>
                 </div>
@@ -391,14 +391,14 @@ export default function ProfilPage() {
 
           {/* Section Répartition Budget */}
           <div className="md:col-span-2">
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-100 dark:border-gray-700">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold flex items-center gap-2 text-gray-700">
-                  <FaPiggyBank className="text-purple-500" /> Répartition du Budget
+                <h2 className="text-xl font-semibold flex items-center gap-2 text-gray-700 dark:text-white">
+                  <FaPiggyBank className="text-purple-500 dark:text-purple-400" /> Répartition du Budget
                 </h2>
                 <button
                   onClick={handleAddCategory}
-                  className="text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded-full font-medium transition-colors flex items-center gap-1"
+                  className="text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-3 py-1 rounded-full font-medium transition-colors flex items-center gap-1"
                 >
                   <FaPlus size={12} /> Ajouter
                 </button>
@@ -406,21 +406,21 @@ export default function ProfilPage() {
 
               <div className="space-y-4">
                 {categories.map((category) => (
-                  <div key={category.id} className="flex flex-col sm:flex-row gap-4 p-4 border rounded-xl hover:border-blue-200 transition-colors bg-gray-50/50">
+                  <div key={category.id} className="flex flex-col sm:flex-row gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-200 dark:hover:border-blue-600 transition-colors bg-gray-50/50 dark:bg-gray-700/50">
                     <div className="flex-1 space-y-3">
                       <div className="flex gap-2">
                         <input
                           type="text"
                           value={category.nom}
                           onChange={(e) => handleCategoryChange(category.id, 'nom', e.target.value)}
-                          className="flex-1 px-3 py-1 border rounded focus:ring-1 focus:ring-blue-500 outline-none text-sm font-medium text-gray-900"
+                          className="flex-1 px-3 py-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-1 focus:ring-blue-500 outline-none text-sm font-medium"
                           placeholder="Nom de la catégorie"
                         />
                         <input
                           type="color"
                           value={category.couleur}
                           onChange={(e) => handleCategoryChange(category.id, 'couleur', e.target.value)}
-                          className="w-10 h-8 p-1 border rounded cursor-pointer"
+                          className="w-10 h-8 p-1 border border-gray-300 dark:border-gray-600 rounded cursor-pointer"
                         />
                       </div>
                       <div className="flex items-center gap-4">
@@ -430,23 +430,23 @@ export default function ProfilPage() {
                           max="100"
                           value={category.pourcentage}
                           onChange={(e) => handleCategoryChange(category.id, 'pourcentage', Number(e.target.value))}
-                          className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                          className="flex-1 h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-blue-600"
                         />
                         <div className="flex items-center gap-1 w-20">
                           <input
                             type="number"
                             value={category.pourcentage}
                             onChange={(e) => handleCategoryChange(category.id, 'pourcentage', Number(e.target.value))}
-                            className="w-12 px-2 py-1 border rounded text-right text-sm text-gray-900"
+                            className="w-12 px-2 py-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded text-right text-sm"
                           />
-                          <span className="text-sm text-gray-500">%</span>
+                          <span className="text-sm text-gray-500 dark:text-gray-400">%</span>
                         </div>
                       </div>
                     </div>
                     <div className="flex sm:flex-col justify-center gap-2">
                       <button
                         onClick={() => handleRemoveCategory(category.id)}
-                        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                         title="Supprimer"
                       >
                         <FaTrash size={14} />
@@ -457,7 +457,7 @@ export default function ProfilPage() {
               </div>
 
               {categories.length === 0 && (
-                <div className="text-center py-12 border-2 border-dashed rounded-xl border-gray-200 text-gray-400">
+                <div className="text-center py-12 border-2 border-dashed rounded-xl border-gray-200 dark:border-gray-700 text-gray-400">
                   <p>Aucune catégorie de budget définie.</p>
                   <button
                     onClick={handleAddCategory}
@@ -469,7 +469,7 @@ export default function ProfilPage() {
               )}
 
               {totalPourcentage > 100 && (
-                <div className="mt-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm flex items-center gap-2">
+                <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-lg text-sm flex items-center gap-2">
                   <span>⚠️ Attention: Le total des pourcentages dépasse 100% ({totalPourcentage}%).</span>
                 </div>
               )}

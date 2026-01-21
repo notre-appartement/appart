@@ -55,7 +55,7 @@ export default function NouvelEmplacementPage() {
       <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Chargement...</p>
+          <p className="text-gray-600 dark:text-gray-300">Chargement...</p>
         </div>
       </div>
     );
@@ -65,8 +65,8 @@ export default function NouvelEmplacementPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Aucun projet actif</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Aucun projet actif</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             Vous devez sélectionner un projet avant d'ajouter un emplacement.
           </p>
           <Link
@@ -93,15 +93,15 @@ export default function NouvelEmplacementPage() {
               </div>
             </div>
 
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
               Limite atteinte
             </h1>
 
-            <p className="text-lg text-gray-700 mb-4">
+            <p className="text-lg text-gray-700 dark:text-gray-200 mb-4">
               {getLimitMessage('emplacements')}
             </p>
 
-            <p className="text-sm text-gray-600 mb-8">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-8">
               Vous avez <strong>{emplacements?.length}/{planConfig.features.maxEmplacements}</strong> emplacements dans ce projet
             </p>
 
@@ -115,7 +115,7 @@ export default function NouvelEmplacementPage() {
               </Link>
               <Link
                 href="/emplacements"
-                className="bg-gray-200 text-gray-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-300 transition-colors"
+                className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-8 py-4 rounded-lg font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
               >
                 Voir mes emplacements
               </Link>
@@ -148,37 +148,37 @@ export default function NouvelEmplacementPage() {
             <FaArrowLeft className="mr-2" />
             Retour aux emplacements
           </Link>
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
             📍 Nouvel Emplacement
           </h1>
         </div>
 
         {/* Formulaire */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-xl p-8">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Nom de l'emplacement *
               </label>
               <input
                 type="text"
                 value={formData.nom}
                 onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Ex: Bureau de Marie, Salle de sport, Supermarché"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Adresse complète *
               </label>
               <input
                 type="text"
                 value={formData.adresse}
                 onChange={(e) => setFormData({ ...formData, adresse: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="45 Avenue des Champs-Élysées, 75008 Paris"
                 required
               />
@@ -188,13 +188,13 @@ export default function NouvelEmplacementPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Type d'emplacement *
               </label>
               <select
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 required
               >
                 <option value="travail">💼 Travail</option>
@@ -206,19 +206,19 @@ export default function NouvelEmplacementPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Description
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 rows={3}
                 placeholder="Ex: Lieu de travail - important d'être à moins de 30min en transport"
               />
             </div>
 
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+            <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded">
               <p className="text-sm text-blue-800">
                 <strong>💡 À venir :</strong> Géolocalisation automatique et carte interactive pour visualiser l'emplacement
               </p>
@@ -237,7 +237,7 @@ export default function NouvelEmplacementPage() {
             </button>
             <Link
               href="/emplacements"
-              className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors flex items-center space-x-2"
+              className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 py-3 px-6 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center space-x-2"
             >
               <FaTimes />
               <span>Annuler</span>

@@ -22,7 +22,7 @@ export function StarRating({ rating, onChange, label, readonly = false, size = '
 
   return (
     <div className="flex items-center space-x-2">
-      <span className="text-sm font-medium text-gray-700 min-w-[120px]">{label}</span>
+      <span className="text-sm font-medium text-gray-700 dark:text-gray-200 min-w-[120px]">{label}</span>
       <div className="flex items-center space-x-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
@@ -43,7 +43,7 @@ export function StarRating({ rating, onChange, label, readonly = false, size = '
             />
           </button>
         ))}
-        <span className="ml-2 text-sm text-gray-600">
+        <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">
           {rating > 0 ? `${rating}/5` : 'Non noté'}
         </span>
       </div>

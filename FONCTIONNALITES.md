@@ -277,6 +277,20 @@
   - [x] Transitions fluides entre thèmes (300ms)
   - [x] Toasts adaptés au mode sombre
   - [x] Navigation adaptée au mode sombre
+  - [x] **Pages complètement thématisées** :
+    - [x] Page d'accueil (cards blanches → grises foncées)
+    - [x] Liste des appartements (cards, filtres, badges)
+    - [x] Page Envies (formulaire, liste, suggestions)
+    - [x] Page Profil (informations personnelles, budget - en cours)
+    - [x] Textes adaptés (gray-800 → white, gray-600 → gray-300)
+    - [x] Bordures adaptées (gray-200 → gray-700)
+    - [x] Backgrounds cards (white → gray-800)
+    - [x] Inputs et selects (dark:bg-gray-700, dark:text-white)
+    - [x] Badges et états (success, warning, error)
+    - [ ] **Pages restantes à thématiser** :
+      - [ ] Emplacements (liste, nouveau, modifier)
+      - [ ] Appartements (nouveau, modifier, détails)
+      - [ ] Projets, Paramètres projet, Abonnement, Checklist
 - [ ] Thèmes personnalisables
 - [ ] Animations fluides
 - [ ] Skeleton loaders

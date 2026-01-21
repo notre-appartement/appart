@@ -32,7 +32,7 @@ export default function EmplacementsPage() {
       <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Chargement...</p>
+          <p className="text-gray-600 dark:text-gray-300">Chargement...</p>
         </div>
       </div>
     );
@@ -42,8 +42,8 @@ export default function EmplacementsPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Aucun projet actif</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Aucun projet actif</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             Vous devez sélectionner un projet avant de gérer vos emplacements.
           </p>
           <Link
@@ -60,9 +60,9 @@ export default function EmplacementsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-5xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold text-gray-800">
+            <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
               📍 Nos Emplacements Préférés
             </h2>
             <Link
@@ -78,7 +78,7 @@ export default function EmplacementsPage() {
           {loading ? (
             <div className="text-center py-8">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
-              <p className="text-gray-600 mt-2">Chargement...</p>
+              <p className="text-gray-600 dark:text-gray-300 mt-2">Chargement...</p>
             </div>
           ) : emplacements.length === 0 ? (
             <div className="text-center text-gray-500 py-12">
@@ -95,7 +95,7 @@ export default function EmplacementsPage() {
                 return (
                   <div
                     key={emplacement.id}
-                    className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow"
+                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-5 hover:shadow-md transition-shadow"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-4 flex-1">
@@ -104,14 +104,14 @@ export default function EmplacementsPage() {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-2">
-                            <h3 className="text-lg font-bold text-gray-800">
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-white">
                               {emplacement.nom}
                             </h3>
                             <span className={`text-xs px-2 py-1 rounded-full bg-${config.color}-100 text-${config.color}-700`}>
                               {config.label}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-2 flex items-center">
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 flex items-center">
                             <FaMapMarkerAlt className="mr-2" />
                             {emplacement.adresse}
                           </p>
@@ -128,7 +128,7 @@ export default function EmplacementsPage() {
                       <div className="flex space-x-2 ml-4">
                         <Link
                           href={`/emplacements/${emplacement.id}/modifier`}
-                          className="text-blue-500 hover:text-blue-700 p-2"
+                          className="text-blue-500 hover:text-blue-700 dark:text-blue-300 p-2"
                           title="Modifier"
                         >
                           <FaEdit />
@@ -150,8 +150,8 @@ export default function EmplacementsPage() {
         </div>
 
         {/* Types d'emplacements */}
-        <div className="bg-white rounded-lg shadow-xl p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+          <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
             📌 Types d'emplacements disponibles
           </h3>
           <div className="grid md:grid-cols-2 gap-4">
@@ -163,8 +163,8 @@ export default function EmplacementsPage() {
                   className={`p-4 bg-${config.color}-50 rounded-lg border border-${config.color}-200`}
                 >
                   <Icon className={`text-2xl text-${config.color}-600 mb-2`} />
-                  <h4 className="font-bold text-gray-800">{config.label}</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-bold text-gray-800 dark:text-white">{config.label}</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     {key === 'travail' && 'Vos lieux de travail'}
                     {key === 'famille' && 'Proches de la famille'}
                     {key === 'loisirs' && 'Activités et hobbies'}

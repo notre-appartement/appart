@@ -25,7 +25,7 @@ export default function RejoindreProjetPage() {
 
     try {
       const projetId = await joinProjet(inviteCode.trim());
-      
+
       // Attendre un peu que le projet soit ajouté à la liste
       setTimeout(() => {
         const projet = projets.find(p => p.id === projetId);
@@ -52,15 +52,15 @@ export default function RejoindreProjetPage() {
             Retour aux projets
           </Link>
 
-          <div className="bg-white rounded-2xl shadow-2xl p-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
             <div className="text-center mb-8">
               <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FaUserPlus className="text-4xl text-purple-600" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
                 Rejoindre un Projet
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 Entrez le code d'invitation à 8 caractères
               </p>
             </div>
@@ -73,7 +73,7 @@ export default function RejoindreProjetPage() {
 
             <form onSubmit={handleJoinProject} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Code d'invitation
                 </label>
                 <input

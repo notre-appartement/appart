@@ -42,7 +42,7 @@ export default function PremiumGuard({
       <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
         <div className="text-center">
           <FaSpinner className="inline-block animate-spin text-4xl text-blue-600 mb-4" />
-          <p className="text-gray-600">Vérification de l'abonnement...</p>
+          <p className="text-gray-600 dark:text-gray-300">Vérification de l'abonnement...</p>
         </div>
       </div>
     );
@@ -60,12 +60,12 @@ export default function PremiumGuard({
             </div>
 
             {/* Titre */}
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
               Accès Premium Requis
             </h1>
 
             {/* Description */}
-            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
               Cette page est réservée aux utilisateurs Premium et Pro.
               <br />
               Votre plan actuel : <strong>{getPlanLabel()}</strong>
@@ -81,7 +81,7 @@ export default function PremiumGuard({
               </Link>
               <button
                 onClick={() => router.back()}
-                className="bg-gray-200 text-gray-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-300 transition-colors"
+                className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-8 py-4 rounded-lg font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
               >
                 Retour
               </button>
@@ -93,17 +93,17 @@ export default function PremiumGuard({
                 Avec Premium, vous débloquez :
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
-                <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <p className="font-semibold text-gray-800 mb-1">📊 Analytics</p>
-                  <p className="text-xs text-gray-600">Statistiques avancées sur vos recherches</p>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                  <p className="font-semibold text-gray-800 dark:text-white mb-1">📊 Analytics</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">Statistiques avancées sur vos recherches</p>
                 </div>
-                <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <p className="font-semibold text-gray-800 mb-1">💡 Stats Marché</p>
-                  <p className="text-xs text-gray-600">Prix moyens par quartier en temps réel</p>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                  <p className="font-semibold text-gray-800 dark:text-white mb-1">💡 Stats Marché</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">Prix moyens par quartier en temps réel</p>
                 </div>
-                <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <p className="font-semibold text-gray-800 mb-1">📄 Export PDF</p>
-                  <p className="text-xs text-gray-600">Rapports professionnels à partager</p>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                  <p className="font-semibold text-gray-800 dark:text-white mb-1">📄 Export PDF</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">Rapports professionnels à partager</p>
                 </div>
               </div>
             </div>

@@ -118,7 +118,7 @@ export default function ChecklistPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-            <p className="text-gray-600 mt-4">Chargement de la checklist...</p>
+            <p className="text-gray-600 dark:text-gray-300 mt-4">Chargement de la checklist...</p>
           </div>
         </div>
       </div>
@@ -129,8 +129,8 @@ export default function ChecklistPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Aucun projet actif</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Aucun projet actif</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             Vous devez sélectionner un projet avant d'accéder à une checklist.
           </p>
           <Link
@@ -161,13 +161,13 @@ export default function ChecklistPage() {
             Retour aux détails
           </Link>
 
-          <div className="bg-white rounded-lg shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
                   📋 Checklist de visite
                 </h1>
-                <p className="text-gray-600 flex items-center space-x-2">
+                <p className="text-gray-600 dark:text-gray-300 flex items-center space-x-2">
                   <FaHome className="text-blue-600" />
                   <span>{appartement.titre}</span>
                 </p>
@@ -179,7 +179,7 @@ export default function ChecklistPage() {
               {appartement.dateVisite && (
                 <div className="text-right">
                   <p className="text-sm text-gray-500">Date de visite</p>
-                  <p className="font-semibold text-gray-800">
+                  <p className="font-semibold text-gray-800 dark:text-white">
                     {appartement.dateVisite.toLocaleDateString('fr-FR', {
                       weekday: 'long',
                       year: 'numeric',
@@ -194,7 +194,7 @@ export default function ChecklistPage() {
         </div>
 
         {/* Instructions */}
-        <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4 mb-6">
+        <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 rounded-lg p-4 mb-6">
           <h3 className="font-bold text-blue-900 mb-2">💡 Comment utiliser cette checklist ?</h3>
           <ul className="text-sm text-blue-800 space-y-1">
             <li>• Cliquez sur les catégories pour voir tous les points à vérifier</li>
@@ -221,7 +221,7 @@ export default function ChecklistPage() {
           </button>
           <Link
             href={`/appartements/${appartement.id}`}
-            className="bg-gray-200 text-gray-700 py-4 px-6 rounded-lg hover:bg-gray-300 transition-colors flex items-center justify-center space-x-2 shadow-lg"
+            className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 py-4 px-6 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center space-x-2 shadow-lg"
           >
             <FaArrowLeft />
             <span>Retour</span>

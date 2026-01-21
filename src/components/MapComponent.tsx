@@ -143,8 +143,8 @@ export default function MapComponent({ appartements, emplacements }: MapComponen
               <div className="p-2 min-w-[200px]">
                 <h3 className="font-bold text-lg mb-2">{appart.titre}</h3>
                 <div className="space-y-1 text-sm">
-                  <p className="text-gray-600">{appart.adresse}</p>
-                  <p className="text-gray-600">{appart.ville}</p>
+                  <p className="text-gray-600 dark:text-gray-300">{appart.adresse}</p>
+                  <p className="text-gray-600 dark:text-gray-300">{appart.ville}</p>
                   <p className="font-semibold text-blue-600 text-base">
                     {appart.prix} € / mois
                   </p>
@@ -185,7 +185,7 @@ export default function MapComponent({ appartements, emplacements }: MapComponen
               <div className="p-2 min-w-[200px]">
                 <h3 className="font-bold text-base mb-2">{emp.nom}</h3>
                 <div className="space-y-1 text-sm">
-                  <p className="text-gray-600">{emp.adresse}</p>
+                  <p className="text-gray-600 dark:text-gray-300">{emp.adresse}</p>
                   {emp.description && (
                     <p className="text-gray-500 italic mt-2">{emp.description}</p>
                   )}

@@ -88,7 +88,7 @@ export default function AppartementsPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Aucun projet actif</h2>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Aucun projet actif</h2>
           <p className="text-gray-600 mb-4">
             Vous devez sélectionner un projet avant de voir vos appartements.
           </p>
@@ -106,12 +106,12 @@ export default function AppartementsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-6 transition-colors duration-300">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold text-gray-800">
+            <h2 className="text-3xl font-bold text-gray-800 dark:text-white dark:text-white">
               🏢 Nos Appartements
               {filteredAppartements.length !== appartements.length && (
-                <span className="text-sm text-gray-500 ml-2">
+                <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                   ({filteredAppartements.length}/{appartements.length})
                 </span>
               )}
@@ -119,7 +119,7 @@ export default function AppartementsPage() {
             <div className="flex space-x-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="bg-gray-100 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2"
+                className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center space-x-2"
               >
                 <FaFilter />
                 <span>Filtres</span>
@@ -145,16 +145,16 @@ export default function AppartementsPage() {
 
           {/* Filtres */}
           {showFilters && (
-            <div className="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6 border border-gray-200 dark:border-gray-600">
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Statut de visite
                   </label>
                   <select
                     value={filters.statut}
                     onChange={(e) => setFilters({ ...filters, statut: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="tous">Tous</option>
                     <option value="visites">Déjà visités</option>
@@ -163,13 +163,13 @@ export default function AppartementsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Évaluation
                   </label>
                   <select
                     value={filters.evaluation}
                     onChange={(e) => setFilters({ ...filters, evaluation: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     disabled={filters.statut === 'a_visiter'}
                   >
                     <option value="tous">Tous</option>
@@ -180,27 +180,27 @@ export default function AppartementsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Prix max (€)
                   </label>
                   <input
                     type="number"
                     value={filters.prixMax}
                     onChange={(e) => setFilters({ ...filters, prixMax: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Ex: 1500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Surface min (m²)
                   </label>
                   <input
                     type="number"
                     value={filters.surfaceMin}
                     onChange={(e) => setFilters({ ...filters, surfaceMin: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Ex: 50"
                   />
                 </div>
@@ -210,7 +210,7 @@ export default function AppartementsPage() {
               <div className="mt-4 text-right">
                 <button
                   onClick={() => setFilters({ statut: 'tous', evaluation: 'tous', prixMax: '', surfaceMin: '' })}
-                  className="text-sm text-gray-600 hover:text-gray-800 underline"
+                  className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-white dark:hover:text-white underline"
                 >
                   Réinitialiser les filtres
                 </button>
@@ -221,22 +221,22 @@ export default function AppartementsPage() {
           {/* Liste des appartements */}
           {loading ? (
             <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
-              <p className="text-gray-600 mt-2">Chargement...</p>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600 dark:border-blue-400"></div>
+              <p className="text-gray-600 dark:text-gray-300 mt-2">Chargement...</p>
             </div>
           ) : appartements.length === 0 ? (
-            <div className="text-center text-gray-500 py-12">
-              <FaPlus className="text-6xl mx-auto mb-4 text-gray-300" />
+            <div className="text-center text-gray-500 dark:text-gray-400 py-12">
+              <FaPlus className="text-6xl mx-auto mb-4 text-gray-300 dark:text-gray-600" />
               <p className="text-xl">Aucun appartement pour le moment</p>
               <p className="text-sm mt-2">Cliquez sur "Ajouter un appartement" pour commencer</p>
             </div>
           ) : filteredAppartements.length === 0 ? (
-            <div className="text-center text-gray-500 py-12">
-              <FaFilter className="text-6xl mx-auto mb-4 text-gray-300" />
+            <div className="text-center text-gray-500 dark:text-gray-400 py-12">
+              <FaFilter className="text-6xl mx-auto mb-4 text-gray-300 dark:text-gray-600" />
               <p className="text-xl">Aucun appartement ne correspond aux filtres</p>
               <button
                 onClick={() => setFilters({ statut: 'tous', evaluation: 'tous', prixMax: '', surfaceMin: '' })}
-                className="text-blue-600 hover:text-blue-800 mt-2 underline"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mt-2 underline"
               >
                 Réinitialiser les filtres
               </button>
@@ -246,10 +246,10 @@ export default function AppartementsPage() {
               {filteredAppartements.map((appart) => (
                 <div
                   key={appart.id}
-                  className={`border rounded-lg overflow-hidden hover:shadow-lg transition-all bg-white ${
+                  className={`border rounded-lg overflow-hidden hover:shadow-lg transition-all bg-white dark:bg-gray-800 ${
                     selectedForComparison.includes(appart.id)
-                      ? 'border-purple-500 border-2 shadow-lg'
-                      : 'border-gray-200'
+                      ? 'border-purple-500 dark:border-purple-400 border-2 shadow-lg'
+                      : 'border-gray-200 dark:border-gray-700'
                   }`}
                 >
                   {/* Image placeholder */}
@@ -268,7 +268,7 @@ export default function AppartementsPage() {
                   {/* Contenu */}
                   <div className="p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-bold text-gray-800 flex-1">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-white dark:text-white flex-1">
                         {appart.titre}
                       </h3>
                       {appart.visite && (
@@ -286,13 +286,13 @@ export default function AppartementsPage() {
                       )}
                     </div>
 
-                    <p className="text-sm text-gray-600 mb-3 flex items-center">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 flex items-center">
                       <FaMapMarkerAlt className="mr-1" />
                       {appart.ville}
                     </p>
 
-                    <div className="flex items-center justify-between text-sm text-gray-700 mb-3">
-                      <span className="flex items-center font-semibold text-lg text-blue-600">
+                    <div className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300 mb-3">
+                      <span className="flex items-center font-semibold text-lg text-blue-600 dark:text-blue-400">
                         <FaEuroSign className="mr-1" />
                         {appart.prix + (appart.charges || 0)} €
                         {budgetLoyerMax > 0 && (
@@ -325,32 +325,32 @@ export default function AppartementsPage() {
                               ★
                             </span>
                           ))}
-                          <span className="ml-2 text-sm text-gray-600">
+                          <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">
                             {appart.noteGlobale.toFixed(1)}
                           </span>
                         </div>
                       </div>
                     )}
 
-                    <div className="text-xs text-gray-400 mb-3">
+                    <div className="text-xs text-gray-400 dark:text-gray-500 mb-3">
                       Ajouté par {appart.createdByName}
                     </div>
 
                     {/* Actions */}
-                    <div className="flex space-x-2 pt-3 border-t">
+                    <div className="flex space-x-2 pt-3 border-t border-gray-200 dark:border-gray-700">
                       <button
                         onClick={() => toggleSelection(appart.id)}
                         className={`px-3 py-2 rounded text-sm transition-colors ${
                           selectedForComparison.includes(appart.id)
                             ? 'bg-purple-600 text-white hover:bg-purple-700'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
                       >
                         {selectedForComparison.includes(appart.id) ? '✓' : '+'}
                       </button>
                       <Link
                         href={`/appartements/${appart.id}`}
-                        className="flex-1 bg-blue-50 text-blue-600 py-2 px-3 rounded hover:bg-blue-100 transition-colors text-center text-sm"
+                        className="flex-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 py-2 px-3 rounded hover:bg-blue-100 transition-colors text-center text-sm"
                       >
                         Voir détails
                       </Link>

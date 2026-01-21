@@ -26,12 +26,12 @@ export default function SuccessPage() {
         <div className="max-w-2xl w-full">
           {loading ? (
             // État de chargement
-            <div className="bg-white rounded-2xl shadow-2xl p-12 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-12 text-center">
               <FaSpinner className="text-6xl text-blue-500 mx-auto mb-6 animate-spin" />
-              <h1 className="text-3xl font-bold text-gray-800 mb-4">
+              <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">
                 Confirmation en cours...
               </h1>
-              <p className="text-gray-600 mb-2">
+              <p className="text-gray-600 dark:text-gray-300 mb-2">
                 Nous traitons votre paiement.
               </p>
               <p className="text-sm text-gray-500">
@@ -40,26 +40,26 @@ export default function SuccessPage() {
             </div>
           ) : (
             // État de succès
-            <div className="bg-white rounded-2xl shadow-2xl p-12 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-12 text-center">
               <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full mb-6 animate-bounce">
                 <FaCheckCircle className="text-5xl text-white" />
               </div>
 
-              <h1 className="text-4xl font-bold text-gray-800 mb-4">
+              <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
                 🎉 Bienvenue dans l'aventure !
               </h1>
-              <p className="text-xl text-gray-700 mb-2">
+              <p className="text-xl text-gray-700 dark:text-gray-200 mb-2">
                 Votre abonnement est maintenant actif
               </p>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-600 dark:text-gray-300 mb-8">
                 Vous bénéficiez de <strong>14 jours d'essai gratuit</strong>. Profitez de toutes les fonctionnalités premium !
               </p>
 
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6 mb-8">
-                <h2 className="text-lg font-bold text-gray-800 mb-3">
+                <h2 className="text-lg font-bold text-gray-800 dark:text-white mb-3">
                   ✨ Ce qui vous attend :
                 </h2>
-                <ul className="text-left space-y-2 text-gray-700">
+                <ul className="text-left space-y-2 text-gray-700 dark:text-gray-200">
                   <li>✅ Projets et appartements illimités</li>
                   <li>✅ Collaboration en équipe</li>
                   <li>✅ Statistiques avancées</li>
@@ -78,7 +78,7 @@ export default function SuccessPage() {
                 </Link>
                 <Link
                   href="/profil"
-                  className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-8 py-4 rounded-lg font-bold border-2 border-gray-300 hover:border-gray-400 transition-all"
+                  className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 dark:text-gray-200 px-8 py-4 rounded-lg font-bold border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white hover:border-gray-400 transition-all"
                 >
                   Voir mon profil
                 </Link>
@@ -91,7 +91,7 @@ export default function SuccessPage() {
               )}
 
               <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-gray-700 dark:text-gray-200">
                   📧 Un email de confirmation a été envoyé à votre adresse.
                   <br />
                   <span className="text-xs text-gray-500">

@@ -180,15 +180,15 @@ export default function MigrationPage() {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {!isAdmin ? (
           // 🔒 ACCÈS REFUSÉ
-          <div className="bg-white rounded-xl shadow-xl p-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8">
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
                 <FaLock className="text-4xl text-red-600" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-4">
+              <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">
                 Accès Refusé
               </h1>
-              <p className="text-gray-600 mb-6 max-w-md">
+              <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md">
                 Cette page est réservée aux administrateurs de l'application.
               </p>
               <p className="text-sm text-gray-500">
@@ -198,16 +198,16 @@ export default function MigrationPage() {
           </div>
         ) : (
           // ✅ ACCÈS AUTORISÉ
-          <div className="bg-white rounded-xl shadow-xl p-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
                 <FaDatabase className="text-2xl text-orange-600" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
                   Migration des Données
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   Migrez vos données existantes vers un projet
                 </p>
               </div>
@@ -299,7 +299,7 @@ export default function MigrationPage() {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Sélectionnez le projet de destination
                   </label>
                   <select
@@ -335,7 +335,7 @@ export default function MigrationPage() {
                 </button>
               </div>
 
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                 <p className="text-sm text-blue-800">
                   <strong>💡 Note :</strong> Cette opération est irréversible. Toutes les données sans projet seront associées au projet sélectionné.
                 </p>

@@ -105,7 +105,7 @@ export default function Navigation() {
 
                 {/* Dropdown des projets */}
                 {projectMenuOpen && (
-                  <div className="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-200">
+                  <div className="absolute left-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl py-2 z-50 border border-gray-200 dark:border-gray-700">
                     {/* En-tête */}
                     <div className="px-4 py-2 border-b border-gray-100">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Mes Projets</p>
@@ -117,12 +117,12 @@ export default function Navigation() {
                         <button
                           key={project.id}
                           onClick={() => handleSelectProject(project)}
-                          className={`w-full flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left ${
-                            currentProject.id === project.id ? 'bg-blue-50' : ''
+                          className={`w-full flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left ${
+                            currentProject.id === project.id ? 'bg-blue-50 dark:bg-blue-900/30' : ''
                           }`}
                         >
                           <FaFolderOpen className={`text-lg ${currentProject.id === project.id ? 'text-blue-600' : 'text-gray-400'}`} />
-                          <span className={`text-sm font-medium truncate flex-1 ${currentProject.id === project.id ? 'text-blue-600' : 'text-gray-700'}`}>
+                          <span className={`text-sm font-medium truncate flex-1 ${currentProject.id === project.id ? 'text-blue-600' : 'text-gray-700 dark:text-gray-200'}`}>
                             {project.nom}
                           </span>
                           {currentProject.id === project.id && (
@@ -133,11 +133,11 @@ export default function Navigation() {
                     </div>
 
                     {/* Lien vers tous les projets */}
-                    <div className="border-t border-gray-100 mt-1 pt-1">
+                    <div className="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
                       <Link
                         href="/projets"
                         onClick={() => setProjectMenuOpen(false)}
-                        className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors text-gray-600 hover:text-blue-600"
+                        className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-300 hover:text-blue-600"
                       >
                         <FaCog className="text-lg" />
                         <span className="text-sm font-medium">Gérer mes projets</span>
@@ -145,7 +145,7 @@ export default function Navigation() {
                       <Link
                         href="/projets/creer"
                         onClick={() => setProjectMenuOpen(false)}
-                        className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors text-green-600 hover:text-green-700"
+                        className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-green-600 hover:text-green-700"
                       >
                         <FaPlus className="text-lg" />
                         <span className="text-sm font-medium">Créer un projet</span>
@@ -217,7 +217,7 @@ export default function Navigation() {
                 className="flex items-center space-x-2 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
                 title="Menu utilisateur"
               >
-                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
                   <FaUser className="text-sm text-blue-600" />
                 </div>
                 <span className="hidden md:inline text-sm font-medium text-white max-w-[120px] truncate">
@@ -230,10 +230,10 @@ export default function Navigation() {
 
               {/* Dropdown Menu */}
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-200">
+                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl py-2 z-50 border border-gray-200 dark:border-gray-700">
                   {/* En-tête du menu */}
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <p className="text-sm font-semibold text-gray-800 truncate">{displayName}</p>
+                  <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                    <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">{displayName}</p>
                     <p className="text-xs text-gray-500 mt-0.5">Compte utilisateur</p>
                   </div>
 
@@ -241,7 +241,7 @@ export default function Navigation() {
                   <Link
                     href="/profil"
                     onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors text-gray-700 hover:text-blue-600"
+                    className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:text-blue-600"
                   >
                     <FaWallet className="text-lg" />
                     <div>
@@ -254,7 +254,7 @@ export default function Navigation() {
                     <Link
                       href="/projets"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors text-gray-700 hover:text-blue-600 md:hidden"
+                      className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-5 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:text-blue-600 md:hidden"
                     >
                       <FaFolderOpen className="text-lg" />
                       <div>
@@ -264,10 +264,10 @@ export default function Navigation() {
                     </Link>
                   )}
 
-                  <div className="border-t border-gray-100 mt-1 pt-1">
+                  <div className="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
                     <button
                       onClick={handleSignOut}
-                      className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-red-50 transition-colors text-red-600"
+                      className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-red-50 dark:hover:bg-red-700 transition-colors text-red-600"
                     >
                       <FaSignOutAlt className="text-lg" />
                       <div className="text-left">

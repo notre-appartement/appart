@@ -80,23 +80,23 @@ export default function DeleteProjectModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="bg-red-50 border-b border-red-200 p-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <FaExclamationTriangle className="text-red-600 text-2xl" />
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
                 Supprimer le projet
               </h2>
-              <p className="text-gray-600 text-sm mt-1">
+              <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
                 {projet.nom}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors"
           >
             <FaTimes className="text-xl" />
           </button>
@@ -104,7 +104,7 @@ export default function DeleteProjectModal({
 
         {/* Options de suppression */}
         <div className="p-6 space-y-4">
-          <p className="text-gray-700 mb-4">
+          <p className="text-gray-700 dark:text-gray-200 mb-4">
             Choisissez comment vous souhaitez supprimer ce projet :
           </p>
 
@@ -115,7 +115,7 @@ export default function DeleteProjectModal({
               className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                 selectedMode === mode.id
                   ? `border-${mode.color}-500 bg-${mode.color}-50`
-                  : 'border-gray-200 hover:border-gray-300'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white'
               }`}
             >
               <div className="flex items-start space-x-3">
@@ -126,10 +126,10 @@ export default function DeleteProjectModal({
                   className="mt-1"
                 />
                 <div className="flex-1">
-                  <h3 className="font-bold text-lg text-gray-800 mb-1">
+                  <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-1">
                     {mode.title}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
                     {mode.description}
                   </p>
                   <ul className="space-y-1">
@@ -145,26 +145,26 @@ export default function DeleteProjectModal({
           ))}
 
           {/* Confirmation */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
               Pour confirmer, tapez le nom du projet : <strong>{projet.nom}</strong>
             </label>
             <input
               type="text"
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               placeholder="Nom du projet"
             />
           </div>
         </div>
 
         {/* Actions */}
-        <div className="bg-gray-50 border-t border-gray-200 p-6 flex justify-end space-x-3">
+        <div className="bg-gray-50 border-t border-gray-200 dark:border-gray-700 p-6 flex justify-end space-x-3">
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+            className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
           >
             Annuler
           </button>

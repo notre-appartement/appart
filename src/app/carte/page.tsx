@@ -12,10 +12,10 @@ import { FaMapMarkerAlt, FaHome, FaBriefcase, FaUsers, FaShoppingCart } from 're
 const MapComponent = dynamic(() => import('@/components/MapComponent'), {
   ssr: false,
   loading: () => (
-    <div className="h-full flex items-center justify-center bg-gray-100">
+    <div className="h-full flex items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="text-center">
         <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-        <p className="text-gray-600 mt-4">Chargement de la carte...</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-4">Chargement de la carte...</p>
       </div>
     </div>
   ),
@@ -40,7 +40,7 @@ export default function CartePage() {
       <div className="h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Chargement...</p>
+          <p className="text-gray-600 dark:text-gray-300">Chargement...</p>
         </div>
       </div>
     );
@@ -50,8 +50,8 @@ export default function CartePage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Aucun projet actif</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Aucun projet actif</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             Vous devez sélectionner un projet avant de voir la carte.
           </p>
           <Link
@@ -68,24 +68,24 @@ export default function CartePage() {
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
-      <div className="bg-white shadow-md p-4">
+      <div className="bg-white dark:bg-gray-800 shadow-md p-4 transition-colors duration-300">
         <div className="container mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
             🗺️ Carte Interactive
           </h1>
 
           {/* Filtres */}
           <div className="flex flex-wrap gap-4 items-center">
             {/* Toggle Appartements */}
-            <label className="flex items-center space-x-2 cursor-pointer bg-blue-50 px-4 py-2 rounded-lg border border-blue-200">
+            <label className="flex items-center space-x-2 cursor-pointer bg-blue-50 dark:bg-blue-900/30 px-4 py-2 rounded-lg border border-blue-200 dark:border-blue-700">
               <input
                 type="checkbox"
                 checked={showAppartements}
                 onChange={(e) => setShowAppartements(e.target.checked)}
                 className="w-5 h-5 text-blue-600 rounded"
               />
-              <FaHome className="text-blue-600" />
-              <span className="font-medium text-gray-700">
+              <FaHome className="text-blue-600 dark:text-blue-400" />
+              <span className="font-medium text-gray-700 dark:text-gray-200">
                 Appartements ({filteredAppartements.length})
               </span>
             </label>
@@ -95,7 +95,7 @@ export default function CartePage() {
               <select
                 value={filterEvaluation}
                 onChange={(e) => setFilterEvaluation(e.target.value as any)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="tous">Toutes les évaluations</option>
                 <option value="bon">✅ Bon uniquement</option>
@@ -105,22 +105,22 @@ export default function CartePage() {
             )}
 
             {/* Toggle Emplacements */}
-            <label className="flex items-center space-x-2 cursor-pointer bg-green-50 px-4 py-2 rounded-lg border border-green-200">
+            <label className="flex items-center space-x-2 cursor-pointer bg-green-50 dark:bg-green-900/30 px-4 py-2 rounded-lg border border-green-200 dark:border-green-700">
               <input
                 type="checkbox"
                 checked={showEmplacements}
                 onChange={(e) => setShowEmplacements(e.target.checked)}
                 className="w-5 h-5 text-green-600 rounded"
               />
-              <FaMapMarkerAlt className="text-green-600" />
-              <span className="font-medium text-gray-700">
+              <FaMapMarkerAlt className="text-green-600 dark:text-green-400" />
+              <span className="font-medium text-gray-700 dark:text-gray-200">
                 Emplacements ({emplacements.length})
               </span>
             </label>
           </div>
 
           {/* Légende */}
-          <div className="mt-4 flex flex-wrap gap-3 text-sm">
+          <div className="mt-4 flex flex-wrap gap-3 text-sm text-gray-700 dark:text-gray-200">
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
               <span>Appartements</span>
@@ -137,16 +137,16 @@ export default function CartePage() {
               <div className="w-4 h-4 bg-red-500 rounded-full"></div>
               <span>❌ Pas bon</span>
             </div>
-            <div className="border-l border-gray-300 pl-3 flex items-center space-x-2">
-              <FaBriefcase className="text-blue-600" />
+            <div className="border-l border-gray-300 dark:border-gray-600 pl-3 flex items-center space-x-2">
+              <FaBriefcase className="text-blue-600 dark:text-blue-400" />
               <span>Travail</span>
             </div>
             <div className="flex items-center space-x-2">
-              <FaUsers className="text-pink-600" />
+              <FaUsers className="text-pink-600 dark:text-pink-400" />
               <span>Famille</span>
             </div>
             <div className="flex items-center space-x-2">
-              <FaShoppingCart className="text-green-600" />
+              <FaShoppingCart className="text-green-600 dark:text-green-400" />
               <span>Commerces</span>
             </div>
           </div>
@@ -156,10 +156,10 @@ export default function CartePage() {
       {/* Carte */}
       <div className="flex-1">
         {loadingApparts || loadingEmplacements ? (
-          <div className="h-full flex items-center justify-center bg-gray-100">
+          <div className="h-full flex items-center justify-center bg-gray-100 dark:bg-gray-900">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-              <p className="text-gray-600 mt-4">Chargement des données...</p>
+              <p className="text-gray-600 dark:text-gray-300 mt-4">Chargement des données...</p>
             </div>
           </div>
         ) : (

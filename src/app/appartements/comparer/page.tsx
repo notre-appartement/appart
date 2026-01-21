@@ -61,7 +61,7 @@ function ComparaisonContent() {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
-          <p className="text-gray-600 mt-4">Chargement de la comparaison...</p>
+          <p className="text-gray-600 dark:text-gray-300 mt-4">Chargement de la comparaison...</p>
         </div>
       </div>
     );
@@ -97,26 +97,26 @@ function ComparaisonContent() {
             <FaArrowLeft className="mr-2" />
             Retour à la liste
           </Link>
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
             ⚖️ Comparaison d'appartements
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-600 dark:text-gray-300 mt-2">
             Comparez {appartements.length} appartements côte à côte
           </p>
         </div>
 
         {/* Tableau comparatif */}
-        <div className="bg-white rounded-lg shadow-xl overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50">
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 sticky left-0 bg-gray-50 z-10 min-w-[200px]">
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-200 sticky left-0 bg-gray-50 z-10 min-w-[200px]">
                   Critère
                 </th>
                 {appartements.map((appart) => (
                   <th key={appart.id} className="px-6 py-4 text-center min-w-[250px]">
                     <div className="space-y-2">
-                      <h3 className="font-bold text-lg text-gray-800">{appart.titre}</h3>
+                      <h3 className="font-bold text-lg text-gray-800 dark:text-white">{appart.titre}</h3>
                       <p className="text-xs text-gray-500">{appart.ville}</p>
                       <Link
                         href={`/appartements/${appart.id}`}
@@ -133,7 +133,7 @@ function ComparaisonContent() {
             <tbody className="divide-y divide-gray-200">
               {/* Photo */}
               <tr>
-                <td className="px-6 py-4 font-medium text-gray-700 sticky left-0 bg-white z-10">
+                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200 sticky left-0 bg-white z-10">
                   📸 Photo
                 </td>
                 {appartements.map((appart) => (
@@ -157,7 +157,7 @@ function ComparaisonContent() {
 
               {/* Prix */}
               <tr className="bg-gray-50">
-                <td className="px-6 py-4 font-medium text-gray-700 sticky left-0 bg-gray-50 z-10">
+                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200 sticky left-0 bg-gray-50 z-10">
                   💰 Prix (loyer + charges)
                 </td>
                 {appartements.map((appart) => {
@@ -173,7 +173,7 @@ function ComparaisonContent() {
                           + {appart.charges} € charges
                         </div>
                       )}
-                      <div className="text-sm font-semibold text-gray-700 mt-1">
+                      <div className="text-sm font-semibold text-gray-700 dark:text-gray-200 mt-1">
                         Total: {total} €
                       </div>
                       {isBest && <div className="text-xs text-green-600 mt-1">✓ Moins cher</div>}
@@ -184,7 +184,7 @@ function ComparaisonContent() {
 
               {/* Surface */}
               <tr>
-                <td className="px-6 py-4 font-medium text-gray-700 sticky left-0 bg-white z-10">
+                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200 sticky left-0 bg-white z-10">
                   📐 Surface
                 </td>
                 {appartements.map((appart) => {
@@ -200,7 +200,7 @@ function ComparaisonContent() {
 
               {/* Pièces */}
               <tr className="bg-gray-50">
-                <td className="px-6 py-4 font-medium text-gray-700 sticky left-0 bg-gray-50 z-10">
+                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200 sticky left-0 bg-gray-50 z-10">
                   🚪 Pièces
                 </td>
                 {appartements.map((appart) => (
@@ -215,7 +215,7 @@ function ComparaisonContent() {
 
               {/* Étage */}
               <tr>
-                <td className="px-6 py-4 font-medium text-gray-700 sticky left-0 bg-white z-10">
+                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200 sticky left-0 bg-white z-10">
                   🏢 Étage
                 </td>
                 {appartements.map((appart) => (
@@ -230,7 +230,7 @@ function ComparaisonContent() {
 
               {/* Meublé */}
               <tr className="bg-gray-50">
-                <td className="px-6 py-4 font-medium text-gray-700 sticky left-0 bg-gray-50 z-10">
+                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200 sticky left-0 bg-gray-50 z-10">
                   🪑 Meublé
                 </td>
                 {appartements.map((appart) => (
@@ -246,7 +246,7 @@ function ComparaisonContent() {
 
               {/* Note globale */}
               <tr>
-                <td className="px-6 py-4 font-medium text-gray-700 sticky left-0 bg-white z-10">
+                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200 sticky left-0 bg-white z-10">
                   ⭐ Note globale
                 </td>
                 {appartements.map((appart) => {
@@ -288,7 +288,7 @@ function ComparaisonContent() {
 
                 return (
                   <tr key={noteKey} className="bg-gray-50">
-                    <td className="px-6 py-4 font-medium text-gray-700 sticky left-0 bg-gray-50 z-10">
+                    <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200 sticky left-0 bg-gray-50 z-10">
                       {labels[noteKey]}
                     </td>
                     {appartements.map((appart) => {
@@ -313,7 +313,7 @@ function ComparaisonContent() {
 
               {/* Évaluation */}
               <tr>
-                <td className="px-6 py-4 font-medium text-gray-700 sticky left-0 bg-white z-10">
+                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200 sticky left-0 bg-white z-10">
                   ✅ Évaluation
                 </td>
                 {appartements.map((appart) => (
@@ -342,7 +342,7 @@ function ComparaisonContent() {
 
               {/* Avantages */}
               <tr className="bg-gray-50">
-                <td className="px-6 py-4 font-medium text-gray-700 sticky left-0 bg-gray-50 z-10">
+                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200 sticky left-0 bg-gray-50 z-10">
                   ✅ Points positifs
                 </td>
                 {appartements.map((appart) => (
@@ -365,7 +365,7 @@ function ComparaisonContent() {
 
               {/* Inconvénients */}
               <tr>
-                <td className="px-6 py-4 font-medium text-gray-700 sticky left-0 bg-white z-10">
+                <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-200 sticky left-0 bg-white z-10">
                   ❌ Points négatifs
                 </td>
                 {appartements.map((appart) => (
@@ -391,11 +391,11 @@ function ComparaisonContent() {
 
         {/* Récapitulatif */}
         <div className="mt-6 bg-purple-50 border border-purple-200 rounded-lg p-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">💡 Récapitulatif</h3>
+          <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">💡 Récapitulatif</h3>
           <div className="grid md:grid-cols-2 gap-4 text-sm">
             <div>
               <strong className="text-green-600">✓ Meilleur rapport qualité/prix :</strong>
-              <p className="text-gray-700 ml-4">
+              <p className="text-gray-700 dark:text-gray-200 ml-4">
                 {appartements.sort((a, b) => {
                   const scoreA = (a.noteGlobale || 0) / ((a.prix + (a.charges || 0)) / 100);
                   const scoreB = (b.noteGlobale || 0) / ((b.prix + (b.charges || 0)) / 100);
@@ -405,7 +405,7 @@ function ComparaisonContent() {
             </div>
             <div>
               <strong className="text-green-600">✓ Mieux noté :</strong>
-              <p className="text-gray-700 ml-4">
+              <p className="text-gray-700 dark:text-gray-200 ml-4">
                 {appartements.sort((a, b) => (b.noteGlobale || 0) - (a.noteGlobale || 0))[0]?.titre || 'N/A'}
               </p>
             </div>
@@ -422,7 +422,7 @@ export default function ComparaisonPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
-          <p className="text-gray-600 mt-4">Chargement...</p>
+          <p className="text-gray-600 dark:text-gray-300 mt-4">Chargement...</p>
         </div>
       </div>
     }>

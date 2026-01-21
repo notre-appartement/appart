@@ -40,7 +40,7 @@ export default function ParametresProjetPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-gray-600">Aucun projet actif</p>
+          <p className="text-gray-600 dark:text-gray-300">Aucun projet actif</p>
           <Link href="/projets" className="text-blue-600 hover:underline mt-4 inline-block">
             Sélectionner un projet
           </Link>
@@ -121,15 +121,15 @@ export default function ParametresProjetPage() {
           Retour au projet
         </Link>
 
-        <div className="bg-white rounded-xl shadow-xl p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
             Paramètres du Projet
           </h1>
-          <p className="text-gray-600 mb-8">{currentProject.nom}</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-8">{currentProject.nom}</p>
 
           {/* Membres du projet */}
           <div className="mb-8 pb-8 border-b">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
               <FaUserShield className="text-purple-600" />
               Membres ({currentProject.membres.length})
             </h2>
@@ -142,7 +142,7 @@ export default function ParametresProjetPage() {
                   <div
                     key={membre.uid}
                     className={`flex items-center justify-between p-4 rounded-lg border-2 ${
-                      isCurrentUser ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50'
+                      isCurrentUser ? 'border-blue-200 bg-blue-50 dark:bg-blue-900/30' : 'border-gray-200 dark:border-gray-700 bg-gray-50'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -152,15 +152,15 @@ export default function ParametresProjetPage() {
                         {membre.isAdmin ? (
                           <FaCrown className="text-purple-600" />
                         ) : (
-                          <FaUser className="text-gray-600" />
+                          <FaUser className="text-gray-600 dark:text-gray-300" />
                         )}
                       </div>
                       <div>
-                        <p className="font-bold text-gray-800">
+                        <p className="font-bold text-gray-800 dark:text-white">
                           {membre.name}
                           {isCurrentUser && <span className="text-blue-600 ml-2 text-sm">(Vous)</span>}
                         </p>
-                        <p className="text-sm text-gray-600">{membre.email}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{membre.email}</p>
                         <div className="flex items-center gap-2 mt-1">
                           {membre.isAdmin && (
                             <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
@@ -182,7 +182,7 @@ export default function ParametresProjetPage() {
                           className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                             membre.isAdmin
                               ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
                           } disabled:opacity-50`}
                         >
                           {membre.isAdmin ? 'Retirer admin' : 'Promouvoir admin'}
@@ -205,7 +205,7 @@ export default function ParametresProjetPage() {
 
 		  {/* Plan d'abonnement du projet */}
           <div className="mb-8 pb-8 border-b">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
               <FaStar className="text-yellow-500" />
               Plan d'Abonnement
             </h2>
@@ -213,7 +213,7 @@ export default function ParametresProjetPage() {
             {limitsLoading ? (
               <div className="text-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600 mb-2"></div>
-                <p className="text-sm text-gray-600">Calcul du plan...</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Calcul du plan...</p>
               </div>
             ) : (
               <div className={`rounded-xl p-6 border-2 ${
@@ -221,7 +221,7 @@ export default function ParametresProjetPage() {
                   ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-300'
                   : projectPlan === 'premium'
                   ? 'bg-gradient-to-br from-yellow-50 to-orange-50 border-orange-300'
-                  : 'bg-gradient-to-br from-gray-50 to-gray-100 border-gray-300'
+                  : 'bg-gradient-to-br from-gray-50 to-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white'
               }`}>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -237,20 +237,20 @@ export default function ParametresProjetPage() {
                     )}
                     {projectPlan === 'free' && (
                       <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
-                        <FaUser className="text-3xl text-gray-600" />
+                        <FaUser className="text-3xl text-gray-600 dark:text-gray-300" />
                       </div>
                     )}
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-800">
+                      <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
                         Plan {planConfig.name}
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
                         {planConfig.description}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-3xl font-bold text-gray-800">
+                    <p className="text-3xl font-bold text-gray-800 dark:text-white">
                       {planConfig.price > 0 ? `${planConfig.price}€` : 'Gratuit'}
                     </p>
                     {planConfig.price > 0 && (
@@ -260,7 +260,7 @@ export default function ParametresProjetPage() {
                 </div>
 
                 {/* Explication */}
-                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 rounded-lg">
                   <p className="text-sm text-blue-800">
                     💡 <strong>Comment ça marche ?</strong> Le plan du projet est déterminé par le <strong>meilleur abonnement</strong> parmi tous les membres. Si au moins un membre a Premium/Pro, tout le projet en bénéficie !
                   </p>
@@ -268,35 +268,35 @@ export default function ParametresProjetPage() {
 
                 {/* Limites actuelles */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                  <div className="bg-white rounded-lg p-3 text-center shadow-sm">
-                    <p className="text-2xl font-bold text-gray-800">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-3 text-center shadow-sm">
+                    <p className="text-2xl font-bold text-gray-800 dark:text-white">
                       {planConfig.features.maxMembersPerProject === -1 ? <FaInfinity className="inline" /> : planConfig.features.maxMembersPerProject}
                     </p>
-                    <p className="text-xs text-gray-600">Membres max</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">Membres max</p>
                   </div>
-                  <div className="bg-white rounded-lg p-3 text-center shadow-sm">
-                    <p className="text-2xl font-bold text-gray-800">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-3 text-center shadow-sm">
+                    <p className="text-2xl font-bold text-gray-800 dark:text-white">
                       {planConfig.features.maxAppartements === -1 ? <FaInfinity className="inline" /> : planConfig.features.maxAppartements}
                     </p>
-                    <p className="text-xs text-gray-600">Appartements</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">Appartements</p>
                   </div>
-                  <div className="bg-white rounded-lg p-3 text-center shadow-sm">
-                    <p className="text-2xl font-bold text-gray-800">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-3 text-center shadow-sm">
+                    <p className="text-2xl font-bold text-gray-800 dark:text-white">
                       {planConfig.features.maxEmplacements === -1 ? <FaInfinity className="inline" /> : planConfig.features.maxEmplacements}
                     </p>
-                    <p className="text-xs text-gray-600">Emplacements</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">Emplacements</p>
                   </div>
-                  <div className="bg-white rounded-lg p-3 text-center shadow-sm">
-                    <p className="text-2xl font-bold text-gray-800">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-3 text-center shadow-sm">
+                    <p className="text-2xl font-bold text-gray-800 dark:text-white">
                       <FaInfinity className="inline" />
                     </p>
-                    <p className="text-xs text-gray-600">Envies</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">Envies</p>
                   </div>
                 </div>
 
                 {/* Votre contribution */}
-                <div className="mt-4 pt-4 border-t border-gray-300">
-                  <p className="text-sm text-gray-700 mb-2">
+                <div className="mt-4 pt-4 border-t border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                  <p className="text-sm text-gray-700 dark:text-gray-200 mb-2">
                     <strong>Votre abonnement personnel :</strong> {currentPlan === 'free' ? 'Gratuit' : currentPlan === 'premium' ? 'Premium' : 'Pro'}
                     {currentPlan !== projectPlan && projectPlan !== 'free' && (
                       <span className="ml-2 text-green-600">
@@ -319,7 +319,7 @@ export default function ParametresProjetPage() {
                         <FaCrown />
                         Passer à Premium pour débloquer le projet
                       </Link>
-                      <p className="text-xs text-gray-600 mt-2">
+                      <p className="text-xs text-gray-600 dark:text-gray-300 mt-2">
                         ✨ Essai gratuit 14 jours • Débloque immédiatement tout le projet
                       </p>
                     </div>
@@ -343,16 +343,16 @@ export default function ParametresProjetPage() {
 
 {/* Code d'invitation */}
 <div className="mb-8 pb-8 border-b">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
               <FaUsers className="text-blue-600" />
               Code d'Invitation
             </h2>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
               Partagez ce code avec les personnes que vous souhaitez inviter au projet
             </p>
             <div className="flex gap-3 items-center">
-              <div className="flex-1 bg-gray-50 border-2 border-gray-200 rounded-lg p-4 text-center">
-                <p className="text-3xl font-mono font-bold text-gray-800 tracking-widest">
+              <div className="flex-1 bg-gray-50 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center">
+                <p className="text-3xl font-mono font-bold text-gray-800 dark:text-white tracking-widest">
                   {currentProject.inviteCode}
                 </p>
               </div>
@@ -374,18 +374,18 @@ export default function ParametresProjetPage() {
               </button>
             </div>
           </div>
-		  
+
           {/* Actions dangereuses */}
           <div>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
               ⚠️ Zone Dangereuse
             </h2>
             <div className="space-y-3">
               <div className="border-2 border-orange-200 bg-orange-50 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-bold text-gray-800 mb-1">Quitter le projet</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-bold text-gray-800 dark:text-white mb-1">Quitter le projet</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       Vous ne pourrez plus accéder aux données de ce projet
                       {isAdmin && adminCount === 1 && currentProject.membres.length > 1 && (
                         <span className="text-orange-700 font-medium"> (Vous êtes le seul admin)</span>
@@ -407,8 +407,8 @@ export default function ParametresProjetPage() {
                 <div className="border-2 border-red-200 bg-red-50 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-bold text-gray-800 mb-1">Supprimer le projet</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="font-bold text-gray-800 dark:text-white mb-1">Supprimer le projet</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
                         Plusieurs options disponibles : archivage, anonymisation ou suppression définitive.
                       </p>
                     </div>

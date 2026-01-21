@@ -127,7 +127,7 @@ export default function NouvelAppartementPage() {
       <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Chargement...</p>
+          <p className="text-gray-600 dark:text-gray-300">Chargement...</p>
         </div>
       </div>
     );
@@ -137,8 +137,8 @@ export default function NouvelAppartementPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Aucun projet actif</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Aucun projet actif</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             Vous devez sélectionner un projet avant d'ajouter un appartement.
           </p>
           <Link
@@ -167,16 +167,16 @@ export default function NouvelAppartementPage() {
             </div>
 
             {/* Titre */}
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
               Limite atteinte
             </h1>
 
             {/* Description */}
-            <p className="text-lg text-gray-700 mb-4">
+            <p className="text-lg text-gray-700 dark:text-gray-200 mb-4">
               {getLimitMessage('appartements')}
             </p>
 
-            <p className="text-sm text-gray-600 mb-8">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-8">
               Vous avez <strong>{appartements?.length}/{planConfig.features.maxAppartements}</strong> appartements dans ce projet
             </p>
 
@@ -191,7 +191,7 @@ export default function NouvelAppartementPage() {
               </Link>
               <Link
                 href="/appartements"
-                className="bg-gray-200 text-gray-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-300 transition-colors"
+                className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-8 py-4 rounded-lg font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
               >
                 Voir mes appartements
               </Link>
@@ -199,24 +199,24 @@ export default function NouvelAppartementPage() {
 
             {/* Avantages */}
             <div className="mt-8 pt-8 border-t border-orange-200">
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                 💡 Plan actuel du projet : <strong>{planConfig.name}</strong>
               </p>
               <p className="text-xs text-gray-500 mb-4">
                 Si vous ou un autre membre du projet passez à Premium/Pro, tout le projet bénéficie des limites supérieures !
               </p>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                 Avec Premium, le projet débloque :
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-left">
-                <div className="bg-white rounded-lg p-3 shadow-sm">
-                  <p className="font-semibold text-gray-800 text-sm">♾️ Appartements illimités</p>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm">
+                  <p className="font-semibold text-gray-800 dark:text-white text-sm">♾️ Appartements illimités</p>
                 </div>
-                <div className="bg-white rounded-lg p-3 shadow-sm">
-                  <p className="font-semibold text-gray-800 text-sm">📊 Analytics avancés</p>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm">
+                  <p className="font-semibold text-gray-800 dark:text-white text-sm">📊 Analytics avancés</p>
                 </div>
-                <div className="bg-white rounded-lg p-3 shadow-sm">
-                  <p className="font-semibold text-gray-800 text-sm">💡 Stats de marché</p>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm">
+                  <p className="font-semibold text-gray-800 dark:text-white text-sm">💡 Stats de marché</p>
                 </div>
               </div>
             </div>
@@ -242,42 +242,42 @@ export default function NouvelAppartementPage() {
             <FaArrowLeft className="mr-2" />
             Retour aux appartements
           </Link>
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
             🏢 Nouvel Appartement
           </h1>
         </div>
 
         {/* Formulaire */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-xl p-8">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
           {/* Informations générales */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b">
               📍 Informations générales
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Titre de l'annonce *
                 </label>
                 <input
                   type="text"
                   value={formData.titre}
                   onChange={(e) => setFormData({ ...formData, titre: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   placeholder="Ex: Bel appartement T3 avec balcon"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Adresse *
                 </label>
                 <input
                   type="text"
                   value={formData.adresse}
                   onChange={(e) => setFormData({ ...formData, adresse: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="12 rue de la République"
                   required
                 />
@@ -285,27 +285,27 @@ export default function NouvelAppartementPage() {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Ville *
                   </label>
                   <input
                     type="text"
                     value={formData.ville}
                     onChange={(e) => setFormData({ ...formData, ville: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Paris"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Code postal *
                   </label>
                   <input
                     type="text"
                     value={formData.codePostal}
                     onChange={(e) => setFormData({ ...formData, codePostal: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="75001"
                     required
                   />
@@ -316,32 +316,32 @@ export default function NouvelAppartementPage() {
 
           {/* Prix et charges */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b">
               💰 Prix et charges
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Loyer mensuel (€) *
                 </label>
                 <input
                   type="number"
                   value={formData.prix || ''}
                   onChange={(e) => setFormData({ ...formData, prix: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   placeholder="1200"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Charges mensuelles (€)
                 </label>
                 <input
                   type="number"
                   value={formData.charges || ''}
                   onChange={(e) => setFormData({ ...formData, charges: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   placeholder="150"
                 />
               </div>
@@ -349,38 +349,38 @@ export default function NouvelAppartementPage() {
 
             <div className="grid md:grid-cols-3 gap-4 mt-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Frais d'agence (€)
                 </label>
                 <input
                   type="number"
                   value={formData.fraisAgence || ''}
                   onChange={(e) => setFormData({ ...formData, fraisAgence: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   placeholder="Ex: 800"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Dépôt de garantie (€)
                 </label>
                 <input
                   type="number"
                   value={formData.depotGarantie || ''}
                   onChange={(e) => setFormData({ ...formData, depotGarantie: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   placeholder="Ex: 1200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Assurance habitation (€/an)
                 </label>
                 <input
                   type="number"
                   value={formData.assuranceHabitation || ''}
                   onChange={(e) => setFormData({ ...formData, assuranceHabitation: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   placeholder="Ex: 200"
                 />
               </div>
@@ -389,45 +389,45 @@ export default function NouvelAppartementPage() {
 
           {/* Caractéristiques */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b">
               📐 Caractéristiques
             </h2>
             <div className="grid md:grid-cols-3 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Surface (m²) *
                 </label>
                 <input
                   type="number"
                   value={formData.surface || ''}
                   onChange={(e) => setFormData({ ...formData, surface: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="65"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Nombre de pièces *
                 </label>
                 <input
                   type="number"
                   value={formData.pieces || ''}
                   onChange={(e) => setFormData({ ...formData, pieces: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="3"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Chambres
                 </label>
                 <input
                   type="number"
                   value={formData.chambres || ''}
                   onChange={(e) => setFormData({ ...formData, chambres: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="2"
                 />
               </div>
@@ -435,14 +435,14 @@ export default function NouvelAppartementPage() {
 
             <div className="grid md:grid-cols-3 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Étage
                 </label>
                 <input
                   type="number"
                   value={formData.etage || ''}
                   onChange={(e) => setFormData({ ...formData, etage: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="3"
                 />
               </div>
@@ -454,7 +454,7 @@ export default function NouvelAppartementPage() {
                     onChange={(e) => setFormData({ ...formData, ascenseur: e.target.checked })}
                     className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                   />
-                  <span className="text-sm font-medium text-gray-700">Ascenseur</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Ascenseur</span>
                 </label>
               </div>
               <div className="flex items-center pt-8">
@@ -465,7 +465,7 @@ export default function NouvelAppartementPage() {
                     onChange={(e) => setFormData({ ...formData, meuble: e.target.checked })}
                     className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                   />
-                  <span className="text-sm font-medium text-gray-700">Meublé</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Meublé</span>
                 </label>
               </div>
             </div>
@@ -473,13 +473,13 @@ export default function NouvelAppartementPage() {
 
           {/* Description */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b">
               📝 Description
             </h2>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={4}
               placeholder="Description de l'appartement, points forts, etc."
             />
@@ -487,7 +487,7 @@ export default function NouvelAppartementPage() {
 
           {/* Photos */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b">
               📸 Photos
             </h2>
             <div className="space-y-4">
@@ -502,7 +502,7 @@ export default function NouvelAppartementPage() {
                   const previews = files.map(file => URL.createObjectURL(file));
                   setImageUrls(previews);
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <p className="text-sm text-gray-500">
                 Ajoutez des photos de l'appartement (max 10 photos, 5MB chacune)
@@ -545,7 +545,7 @@ export default function NouvelAppartementPage() {
 
           {/* Statut de visite */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b">
               📅 Statut de visite
             </h2>
             <div className="space-y-4">
@@ -557,7 +557,7 @@ export default function NouvelAppartementPage() {
                   onChange={(e) => setFormData({ ...formData, visite: e.target.checked })}
                   className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                 />
-                <label htmlFor="visite" className="text-sm font-medium text-gray-700 cursor-pointer">
+                <label htmlFor="visite" className="text-sm font-medium text-gray-700 dark:text-gray-200 cursor-pointer">
                   Appartement déjà visité
                 </label>
               </div>
@@ -565,19 +565,19 @@ export default function NouvelAppartementPage() {
               {formData.visite && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                       Date de visite
                     </label>
                     <input
                       type="date"
                       value={formData.dateVisite}
                       onChange={(e) => setFormData({ ...formData, dateVisite: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                       Évaluation
                     </label>
                     <div className="flex space-x-4">
@@ -590,7 +590,7 @@ export default function NouvelAppartementPage() {
                           onChange={(e) => setFormData({ ...formData, choix: 'bon' })}
                           className="w-4 h-4 text-green-600 focus:ring-green-500"
                         />
-                        <span className="text-sm font-medium text-gray-700">✅ Bon</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">✅ Bon</span>
                       </label>
                       <label className="flex items-center space-x-2 cursor-pointer">
                         <input
@@ -601,7 +601,7 @@ export default function NouvelAppartementPage() {
                           onChange={(e) => setFormData({ ...formData, choix: 'moyen' })}
                           className="w-4 h-4 text-orange-600 focus:ring-orange-500"
                         />
-                        <span className="text-sm font-medium text-gray-700">⚠️ Moyen</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">⚠️ Moyen</span>
                       </label>
                       <label className="flex items-center space-x-2 cursor-pointer">
                         <input
@@ -612,7 +612,7 @@ export default function NouvelAppartementPage() {
                           onChange={(e) => setFormData({ ...formData, choix: 'pas_bon' })}
                           className="w-4 h-4 text-red-600 focus:ring-red-500"
                         />
-                        <span className="text-sm font-medium text-gray-700">❌ Pas bon</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">❌ Pas bon</span>
                       </label>
                     </div>
                   </div>
@@ -624,11 +624,11 @@ export default function NouvelAppartementPage() {
           {/* Notes par critères */}
           {formData.visite && (
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b">
                 ⭐ Notes par critères
               </h2>
               <div className="space-y-4 bg-yellow-50 p-6 rounded-lg">
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                   Notez chaque critère de 1 à 5 étoiles pour vous aider à comparer les appartements
                 </p>
                 <StarRating
@@ -661,12 +661,12 @@ export default function NouvelAppartementPage() {
                 {Object.values(notes).some(n => n > 0) && (
                   <div className="mt-6 pt-4 border-t border-yellow-200">
                     <div className="flex items-center justify-between bg-yellow-100 p-4 rounded-lg">
-                      <span className="font-bold text-lg text-gray-800">Note globale :</span>
+                      <span className="font-bold text-lg text-gray-800 dark:text-white">Note globale :</span>
                       <div className="flex items-center space-x-2">
                         <span className="text-3xl font-bold text-yellow-600">
                           {calculateGlobalNote(notes).toFixed(1)}
                         </span>
-                        <span className="text-gray-600">/5</span>
+                        <span className="text-gray-600 dark:text-gray-300">/5</span>
                       </div>
                     </div>
                   </div>
@@ -678,7 +678,7 @@ export default function NouvelAppartementPage() {
           {/* Avantages et inconvénients */}
           {formData.visite && (
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b">
                 ⚖️ Avantages et Inconvénients
               </h2>
 
@@ -702,7 +702,7 @@ export default function NouvelAppartementPage() {
                           }
                         }
                       }}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       placeholder="Ex: Proche des commerces"
                     />
                     <button
@@ -753,7 +753,7 @@ export default function NouvelAppartementPage() {
                           }
                         }
                       }}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                       placeholder="Ex: Pas d'ascenseur"
                     />
                     <button
@@ -790,44 +790,44 @@ export default function NouvelAppartementPage() {
 
           {/* Contact et annonce */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b">
               📞 Contact et annonce
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   Lien de l'annonce
                 </label>
                 <input
                   type="url"
                   value={formData.lienAnnonce}
                   onChange={(e) => setFormData({ ...formData, lienAnnonce: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="https://..."
                 />
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Nom de l'agence
                   </label>
                   <input
                     type="text"
                     value={formData.agence}
                     onChange={(e) => setFormData({ ...formData, agence: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Agence Immobilière ABC"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Contact agence
                   </label>
                   <input
                     type="text"
                     value={formData.contactAgence}
                     onChange={(e) => setFormData({ ...formData, contactAgence: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="01 23 45 67 89"
                   />
                 </div>
@@ -847,7 +847,7 @@ export default function NouvelAppartementPage() {
             </button>
             <Link
               href="/appartements"
-              className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors flex items-center space-x-2"
+              className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 py-3 px-6 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center space-x-2"
             >
               <FaTimes />
               <span>Annuler</span>

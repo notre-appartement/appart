@@ -79,29 +79,29 @@ export default function AbonnementPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-12 px-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 py-12 px-4 transition-colors duration-300">
         <div className="container mx-auto max-w-7xl">
           {/* Header */}
           <div className="text-center mb-12">
             <Link
               href="/"
-              className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6"
+              className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mb-6"
             >
               <FaArrowLeft className="mr-2" />
               Retour au tableau de bord
             </Link>
 
-            <h1 className="text-5xl font-bold text-gray-800 mb-4">
+            <h1 className="text-5xl font-bold text-gray-800 dark:text-white mb-4">
               Choisissez votre plan
             </h1>
-            <p className="text-xl text-gray-600 mb-6">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
               Trouvez l'appartement parfait avec les bons outils
             </p>
 
             {/* Badge plan actuel */}
-            <div className="inline-flex items-center gap-2 bg-white rounded-full px-6 py-3 shadow-lg">
-              <span className="text-sm text-gray-600">Plan actuel :</span>
-              <span className="font-bold text-gray-800">{SUBSCRIPTION_PLANS[currentPlan].name}</span>
+            <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 rounded-full px-6 py-3 shadow-lg">
+              <span className="text-sm text-gray-600 dark:text-gray-300">Plan actuel :</span>
+              <span className="font-bold text-gray-800 dark:text-white">{SUBSCRIPTION_PLANS[currentPlan].name}</span>
               {isOnTrial() && (
                 <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
                   Essai : {trialDaysRemaining()}j restants
@@ -134,16 +134,16 @@ export default function AbonnementPage() {
           {/* Grille des plans */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             {/* Plan Free */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 border-2 border-gray-200 hover:shadow-xl transition-shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border-2 border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
               <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Gratuit</h2>
-                <div className="text-4xl font-bold text-gray-800 mb-2">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Gratuit</h2>
+                <div className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
                   0€
                 </div>
-                <p className="text-gray-500 text-sm">Pour toujours</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">Pour toujours</p>
               </div>
 
-              <p className="text-gray-600 text-center mb-6">
+              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
                 {SUBSCRIPTION_PLANS.free.description}
               </p>
 
@@ -151,7 +151,7 @@ export default function AbonnementPage() {
                 {SUBSCRIPTION_PLANS.free.featuresList.map((feature, index) => (
                   <li key={index} className="flex items-start gap-2">
                     <FaCheck className="text-green-500 mt-1 flex-shrink-0" />
-                    <span className="text-gray-700 text-sm">{feature}</span>
+                    <span className="text-gray-700 dark:text-gray-200 text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -160,8 +160,8 @@ export default function AbonnementPage() {
                 disabled={currentPlan === 'free'}
                 className={`w-full py-3 rounded-lg font-bold transition-all ${
                   currentPlan === 'free'
-                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                    : 'bg-gray-700 text-white hover:bg-gray-800'
+                    ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-700 dark:bg-gray-600 text-white hover:bg-gray-800 dark:hover:bg-gray-500'
                 }`}
               >
                 {currentPlan === 'free' ? 'Plan actuel' : 'Rétrograder'}
@@ -169,7 +169,7 @@ export default function AbonnementPage() {
             </div>
 
             {/* Plan Premium */}
-            <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl shadow-xl p-8 border-2 border-orange-300 hover:shadow-2xl transition-shadow relative transform md:scale-105">
+            <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-2xl shadow-xl p-8 border-2 border-orange-300 dark:border-orange-600 hover:shadow-2xl transition-shadow relative transform md:scale-105">
               {/* Badge populaire */}
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
@@ -181,14 +181,14 @@ export default function AbonnementPage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mb-4">
                   <FaCrown className="text-3xl text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Premium</h2>
-                <div className="text-4xl font-bold text-gray-800 mb-2">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Premium</h2>
+                <div className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
                   9,99€
                 </div>
-                <p className="text-gray-600 text-sm">par mois</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">par mois</p>
               </div>
 
-              <p className="text-gray-700 text-center mb-6 font-medium">
+              <p className="text-gray-700 dark:text-gray-200 text-center mb-6 font-medium">
                 {SUBSCRIPTION_PLANS.premium.description}
               </p>
 
@@ -196,7 +196,7 @@ export default function AbonnementPage() {
                 {SUBSCRIPTION_PLANS.premium.featuresList.map((feature, index) => (
                   <li key={index} className="flex items-start gap-2">
                     <FaCheck className="text-orange-500 mt-1 flex-shrink-0" />
-                    <span className="text-gray-700 text-sm font-medium">{feature}</span>
+                    <span className="text-gray-700 dark:text-gray-200 text-sm font-medium">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -206,9 +206,9 @@ export default function AbonnementPage() {
                 disabled={currentPlan === 'premium' || currentPlan === 'pro' || loading !== null}
                 className={`w-full py-4 rounded-lg font-bold transition-all shadow-lg ${
                   currentPlan === 'premium'
-                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                    ? 'bg-gray-300 text-gray-600 dark:text-gray-300 cursor-not-allowed'
                     : currentPlan === 'pro'
-                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                    ? 'bg-gray-300 text-gray-600 dark:text-gray-300 cursor-not-allowed'
                     : 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 hover:shadow-xl transform hover:scale-105'
                 }`}
               >
@@ -228,19 +228,19 @@ export default function AbonnementPage() {
             </div>
 
             {/* Plan Pro */}
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-lg p-8 border-2 border-purple-300 hover:shadow-xl transition-shadow">
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl shadow-lg p-8 border-2 border-purple-300 dark:border-purple-600 hover:shadow-xl transition-shadow">
               <div className="text-center mb-6">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mb-4">
                   <FaRocket className="text-3xl text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Pro</h2>
-                <div className="text-4xl font-bold text-gray-800 mb-2">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Pro</h2>
+                <div className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
                   19,99€
                 </div>
-                <p className="text-gray-600 text-sm">par mois</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">par mois</p>
               </div>
 
-              <p className="text-gray-700 text-center mb-6 font-medium">
+              <p className="text-gray-700 dark:text-gray-200 text-center mb-6 font-medium">
                 {SUBSCRIPTION_PLANS.pro.description}
               </p>
 
@@ -248,7 +248,7 @@ export default function AbonnementPage() {
                 {SUBSCRIPTION_PLANS.pro.featuresList.map((feature, index) => (
                   <li key={index} className="flex items-start gap-2">
                     <FaCheck className="text-purple-500 mt-1 flex-shrink-0" />
-                    <span className="text-gray-700 text-sm font-medium">{feature}</span>
+                    <span className="text-gray-700 dark:text-gray-200 text-sm font-medium">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -258,7 +258,7 @@ export default function AbonnementPage() {
                 disabled={currentPlan === 'pro' || loading !== null}
                 className={`w-full py-4 rounded-lg font-bold transition-all shadow-lg ${
                   currentPlan === 'pro'
-                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                    ? 'bg-gray-300 text-gray-600 dark:text-gray-300 cursor-not-allowed'
                     : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:shadow-xl transform hover:scale-105'
                 }`}
               >
@@ -277,32 +277,32 @@ export default function AbonnementPage() {
           </div>
 
           {/* FAQ / Informations */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 max-w-4xl mx-auto">
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
               Questions fréquentes
             </h3>
             <div className="space-y-6">
               <div>
-                <h4 className="font-bold text-gray-800 mb-2">🎁 Comment fonctionne l'essai gratuit ?</h4>
-                <p className="text-gray-600 text-sm">
+                <h4 className="font-bold text-gray-800 dark:text-white mb-2">🎁 Comment fonctionne l'essai gratuit ?</h4>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Profitez de 14 jours d'essai gratuit sur les plans Premium et Pro. Aucune carte bancaire requise pour commencer. Vous pouvez annuler à tout moment.
                 </p>
               </div>
               <div>
-                <h4 className="font-bold text-gray-800 mb-2">🔄 Puis-je changer de plan ?</h4>
-                <p className="text-gray-600 text-sm">
+                <h4 className="font-bold text-gray-800 dark:text-white mb-2">🔄 Puis-je changer de plan ?</h4>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Les changements prennent effet immédiatement.
                 </p>
               </div>
               <div>
-                <h4 className="font-bold text-gray-800 mb-2">💳 Quels moyens de paiement acceptez-vous ?</h4>
-                <p className="text-gray-600 text-sm">
+                <h4 className="font-bold text-gray-800 dark:text-white mb-2">💳 Quels moyens de paiement acceptez-vous ?</h4>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Nous acceptons toutes les cartes bancaires (Visa, Mastercard, American Express) via notre plateforme de paiement sécurisée Stripe.
                 </p>
               </div>
               <div>
-                <h4 className="font-bold text-gray-800 mb-2">🔒 Mes données sont-elles sécurisées ?</h4>
-                <p className="text-gray-600 text-sm">
+                <h4 className="font-bold text-gray-800 dark:text-white mb-2">🔒 Mes données sont-elles sécurisées ?</h4>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Absolument ! Nous utilisons le chiffrement SSL et stockons vos données sur Firebase avec les meilleures pratiques de sécurité. Vos informations de paiement sont gérées par Stripe et ne sont jamais stockées sur nos serveurs.
                 </p>
               </div>
@@ -311,7 +311,7 @@ export default function AbonnementPage() {
 
           {/* Note essai gratuit */}
           <div className="mt-8 text-center">
-            <p className="text-sm text-gray-600 bg-green-50 border border-green-200 rounded-lg p-4 inline-block">
+            <p className="text-sm text-gray-600 dark:text-gray-200 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg p-4 inline-block">
               🎁 <strong>14 jours d'essai gratuit</strong> sur les plans Premium et Pro !
               <br />
               Aucune carte bancaire requise pendant la période d'essai.

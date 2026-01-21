@@ -60,12 +60,12 @@ export function VisiteChecklistComponent({ checklist, onSave, readonly = false }
   return (
     <div className="space-y-6">
       {/* Barre de progression */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xl font-bold text-gray-800">
+          <h3 className="text-xl font-bold text-gray-800 dark:text-white">
             📋 Checklist de visite
           </h3>
-          <span className="text-sm font-semibold text-gray-600">
+          <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
             {checkedItems}/{totalItems} ({progressPercent}%)
           </span>
         </div>
@@ -104,7 +104,7 @@ export function VisiteChecklistComponent({ checklist, onSave, readonly = false }
           const isExpanded = expandedCategories.has(category);
 
           return (
-            <div key={category} className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div key={category} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
               {/* Header de catégorie */}
               <button
                 onClick={() => toggleCategory(category)}
@@ -112,10 +112,10 @@ export function VisiteChecklistComponent({ checklist, onSave, readonly = false }
               >
                 <div className="flex items-center space-x-3">
                   <span className="text-2xl">{isExpanded ? '▼' : '▶'}</span>
-                  <h4 className="font-bold text-gray-800 text-left">{category}</h4>
+                  <h4 className="font-bold text-gray-800 dark:text-white text-left">{category}</h4>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
                     {categoryChecked}/{categoryTotal}
                   </span>
                   <div className="w-20 bg-gray-200 rounded-full h-2">
@@ -131,7 +131,7 @@ export function VisiteChecklistComponent({ checklist, onSave, readonly = false }
               {isExpanded && (
                 <div className="px-6 pb-4 space-y-2">
                   {categoryItems.map((item) => (
-                    <div key={item.id} className="border-l-4 border-gray-200 pl-4 py-2">
+                    <div key={item.id} className="border-l-4 border-gray-200 dark:border-gray-700 pl-4 py-2">
                       <div className="flex items-start space-x-3">
                         <button
                           onClick={() => toggleItem(item.id)}
@@ -146,7 +146,7 @@ export function VisiteChecklistComponent({ checklist, onSave, readonly = false }
                         </button>
 
                         <div className="flex-1">
-                          <p className={`text-gray-800 ${item.checked ? 'line-through text-gray-500' : ''}`}>
+                          <p className={`text-gray-800 dark:text-white ${item.checked ? 'line-through text-gray-500' : ''}`}>
                             {item.label}
                           </p>
 
@@ -163,14 +163,14 @@ export function VisiteChecklistComponent({ checklist, onSave, readonly = false }
                                 }}
                                 onBlur={() => setEditingNote(null)}
                                 placeholder="Ajouter une note..."
-                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 rows={2}
                                 autoFocus
                               />
                             </div>
                           ) : item.note ? (
                             <div className="mt-2 p-2 bg-yellow-50 border-l-2 border-yellow-400 rounded">
-                              <p className="text-sm text-gray-700 italic">{item.note}</p>
+                              <p className="text-sm text-gray-700 dark:text-gray-200 italic">{item.note}</p>
                             </div>
                           ) : null}
 
@@ -195,8 +195,8 @@ export function VisiteChecklistComponent({ checklist, onSave, readonly = false }
       </div>
 
       {/* Notes générales */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h4 className="font-bold text-gray-800 mb-3 flex items-center space-x-2">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h4 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center space-x-2">
           <FaStickyNote className="text-yellow-500" />
           <span>Notes générales</span>
         </h4>
@@ -204,7 +204,7 @@ export function VisiteChecklistComponent({ checklist, onSave, readonly = false }
           value={notesGenerales}
           onChange={(e) => setNotesGenerales(e.target.value)}
           disabled={readonly}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
+          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
           rows={4}
           placeholder="Notes générales sur la visite, impressions, points à vérifier..."
         />

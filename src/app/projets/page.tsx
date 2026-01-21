@@ -51,10 +51,10 @@ export default function ProjetsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Chargement des projets...</p>
+          <p className="text-gray-600 dark:text-gray-300">Chargement des projets...</p>
         </div>
       </div>
     );
@@ -62,13 +62,13 @@ export default function ProjetsPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 md:p-8 transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-800 mb-3">
+            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-3">
               🏠 Mes Projets de Recherche
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               Sélectionnez un projet existant ou créez-en un nouveau pour collaborer
             </p>
           </div>
@@ -79,22 +79,22 @@ export default function ProjetsPage() {
               canCreate ? (
                 <button
                   onClick={() => setShowCreateForm(true)}
-                  className="bg-white border-2 border-dashed border-blue-300 rounded-xl p-8 hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                  className="bg-white dark:bg-gray-800 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-xl p-8 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 transition-all group"
                 >
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
-                      <FaPlus className="text-3xl text-blue-600" />
+                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 dark:group-hover:bg-blue-900 transition-colors">
+                      <FaPlus className="text-3xl text-blue-600 dark:text-blue-400" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-800 mb-2">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-2">
                       Nouveau Projet
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       Créez un projet et invitez vos collaborateurs
                     </p>
                   </div>
                 </button>
               ) : (
-                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-orange-300 rounded-xl p-8 relative overflow-hidden">
+                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-2 border-orange-300 dark:border-orange-600 rounded-xl p-8 relative overflow-hidden">
                   {/* Badge limite */}
                   <div className="absolute top-3 right-3">
                     <FaLock className="text-orange-400 text-xl" />
@@ -104,13 +104,13 @@ export default function ProjetsPage() {
                     <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
                       <FaCrown className="text-3xl text-white" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-800 mb-2">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-2">
                       Limite atteinte
                     </h3>
-                    <p className="text-sm text-gray-700 mb-4">
+                    <p className="text-sm text-gray-700 dark:text-gray-200 mb-4">
                       {getLimitMessage('projects')}
                     </p>
-                    <p className="text-xs text-gray-600 mb-4">
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mb-4">
                       Vous avez <strong>{projets.length}/{planConfig.features.maxProjects}</strong> projet{projets.length > 1 ? 's' : ''}
                     </p>
                     <Link
@@ -127,30 +127,30 @@ export default function ProjetsPage() {
                 </div>
               )
             ) : (
-              <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-blue-500">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border-2 border-blue-500 dark:border-blue-400">
                 <form onSubmit={handleCreateProject} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                       Nom du projet *
                     </label>
                     <input
                       type="text"
                       value={newProjectName}
                       onChange={(e) => setNewProjectName(e.target.value)}
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-900"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       placeholder="Ex: Appart Lyon 2026"
                       required
                       autoFocus
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                       Description
                     </label>
                     <textarea
                       value={newProjectDescription}
                       onChange={(e) => setNewProjectDescription(e.target.value)}
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-900"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       rows={3}
                       placeholder="Recherche d'appartement à Lyon..."
                     />
@@ -170,7 +170,7 @@ export default function ProjetsPage() {
                         setNewProjectName('');
                         setNewProjectDescription('');
                       }}
-                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                      className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                     >
                       Annuler
                     </button>
@@ -183,16 +183,16 @@ export default function ProjetsPage() {
             {projets.map((projet) => (
               <div
                 key={projet.id}
-                className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all border border-gray-100 cursor-pointer group"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all border border-gray-100 cursor-pointer group"
                 onClick={() => handleSelectProject(projet)}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
                       {projet.nom}
                     </h3>
                     {projet.description && (
-                      <p className="text-sm text-gray-600 line-clamp-2">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
                         {projet.description}
                       </p>
                     )}
@@ -200,7 +200,7 @@ export default function ProjetsPage() {
                   <FaArrowRight className="text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
 
-                <div className="flex items-center gap-4 text-sm text-gray-500 mt-4 pt-4 border-t">
+                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex items-center gap-2">
                     <FaUsers />
                     <span>{projet.membres.length} membre{projet.membres.length > 1 ? 's' : ''}</span>
@@ -216,7 +216,7 @@ export default function ProjetsPage() {
                     {projet.membres.map((membre, idx) => (
                       <div
                         key={idx}
-                        className="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium"
+                        className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium"
                       >
                         {membre.name}
                       </div>
@@ -228,23 +228,23 @@ export default function ProjetsPage() {
           </div>
 
           {/* Rejoindre un projet avec un code */}
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto border border-gray-100">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-2xl mx-auto border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <FaUserPlus className="text-2xl text-purple-600" />
+              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center">
+                <FaUserPlus className="text-2xl text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-800">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white">
                   Rejoindre un projet existant
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   Entrez le code d'invitation que vous avez reçu
                 </p>
               </div>
             </div>
             <button
               onClick={() => router.push('/rejoindre')}
-              className="w-full bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition-colors font-medium"
+              className="w-full bg-purple-600 dark:bg-purple-700 text-white py-3 px-6 rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors font-medium"
             >
               Entrer un code d'invitation
             </button>

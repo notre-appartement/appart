@@ -63,12 +63,12 @@ export default function PremiumFeature({
           </div>
 
           {/* Titre */}
-          <h3 className="text-2xl font-bold text-gray-800 mb-3">
+          <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-3">
             Feature {planName}
           </h3>
 
           {/* Description */}
-          <p className="text-gray-600 mb-6 leading-relaxed">
+          <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
             Cette fonctionnalité est disponible avec le plan{' '}
             <span className={`font-bold ${requiredPlan === 'pro' ? 'text-purple-600' : 'text-orange-600'}`}>
               {planName}
