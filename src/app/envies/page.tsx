@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { FaPlus, FaHeart, FaUser, FaTrash, FaEdit } from 'react-icons/fa';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,7 +24,7 @@ export default function EnviesPage() {
   // Récupérer la liste des membres du projet avec une option "Partagé"
   const membresOptions = useMemo(() => {
     if (!currentProject) return ['Partagé'];
-    
+
     const membres = currentProject.membres.map(m => m.name);
     return ['Partagé', ...membres];
   }, [currentProject]);
@@ -42,17 +43,19 @@ export default function EnviesPage() {
       if (editingId) {
         // Mode édition
         await updateEnvie(editingId, formData);
+        toast.success('✏️ Envie modifiée avec succès !');
         setEditingId(null);
       } else {
         // Mode ajout
         await addEnvie(formData);
+        toast.success('💭 Envie ajoutée avec succès !');
       }
       // Réinitialiser avec le premier membre ou "Partagé"
       const defaultAuteur = membresOptions.includes(displayName) ? displayName : membresOptions[0];
       setFormData({ nom: '', definition: '', important: false, auteur: defaultAuteur });
       setShowForm(false);
     } catch (err) {
-      alert(editingId ? 'Erreur lors de la modification de l\'envie' : 'Erreur lors de l\'ajout de l\'envie');
+      toast.error(editingId ? 'Erreur lors de la modification de l\'envie' : 'Erreur lors de l\'ajout de l\'envie');
     }
   };
 
@@ -78,8 +81,9 @@ export default function EnviesPage() {
     if (confirm(`Voulez-vous vraiment supprimer "${nom}" ?`)) {
       try {
         await deleteEnvie(id);
+        toast.success('🗑️ Envie supprimée');
       } catch (err) {
-        alert('Erreur lors de la suppression');
+        toast.error('Erreur lors de la suppression');
       }
     }
   };

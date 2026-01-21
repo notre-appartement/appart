@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import { useProjects } from '@/hooks/useProjects';
 import { useProject } from '@/contexts/ProjectContext';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -38,10 +39,11 @@ export default function ProjetsPage() {
       if (newProjet) {
         setCurrentProject(newProjet);
       }
+      toast.success('🎉 Projet créé avec succès !');
       router.push('/');
     } catch (err) {
       console.error(err);
-      alert('Erreur lors de la création du projet');
+      toast.error('Erreur lors de la création du projet');
     } finally {
       setCreating(false);
     }

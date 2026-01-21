@@ -271,7 +271,19 @@
 - [ ] Thèmes personnalisables
 - [ ] Animations fluides
 - [ ] Skeleton loaders
-- [ ] Toasts de notifications
+- [x] **Toasts de notifications** 🎉
+  - [x] Installation react-hot-toast
+  - [x] Configuration dans layout.tsx
+  - [x] Toasts de succès (vert, icône ✅)
+  - [x] Toasts d'erreur (rouge, icône ❌)
+  - [x] Position top-right, 3-4s de durée
+  - [x] Design moderne avec ombres
+  - [x] Remplacement des alert() dans :
+    - [x] Appartements (ajout, suppression, comparaison)
+    - [x] Projets (création, erreurs)
+    - [x] Envies (ajout, modification, suppression)
+    - [x] Abonnement (paiement Stripe)
+  - [x] Messages personnalisés avec emojis
 
 ### Accessibilité
 - [ ] Navigation au clavier

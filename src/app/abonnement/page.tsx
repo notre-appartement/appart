@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import toast from 'react-hot-toast';
 import { FaCheck, FaCrown, FaRocket, FaArrowLeft, FaSpinner, FaTimes } from 'react-icons/fa';
 import AuthGuard from '@/components/AuthGuard';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,12 +26,12 @@ export default function AbonnementPage() {
 
   const handleSelectPlan = async (plan: SubscriptionPlan) => {
     if (plan === 'free') {
-      alert('Vous êtes déjà sur le plan gratuit !');
+      toast.error('Vous êtes déjà sur le plan gratuit !');
       return;
     }
 
     if (!user) {
-      alert('Vous devez être connecté pour souscrire à un abonnement');
+      toast.error('Vous devez être connecté pour souscrire à un abonnement');
       return;
     }
 
@@ -71,7 +72,7 @@ export default function AbonnementPage() {
       window.location.href = url;
     } catch (error: any) {
       console.error('Erreur:', error);
-      alert(`Erreur lors de la création de la session de paiement: ${error.message}`);
+      toast.error(`Erreur lors de la création de la session de paiement: ${error.message}`);
       setLoading(null);
     }
   };

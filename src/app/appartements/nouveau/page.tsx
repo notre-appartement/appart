@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import { FaArrowLeft, FaSave, FaTimes, FaCrown, FaLock } from 'react-icons/fa';
 import { useAppartements } from '@/hooks/useAppartements';
 import { useProject } from '@/contexts/ProjectContext';
@@ -112,10 +113,11 @@ export default function NouvelAppartementPage() {
       }
 
       await addAppartement(dataToSubmit);
+      toast.success('🏠 Appartement ajouté avec succès !');
       router.push('/appartements');
     } catch (err) {
       console.error(err);
-      alert('Erreur lors de l\'ajout de l\'appartement');
+      toast.error('Erreur lors de l\'ajout de l\'appartement');
       setLoading(false);
     }
   };

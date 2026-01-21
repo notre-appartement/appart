@@ -5,6 +5,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { ProjectProvider } from '@/contexts/ProjectContext'
 import AuthGuard from '@/components/AuthGuard'
 import Navigation from '@/components/Navigation'
+import ToastProvider from '@/components/ToastProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -33,6 +34,7 @@ export default function RootLayout({
             </AuthGuard>
           </ProjectProvider>
         </AuthProvider>
+        <ToastProvider />
       </body>
     </html>
   )

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { FaPlus, FaMapMarkerAlt, FaEuroSign, FaRuler, FaTrash, FaFilter, FaExchangeAlt } from 'react-icons/fa';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -27,8 +28,9 @@ export default function AppartementsPage() {
     if (confirm(`Voulez-vous vraiment supprimer "${titre}" ?`)) {
       try {
         await deleteAppartement(id);
+        toast.success('🗑️ Appartement supprimé');
       } catch (err) {
-        alert('Erreur lors de la suppression');
+        toast.error('Erreur lors de la suppression');
       }
     }
   };
@@ -38,7 +40,7 @@ export default function AppartementsPage() {
       setSelectedForComparison(selectedForComparison.filter(apId => apId !== id));
     } else {
       if (selectedForComparison.length >= 4) {
-        alert('Vous ne pouvez comparer que 4 appartements maximum');
+        toast.error('Vous ne pouvez comparer que 4 appartements maximum');
         return;
       }
       setSelectedForComparison([...selectedForComparison, id]);
@@ -47,7 +49,7 @@ export default function AppartementsPage() {
 
   const handleCompare = () => {
     if (selectedForComparison.length < 2) {
-      alert('Sélectionnez au moins 2 appartements à comparer');
+      toast.error('Sélectionnez au moins 2 appartements à comparer');
       return;
     }
     router.push(`/appartements/comparer?ids=${selectedForComparison.join(',')}`);
@@ -295,8 +297,8 @@ export default function AppartementsPage() {
                         {appart.prix + (appart.charges || 0)} €
                         {budgetLoyerMax > 0 && (
                           <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded-full ${
-                            (appart.prix + (appart.charges || 0)) <= budgetLoyerMax 
-                              ? 'bg-green-100 text-green-700' 
+                            (appart.prix + (appart.charges || 0)) <= budgetLoyerMax
+                              ? 'bg-green-100 text-green-700'
                               : 'bg-red-100 text-red-700'
                           }`}>
                             {(appart.prix + (appart.charges || 0)) <= budgetLoyerMax ? 'Budget OK' : 'Hors Budget'}
