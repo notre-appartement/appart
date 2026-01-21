@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useAppartements } from '@/hooks/useAppartements';
 import { useSharedBudget } from '@/hooks/useSharedBudget';
 import { useProject } from '@/contexts/ProjectContext';
+import { SkeletonList } from '@/components/SkeletonLoader';
 
 export default function AppartementsPage() {
   const router = useRouter();
@@ -75,11 +76,12 @@ export default function AppartementsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Chargement...</p>
+      <div className="container mx-auto px-4 py-8 dark:bg-gray-900 min-h-screen">
+        <div className="mb-8">
+          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-4 animate-pulse"></div>
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-96 animate-pulse"></div>
         </div>
+        <SkeletonList type="appartement" count={6} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" />
       </div>
     );
   }

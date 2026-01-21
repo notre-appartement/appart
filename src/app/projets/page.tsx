@@ -9,6 +9,7 @@ import { useProject } from '@/contexts/ProjectContext';
 import { useSubscription } from '@/hooks/useSubscription';
 import AuthGuard from '@/components/AuthGuard';
 import { FaPlus, FaUsers, FaArrowRight, FaCalendar, FaUserPlus, FaCrown, FaLock } from 'react-icons/fa';
+import { SkeletonList } from '@/components/SkeletonLoader';
 
 export default function ProjetsPage() {
   const router = useRouter();
@@ -51,12 +52,17 @@ export default function ProjetsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">Chargement des projets...</p>
+      <AuthGuard>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 md:p-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-96 mx-auto mb-3 animate-pulse"></div>
+              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-[32rem] mx-auto animate-pulse"></div>
+            </div>
+            <SkeletonList type="projet" count={3} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" />
+          </div>
         </div>
-      </div>
+      </AuthGuard>
     );
   }
 

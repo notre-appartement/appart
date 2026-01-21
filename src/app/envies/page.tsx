@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEnvies } from '@/hooks/useEnvies';
 import { useProject } from '@/contexts/ProjectContext';
+import { SkeletonList } from '@/components/SkeletonLoader';
 
 export default function EnviesPage() {
   const { displayName } = useAuth();
@@ -88,12 +89,14 @@ export default function EnviesPage() {
     }
   };
 
-  if (projectLoading) {
+  if (projectLoading || loading) {
     return (
-      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Chargement...</p>
+      <div className="container mx-auto px-4 py-8 dark:bg-gray-900 min-h-screen">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-80 mb-4 animate-pulse"></div>
+          </div>
+          <SkeletonList type="envie" count={6} className="space-y-4" />
         </div>
       </div>
     );
@@ -286,7 +289,7 @@ export default function EnviesPage() {
 
         {/* Suggestions */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 transition-colors duration-300">
-          <h3 className="text-xl font-bold text-gray-800 dark:text-white dark:text-white mb-4">
+          <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
             💡 Suggestions d'envies
           </h3>
           <div className="grid md:grid-cols-2 gap-3">
@@ -306,7 +309,7 @@ export default function EnviesPage() {
                   setFormData({ ...formData, nom: suggestion });
                   setShowForm(true);
                 }}
-                className="p-3 bg-gray-50 rounded border border-gray-200 dark:border-gray-700 text-gray-700 hover:bg-pink-50 hover:border-pink-300 transition-colors text-left"
+                className="p-3 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/30 hover:border-pink-300 dark:hover:border-pink-600 transition-colors text-left"
               >
                 {suggestion}
               </button>

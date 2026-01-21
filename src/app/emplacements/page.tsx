@@ -4,6 +4,7 @@ import { FaPlus, FaMapMarkerAlt, FaBriefcase, FaHome, FaShoppingCart, FaUsers, F
 import Link from 'next/link';
 import { useEmplacements } from '@/hooks/useEmplacements';
 import { useProject } from '@/contexts/ProjectContext';
+import { SkeletonList } from '@/components/SkeletonLoader';
 
 const typeConfig = {
   travail: { icon: FaBriefcase, color: 'blue', label: 'Travail' },
@@ -27,13 +28,14 @@ export default function EmplacementsPage() {
     }
   };
 
-  if (projectLoading) {
+  if (projectLoading || loading) {
     return (
-      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">Chargement...</p>
+      <div className="container mx-auto px-4 py-8 dark:bg-gray-900 min-h-screen">
+        <div className="mb-8">
+          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-4 animate-pulse"></div>
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-96 animate-pulse"></div>
         </div>
+        <SkeletonList type="emplacement" count={6} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" />
       </div>
     );
   }
@@ -150,7 +152,7 @@ export default function EmplacementsPage() {
         </div>
 
         {/* Types d'emplacements */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 transition-colors duration-300">
           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
             📌 Types d'emplacements disponibles
           </h3>
@@ -160,9 +162,29 @@ export default function EmplacementsPage() {
               return (
                 <div
                   key={key}
-                  className={`p-4 bg-${config.color}-50 rounded-lg border border-${config.color}-200`}
+                  className={`p-4 rounded-lg border transition-colors duration-300 ${
+                    key === 'travail'
+                      ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                      : key === 'famille'
+                      ? 'bg-pink-50 dark:bg-pink-900/20 border-pink-200 dark:border-pink-800'
+                      : key === 'loisirs'
+                      ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'
+                      : key === 'commerces'
+                      ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                      : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
+                  }`}
                 >
-                  <Icon className={`text-2xl text-${config.color}-600 mb-2`} />
+                  <Icon className={`text-2xl mb-2 ${
+                    key === 'travail'
+                      ? 'text-blue-600 dark:text-blue-400'
+                      : key === 'famille'
+                      ? 'text-pink-600 dark:text-pink-400'
+                      : key === 'loisirs'
+                      ? 'text-purple-600 dark:text-purple-400'
+                      : key === 'commerces'
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-gray-600 dark:text-gray-400'
+                  }`} />
                   <h4 className="font-bold text-gray-800 dark:text-white">{config.label}</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-300">
                     {key === 'travail' && 'Vos lieux de travail'}
