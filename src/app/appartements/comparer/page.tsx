@@ -168,7 +168,7 @@ function ComparaisonContent() {
                       <div className="text-xl font-bold text-blue-600">
                         {appart.prix} €
                       </div>
-                      {appart.charges > 0 && (
+                      {(appart.charges ?? 0) > 0 && (
                         <div className="text-sm text-gray-500">
                           + {appart.charges} € charges
                         </div>
