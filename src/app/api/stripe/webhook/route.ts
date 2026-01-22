@@ -100,13 +100,18 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   }
 
   // Mettre à jour le profil utilisateur dans Firestore
+  const currentPeriodEnd = (subscription as any).current_period_end as number | undefined;
+  const cancelAtPeriodEnd = (subscription as any).cancel_at_period_end as boolean | undefined;
+
   await adminDb.collection('profiles').doc(userId).update({
     'subscription.plan': plan,
     'subscription.status': subscription.status,
     'subscription.stripeSubscriptionId': subscriptionId,
     'subscription.stripeCustomerId': subscription.customer as string,
-    'subscription.currentPeriodEnd': new Date(subscription.current_period_end * 1000),
-    'subscription.cancelAtPeriodEnd': subscription.cancel_at_period_end,
+    'subscription.currentPeriodEnd': currentPeriodEnd
+      ? new Date(currentPeriodEnd * 1000)
+      : null,
+    'subscription.cancelAtPeriodEnd': cancelAtPeriodEnd ?? false,
     updatedAt: new Date(),
   });
 
@@ -127,11 +132,16 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     plan = 'pro';
   }
 
+  const currentPeriodEnd = (subscription as any).current_period_end as number | undefined;
+  const cancelAtPeriodEnd = (subscription as any).cancel_at_period_end as boolean | undefined;
+
   await adminDb.collection('profiles').doc(userId).update({
     'subscription.plan': plan,
     'subscription.status': subscription.status,
-    'subscription.currentPeriodEnd': new Date(subscription.current_period_end * 1000),
-    'subscription.cancelAtPeriodEnd': subscription.cancel_at_period_end,
+    'subscription.currentPeriodEnd': currentPeriodEnd
+      ? new Date(currentPeriodEnd * 1000)
+      : null,
+    'subscription.cancelAtPeriodEnd': cancelAtPeriodEnd ?? false,
     updatedAt: new Date(),
   });
 
@@ -162,9 +172,13 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   const userId = subscription.metadata?.userId;
   if (!userId) return;
 
+  const currentPeriodEnd = (subscription as any).current_period_end as number | undefined;
+
   await adminDb.collection('profiles').doc(userId).update({
     'subscription.status': 'active',
-    'subscription.currentPeriodEnd': new Date(subscription.current_period_end * 1000),
+    'subscription.currentPeriodEnd': currentPeriodEnd
+      ? new Date(currentPeriodEnd * 1000)
+      : null,
     updatedAt: new Date(),
   });
 
