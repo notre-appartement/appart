@@ -45,12 +45,16 @@ export function useUserProfile() {
           } as UserProfile);
         } else {
           // Initialiser un profil par défaut si inexistant
+          const now = new Date();
           const newProfile: UserProfile = {
             uid: user.uid,
+            email: user.email || '',
             displayName: displayName || '',
             salaireMensuel: 0,
             categoriesBudget: DEFAULT_CATEGORIES,
-            updatedAt: new Date(),
+            createdAt: now,
+            updatedAt: now,
+            lastLoginAt: now,
           };
           setProfile(newProfile);
           // On ne le sauvegarde pas tout de suite pour éviter des écritures inutiles
