@@ -13,9 +13,19 @@ export async function POST(req: NextRequest) {
   const signature = req.headers.get('stripe-signature');
 
   if (!signature) {
+    console.error('❌ Missing stripe-signature header');
     return NextResponse.json(
       { error: 'Missing stripe-signature header' },
       { status: 400 }
+    );
+  }
+
+  // Vérifier que le webhook secret est configuré
+  if (!webhookSecret) {
+    console.error('❌ STRIPE_WEBHOOK_SECRET manquant dans .env.local');
+    return NextResponse.json(
+      { error: 'Webhook secret not configured' },
+      { status: 500 }
     );
   }
 
@@ -23,6 +33,7 @@ export async function POST(req: NextRequest) {
 
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    console.log(`📥 Webhook reçu: ${event.type} [${event.id}]`);
   } catch (err: any) {
     console.error(`⚠️ Webhook signature verification failed:`, err.message);
     return NextResponse.json(
@@ -64,15 +75,29 @@ export async function POST(req: NextRequest) {
         break;
       }
 
+      // Événements non critiques - on les ignore mais on retourne 200
+      case 'customer.created':
+      case 'customer.updated':
+      case 'payment_method.attached':
+      case 'setup_intent.created':
+      case 'setup_intent.succeeded':
+      case 'invoice.created':
+      case 'invoice.finalized':
+      case 'invoice.paid':
+        console.log(`ℹ️  Événement ignoré (non critique): ${event.type}`);
+        return NextResponse.json({ received: true, ignored: true });
+
       default:
-        console.log(`Événement non géré: ${event.type}`);
+        console.log(`ℹ️  Événement non géré: ${event.type}`);
+        return NextResponse.json({ received: true, unhandled: true });
     }
 
     return NextResponse.json({ received: true });
   } catch (err: any) {
-    console.error(`Erreur traitement webhook:`, err);
+    console.error(`❌ Erreur traitement webhook [${event.type}]:`, err);
+    console.error('Stack:', err.stack);
     return NextResponse.json(
-      { error: `Webhook handler failed: ${err.message}` },
+      { error: `Webhook handler failed: ${err.message}`, type: event.type },
       { status: 500 }
     );
   }
@@ -82,11 +107,18 @@ export async function POST(req: NextRequest) {
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId;
   if (!userId) {
-    console.error('userId manquant dans session metadata');
-    return;
+    console.error('❌ userId manquant dans session metadata');
+    console.error('Session metadata:', JSON.stringify(session.metadata, null, 2));
+    throw new Error('userId manquant dans session metadata');
   }
 
   const subscriptionId = session.subscription as string;
+  if (!subscriptionId) {
+    console.error('❌ subscriptionId manquant dans session');
+    throw new Error('subscriptionId manquant dans session');
+  }
+
+  console.log(`📋 Récupération de l'abonnement: ${subscriptionId}`);
   const subscription: Stripe.Subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
   // Déterminer le plan en fonction du price ID
@@ -103,19 +135,25 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   const currentPeriodEnd = (subscription as any).current_period_end as number | undefined;
   const cancelAtPeriodEnd = (subscription as any).cancel_at_period_end as boolean | undefined;
 
-  await adminDb.collection('profiles').doc(userId).update({
-    'subscription.plan': plan,
-    'subscription.status': subscription.status,
-    'subscription.stripeSubscriptionId': subscriptionId,
-    'subscription.stripeCustomerId': subscription.customer as string,
-    'subscription.currentPeriodEnd': currentPeriodEnd
-      ? new Date(currentPeriodEnd * 1000)
-      : null,
-    'subscription.cancelAtPeriodEnd': cancelAtPeriodEnd ?? false,
-    updatedAt: new Date(),
-  });
+  console.log(`💾 Mise à jour du profil ${userId} avec le plan ${plan}`);
 
-  console.log(`✅ Abonnement activé pour ${userId}: ${plan}`);
+  try {
+    await adminDb.collection('profiles').doc(userId).update({
+      'subscription.plan': plan,
+      'subscription.status': subscription.status,
+      'subscription.stripeSubscriptionId': subscriptionId,
+      'subscription.stripeCustomerId': subscription.customer as string,
+      'subscription.currentPeriodEnd': currentPeriodEnd
+        ? new Date(currentPeriodEnd * 1000)
+        : null,
+      'subscription.cancelAtPeriodEnd': cancelAtPeriodEnd ?? false,
+      updatedAt: new Date(),
+    });
+    console.log(`✅ Abonnement activé pour ${userId}: ${plan}`);
+  } catch (error: any) {
+    console.error(`❌ Erreur lors de la mise à jour du profil ${userId}:`, error);
+    throw error;
+  }
 }
 
 // Gestion mise à jour abonnement
