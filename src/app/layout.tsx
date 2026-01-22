@@ -5,7 +5,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { ProjectProvider } from '@/contexts/ProjectContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import AuthGuard from '@/components/AuthGuard'
-import Navigation from '@/components/Navigation'
+import ConditionalLayout from '@/components/ConditionalLayout'
 import ToastProvider from '@/components/ToastProvider'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -27,12 +27,9 @@ export default function RootLayout({
           <AuthProvider>
             <ProjectProvider>
               <AuthGuard>
-                <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-                  <Navigation />
-                  <main>
-                    {children}
-                  </main>
-                </div>
+                <ConditionalLayout>
+                  {children}
+                </ConditionalLayout>
               </AuthGuard>
             </ProjectProvider>
           </AuthProvider>

@@ -2,22 +2,29 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaHome, FaHeart, FaMapMarkerAlt, FaBuilding, FaUsers, FaChartLine } from 'react-icons/fa';
+import { FaHome, FaHeart, FaMapMarkerAlt, FaBuilding, FaUsers, FaChartLine, FaCheck, FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
 import { useProject } from '@/contexts/ProjectContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
   const router = useRouter();
   const { currentProject, loading } = useProject();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     // Si pas de projet actif après le chargement, rediriger vers la sélection
-    if (!loading && !currentProject) {
+    if (!authLoading && user && !loading && !currentProject) {
       router.push('/projets');
     }
-  }, [currentProject, loading, router]);
+  }, [currentProject, loading, router, user, authLoading]);
 
-  if (loading) {
+  // Si l'utilisateur n'est pas connecté, afficher la landing page
+  if (!authLoading && !user) {
+    return <LandingPage />;
+  }
+
+  if (loading || authLoading) {
     return (
       <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -182,6 +189,192 @@ export default function Home() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Landing Page pour les utilisateurs non connectés
+function LandingPage() {
+  const features = [
+    {
+      icon: FaBuilding,
+      title: 'Gestion des Appartements',
+      description: 'Organisez vos visites, comparez les appartements et gardez une trace de vos favoris.',
+      color: 'from-blue-500 to-blue-600',
+    },
+    {
+      icon: FaHeart,
+      title: 'Vos Envies',
+      description: 'Définissez vos critères importants et partagez vos envies avec votre partenaire.',
+      color: 'from-pink-500 to-pink-600',
+    },
+    {
+      icon: FaMapMarkerAlt,
+      title: 'Emplacements',
+      description: 'Marquez vos lieux préférés et visualisez-les sur une carte interactive.',
+      color: 'from-green-500 to-green-600',
+    },
+    {
+      icon: FaUsers,
+      title: 'Collaboration',
+      description: 'Travaillez ensemble sur votre recherche d\'appartement en temps réel.',
+      color: 'from-purple-500 to-purple-600',
+    },
+  ];
+
+  return (
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-white">
+        <div className="container mx-auto px-4 py-20 md:py-32 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mb-6">
+              <FaHome className="text-4xl" />
+            </div>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6">
+              Notre Appart
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 text-blue-100 dark:text-gray-300">
+              L'application collaborative pour trouver votre appartement idéal ensemble
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                href="/connexion"
+                className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl flex items-center gap-2"
+              >
+                Commencer maintenant
+                <FaArrowRight />
+              </Link>
+              <Link
+                href="#fonctionnalites"
+                className="bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white/20 transition-all border-2 border-white/30"
+              >
+                Découvrir les fonctionnalités
+              </Link>
+            </div>
+          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white dark:from-gray-900 to-transparent"></div>
+      </section>
+
+      {/* Features Section */}
+      <section id="fonctionnalites" className="py-20 bg-white dark:bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white mb-4">
+              Tout ce dont vous avez besoin
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Une application complète pour organiser votre recherche d'appartement en duo
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <div
+                  key={index}
+                  className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2 border border-gray-200 dark:border-gray-700"
+                >
+                  <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4`}>
+                    <Icon className="text-3xl text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {feature.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Additional Features */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-8 md:p-12">
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                  ✨ Fonctionnalités principales
+                </h3>
+                <ul className="space-y-3">
+                  {[
+                    'Gestion collaborative des appartements',
+                    'Comparaison côte à côte',
+                    'Carte interactive avec géolocalisation',
+                    'Checklist de visite personnalisable',
+                    'Gestion du budget partagé',
+                    'Système de projets multiples',
+                  ].map((item, index) => (
+                    <li key={index} className="flex items-start text-gray-700 dark:text-gray-300">
+                      <FaCheck className="text-green-500 dark:text-green-400 mt-1 mr-3 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                  🎯 Pourquoi Notre Appart ?
+                </h3>
+                <ul className="space-y-3">
+                  {[
+                    'Travaillez ensemble en temps réel',
+                    'Synchronisation automatique',
+                    'Interface intuitive et moderne',
+                    'Accessible sur tous vos appareils',
+                    'Sécurisé et privé',
+                    'Gratuit et open source',
+                  ].map((item, index) => (
+                    <li key={index} className="flex items-start text-gray-700 dark:text-gray-300">
+                      <FaCheck className="text-blue-500 dark:text-blue-400 mt-1 mr-3 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="py-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 dark:from-gray-800 dark:via-gray-700 dark:to-gray-900 text-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Prêt à commencer ?
+            </h2>
+            <p className="text-xl mb-8 text-blue-100 dark:text-gray-300">
+              Connectez-vous pour accéder à votre espace collaboratif et commencer votre recherche d'appartement
+            </p>
+            <Link
+              href="/connexion"
+              className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl"
+            >
+              Se connecter
+              <FaArrowRight />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 dark:bg-black text-gray-300 py-12">
+        <div className="container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <FaHome className="text-2xl text-blue-400" />
+            <span className="text-2xl font-bold text-white">Notre Appart</span>
+          </div>
+          <p className="text-gray-400 mb-4">
+            L'application collaborative pour trouver votre appartement idéal
+          </p>
+          <p className="text-sm text-gray-500">
+            © {new Date().getFullYear()} Notre Appart. Tous droits réservés.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
