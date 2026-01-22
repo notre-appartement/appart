@@ -63,6 +63,7 @@ export default function Navigation() {
     if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
       setUserMenuOpen(false);
       await signOut();
+      router.push('/');
     }
   };
 
