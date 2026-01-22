@@ -1,7 +1,7 @@
 import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
-let app: App;
+let app: App | undefined;
 
 // Initialiser Firebase Admin SDK
 if (!getApps().length) {
@@ -18,6 +18,10 @@ if (!getApps().length) {
   }
 } else {
   app = getApps()[0];
+}
+
+if (!app) {
+  throw new Error('Firebase Admin app n\'a pas pu être initialisé');
 }
 
 export const adminDb = getFirestore(app);
