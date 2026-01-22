@@ -133,7 +133,7 @@ export function AnimatedGrid({ children, className = '' }: { children: ReactNode
 }
 
 // Animation d'item de grille
-export function AnimatedGridItem({ children, className = '' }: { children: ReactNode; className?: string }) {
+export function AnimatedGridItem({ children, className = '', ...props }: HTMLMotionProps<"div"> & { children: ReactNode }) {
   return (
     <motion.div
       variants={{
@@ -143,6 +143,7 @@ export function AnimatedGridItem({ children, className = '' }: { children: React
       transition={{ duration: 0.3 }}
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
       className={className}
+      {...props}
     >
       {children}
     </motion.div>
