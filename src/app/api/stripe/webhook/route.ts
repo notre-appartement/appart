@@ -165,7 +165,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 
 // Gestion paiement réussi
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  const subscriptionId = invoice.subscription as string;
+  const subscriptionId = (invoice as any).subscription as string | null | undefined;
   if (!subscriptionId) return;
 
   const subscription: Stripe.Subscription = await stripe.subscriptions.retrieve(subscriptionId);
@@ -187,7 +187,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
 // Gestion échec paiement
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  const subscriptionId = invoice.subscription as string;
+  const subscriptionId = (invoice as any).subscription as string | null | undefined;
   if (!subscriptionId) return;
 
   const subscription: Stripe.Subscription = await stripe.subscriptions.retrieve(subscriptionId);
