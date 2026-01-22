@@ -33,7 +33,7 @@ export default function MigrationPage() {
       try {
         // Charger tous les projets (sans filtre, car les règles bloquent sinon)
         const projetsSnap = await getDocs(collection(db, 'projets'));
-        const allProjets = projetsSnap.docs.map(doc => ({
+        const allProjets: any[] = projetsSnap.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
