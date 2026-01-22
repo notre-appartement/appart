@@ -15,26 +15,40 @@ export const useSubscription = () => {
    * Vérifie si l'utilisateur a accès à une feature spécifique
    */
   const hasFeature = (feature: PlanFeature): boolean => {
-    if (!profile) return SUBSCRIPTION_PLANS.free.features[feature];
+    let featureValue: number | boolean;
 
-    const subscription = profile.subscription;
-    if (!subscription) return SUBSCRIPTION_PLANS.free.features[feature];
-
-    // Vérifier le statut de l'abonnement
-    if (subscription.status === 'inactive' || subscription.status === 'cancelled') {
-      return SUBSCRIPTION_PLANS.free.features[feature];
-    }
-
-    // Si en période d'essai, vérifier si elle est encore valide
-    if (subscription.status === 'trial' && subscription.trialEndDate) {
-      if (new Date() > subscription.trialEndDate) {
-        // Période d'essai expirée
-        return SUBSCRIPTION_PLANS.free.features[feature];
+    if (!profile) {
+      featureValue = SUBSCRIPTION_PLANS.free.features[feature];
+    } else {
+      const subscription = profile.subscription;
+      if (!subscription) {
+        featureValue = SUBSCRIPTION_PLANS.free.features[feature];
+      } else {
+        // Vérifier le statut de l'abonnement
+        if (subscription.status === 'inactive' || subscription.status === 'cancelled') {
+          featureValue = SUBSCRIPTION_PLANS.free.features[feature];
+        } else {
+          // Si en période d'essai, vérifier si elle est encore valide
+          if (subscription.status === 'trial' && subscription.trialEndDate) {
+            if (new Date() > subscription.trialEndDate) {
+              // Période d'essai expirée
+              featureValue = SUBSCRIPTION_PLANS.free.features[feature];
+            } else {
+              featureValue = planConfig.features[feature];
+            }
+          } else {
+            featureValue = planConfig.features[feature];
+          }
+        }
       }
     }
 
-    // Retourner la valeur de la feature pour le plan actuel
-    return planConfig.features[feature];
+    // Convertir en booléen : pour les nombres, -1 (illimité) = true, > 0 = true, sinon false
+    if (typeof featureValue === 'boolean') {
+      return featureValue;
+    }
+    // Pour les features numériques, considérer comme disponible si > 0 ou illimité (-1)
+    return featureValue === -1 || featureValue > 0;
   };
 
   /**
