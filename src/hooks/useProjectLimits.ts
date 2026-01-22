@@ -60,6 +60,7 @@ export const useProjectLimits = (projet: Projet | null) => {
 
         // Déterminer le meilleur plan parmi tous les membres
         let bestPlan: SubscriptionPlan = 'free';
+        let hasPro = false;
 
         for (const profile of profiles) {
           const memberPlan = profile.subscription?.plan || 'free';
@@ -80,8 +81,9 @@ export const useProjectLimits = (projet: Projet | null) => {
           // Ordre de priorité : pro > premium > free
           if (memberPlan === 'pro') {
             bestPlan = 'pro';
+            hasPro = true;
             break; // Pro est le meilleur, on peut arrêter
-          } else if (memberPlan === 'premium' && bestPlan !== 'pro') {
+          } else if (memberPlan === 'premium' && !hasPro) {
             bestPlan = 'premium';
           }
         }
