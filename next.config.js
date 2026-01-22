@@ -11,6 +11,16 @@ const nextConfig = {
   // Ajoutez votre base path si vous déployez sur un sous-dossier de GitHub Pages
   // basePath: '/nom-du-repo',
   // assetPrefix: '/nom-du-repo/',
+  webpack: (config, { isServer }) => {
+    // Exclure firebase-admin du bundle client
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        'firebase-admin': false,
+      };
+    }
+    return config;
+  },
 }
 
 module.exports = nextConfig
