@@ -19,6 +19,11 @@ const nextConfig = {
         'firebase-admin': false,
       };
     }
+    // Ignorer le dossier functions (Firebase Functions)
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ['**/functions/**', '**/node_modules/**'],
+    };
     return config;
   },
 }
