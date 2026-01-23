@@ -9,11 +9,13 @@ import { useEnvies } from '@/hooks/useEnvies';
 import { useProject } from '@/contexts/ProjectContext';
 import { SkeletonList } from '@/components/SkeletonLoader';
 import { AnimatedList, AnimatedListItem, AnimatedPage } from '@/components/AnimatedCard';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 
 export default function EnviesPage() {
   const { displayName } = useAuth();
   const { envies, loading, addEnvie, updateEnvie, deleteEnvie } = useEnvies();
   const { currentProject, loading: projectLoading } = useProject();
+  const { confirm, Dialog } = useConfirmDialog();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -80,7 +82,15 @@ export default function EnviesPage() {
   };
 
   const handleDelete = async (id: string, nom: string) => {
-    if (confirm(`Voulez-vous vraiment supprimer "${nom}" ?`)) {
+    const confirmed = await confirm({
+      title: 'Supprimer l\'envie',
+      message: `Voulez-vous vraiment supprimer "${nom}" ?`,
+      confirmText: 'Supprimer',
+      cancelText: 'Annuler',
+      type: 'danger',
+    });
+
+    if (confirmed) {
       try {
         await deleteEnvie(id);
         toast.success('🗑️ Envie supprimée');
@@ -318,6 +328,7 @@ export default function EnviesPage() {
           </div>
         </div>
       </div>
+      {Dialog}
     </AnimatedPage>
   );
 }

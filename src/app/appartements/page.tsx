@@ -10,12 +10,14 @@ import { useSharedBudget } from '@/hooks/useSharedBudget';
 import { useProject } from '@/contexts/ProjectContext';
 import { SkeletonList } from '@/components/SkeletonLoader';
 import { AnimatedGrid, AnimatedGridItem, AnimatedPage } from '@/components/AnimatedCard';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 
 export default function AppartementsPage() {
   const router = useRouter();
   const { appartements, loading: loadingApparts, deleteAppartement } = useAppartements();
   const { budgetLoyerMax, loading: loadingBudget } = useSharedBudget();
   const { currentProject, loading: projectLoading } = useProject();
+  const { confirm, Dialog } = useConfirmDialog();
   const loading = loadingApparts || loadingBudget || projectLoading;
   const [showFilters, setShowFilters] = useState(false);
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
@@ -27,7 +29,15 @@ export default function AppartementsPage() {
   });
 
   const handleDelete = async (id: string, titre: string) => {
-    if (confirm(`Voulez-vous vraiment supprimer "${titre}" ?`)) {
+    const confirmed = await confirm({
+      title: 'Supprimer l\'appartement',
+      message: `Voulez-vous vraiment supprimer "${titre}" ?`,
+      confirmText: 'Supprimer',
+      cancelText: 'Annuler',
+      type: 'danger',
+    });
+
+    if (confirmed) {
       try {
         await deleteAppartement(id);
         toast.success('🗑️ Appartement supprimé');
@@ -372,6 +382,7 @@ export default function AppartementsPage() {
           )}
         </div>
       </div>
+      {Dialog}
     </AnimatedPage>
   );
 }

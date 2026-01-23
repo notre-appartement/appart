@@ -10,6 +10,8 @@ import { useProjectLimits } from '@/hooks/useProjectLimits';
 import { useSubscription } from '@/hooks/useSubscription';
 import AuthGuard from '@/components/AuthGuard';
 import DeleteProjectModal from '@/components/DeleteProjectModal';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
+import toast from 'react-hot-toast';
 import {
   FaArrowLeft,
   FaCopy,
@@ -35,6 +37,8 @@ export default function ParametresProjetPage() {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { confirm, Dialog } = useConfirmDialog();
+
 
   if (!currentProject) {
     return (
@@ -60,47 +64,80 @@ export default function ParametresProjetPage() {
   };
 
   const handleRemoveMembre = async (membreUid: string, membreName: string) => {
-    if (!confirm(`Voulez-vous vraiment retirer ${membreName} du projet ?`)) return;
+    const confirmed = await confirm({
+      title: 'Retirer un membre',
+      message: `Voulez-vous vraiment retirer ${membreName} du projet ?`,
+      confirmText: 'Retirer',
+      cancelText: 'Annuler',
+      type: 'danger',
+    });
+
+    if (!confirmed) return;
 
     setLoading(true);
     try {
       await removeMembre(currentProject.id, membreUid);
+      toast.success(`${membreName} a été retiré du projet`);
     } catch (err: any) {
-      alert(err.message || 'Erreur lors de la suppression');
+      toast.error(err.message || 'Erreur lors de la suppression');
     } finally {
       setLoading(false);
     }
   };
 
   const handleToggleAdmin = async (membreUid: string, membreName: string, currentStatus: boolean) => {
-    if (!confirm(`Voulez-vous ${currentStatus ? 'retirer' : 'donner'} les droits administrateur à ${membreName} ?`)) return;
+    const confirmed = await confirm({
+      title: 'Modifier les droits administrateur',
+      message: `Voulez-vous ${currentStatus ? 'retirer' : 'donner'} les droits administrateur à ${membreName} ?`,
+      confirmText: 'Confirmer',
+      cancelText: 'Annuler',
+      type: 'warning',
+    });
+
+    if (!confirmed) return;
 
     setLoading(true);
     try {
       await toggleAdminStatus(currentProject.id, membreUid);
+      toast.success(`Les droits administrateur ont été ${currentStatus ? 'retirés' : 'donnés'} à ${membreName}`);
     } catch (err: any) {
-      alert(err.message || 'Erreur lors du changement de rôle');
+      toast.error(err.message || 'Erreur lors du changement de rôle');
     } finally {
       setLoading(false);
     }
   };
 
   const handleLeaveProject = async () => {
-    if (!confirm('Voulez-vous vraiment quitter ce projet ?')) return;
+    const confirmed = await confirm({
+      title: 'Quitter le projet',
+      message: 'Voulez-vous vraiment quitter ce projet ?',
+      confirmText: 'Quitter',
+      cancelText: 'Annuler',
+      type: 'warning',
+    });
+
+    if (!confirmed) return;
 
     if (isAdmin && adminCount === 1 && currentProject.membres.length > 1) {
-      if (!confirm('Vous êtes le seul administrateur. Si vous quittez, le projet pourrait devenir impossible à gérer. Continuer ?')) {
-        return;
-      }
+      const confirmedAgain = await confirm({
+        title: 'Attention',
+        message: 'Vous êtes le seul administrateur. Si vous quittez, le projet pourrait devenir impossible à gérer. Continuer ?',
+        confirmText: 'Continuer',
+        cancelText: 'Annuler',
+        type: 'danger',
+      });
+
+      if (!confirmedAgain) return;
     }
 
     setLoading(true);
     try {
       await leaveProjet(currentProject.id);
+      toast.success('Vous avez quitté le projet');
       setCurrentProject(null);
       router.push('/projets');
     } catch (err: any) {
-      alert(err.message || 'Erreur lors de la sortie du projet');
+      toast.error(err.message || 'Erreur lors de la sortie du projet');
       setLoading(false);
     }
   };
@@ -142,15 +179,15 @@ export default function ParametresProjetPage() {
                   <div
                     key={membre.uid}
                     className={`flex items-center justify-between p-4 rounded-lg border-2 transition-colors ${
-                      isCurrentUser 
-                        ? 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30' 
+                      isCurrentUser
+                        ? 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30'
                         : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        membre.isAdmin 
-                          ? 'bg-purple-100 dark:bg-purple-900/50' 
+                        membre.isAdmin
+                          ? 'bg-purple-100 dark:bg-purple-900/50'
                           : 'bg-gray-200 dark:bg-gray-600'
                       }`}>
                         {membre.isAdmin ? (
@@ -439,6 +476,7 @@ export default function ParametresProjetPage() {
         onClose={() => setShowDeleteModal(false)}
         onSuccess={handleDeleteSuccess}
       />
+      {Dialog}
     </AuthGuard>
   );
 }

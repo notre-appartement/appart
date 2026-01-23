@@ -21,12 +21,15 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useProject, getAllProjects } from '@/contexts/ProjectContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
+import toast from 'react-hot-toast';
 import { FaPlus, FaCheck } from 'react-icons/fa';
 
 export default function Navigation() {
   const { displayName, signOut, user } = useAuth();
   const { currentProject, setCurrentProject } = useProject();
   const { theme, toggleTheme } = useTheme();
+  const { confirm, Dialog } = useConfirmDialog();
   const projects = getAllProjects(user);
   const pathname = usePathname();
   const router = useRouter();
@@ -60,7 +63,15 @@ export default function Navigation() {
   }, []);
 
   const handleSignOut = async () => {
-    if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+    const confirmed = await confirm({
+      title: 'Déconnexion',
+      message: 'Voulez-vous vraiment vous déconnecter ?',
+      confirmText: 'Déconnexion',
+      cancelText: 'Annuler',
+      type: 'warning',
+    });
+
+    if (confirmed) {
       setUserMenuOpen(false);
       await signOut();
       router.push('/');
@@ -283,6 +294,7 @@ export default function Navigation() {
           </div>
         </div>
       </div>
+      {Dialog}
     </nav>
   );
 }

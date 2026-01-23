@@ -6,6 +6,8 @@ import { useEmplacements } from '@/hooks/useEmplacements';
 import { useProject } from '@/contexts/ProjectContext';
 import { SkeletonList } from '@/components/SkeletonLoader';
 import { AnimatedList, AnimatedListItem, AnimatedPage } from '@/components/AnimatedCard';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
+import toast from 'react-hot-toast';
 
 const typeConfig = {
   travail: { icon: FaBriefcase, color: 'blue', label: 'Travail' },
@@ -18,13 +20,23 @@ const typeConfig = {
 export default function EmplacementsPage() {
   const { emplacements, loading, deleteEmplacement } = useEmplacements();
   const { currentProject, loading: projectLoading } = useProject();
+  const { confirm, Dialog } = useConfirmDialog();
 
   const handleDelete = async (id: string, nom: string) => {
-    if (confirm(`Voulez-vous vraiment supprimer "${nom}" ?`)) {
+    const confirmed = await confirm({
+      title: 'Supprimer l\'emplacement',
+      message: `Voulez-vous vraiment supprimer "${nom}" ?`,
+      confirmText: 'Supprimer',
+      cancelText: 'Annuler',
+      type: 'danger',
+    });
+
+    if (confirmed) {
       try {
         await deleteEmplacement(id);
+        toast.success('🗑️ Emplacement supprimé');
       } catch (err) {
-        alert('Erreur lors de la suppression');
+        toast.error('Erreur lors de la suppression');
       }
     }
   };
@@ -200,6 +212,7 @@ export default function EmplacementsPage() {
           </div>
         </div>
       </div>
+      {Dialog}
     </AnimatedPage>
   );
 }
