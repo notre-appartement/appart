@@ -76,7 +76,7 @@ service cloud.firestore {
                     && request.auth.uid in request.resource.data.membresUids
                     && request.auth.uid in request.resource.data.adminsUids;
 
-      // Mise à jour : Admins du projet OU ajout d'un nouveau membre (rejoindre un projet)
+      // Mise à jour : Admins du projet OU ajout d'un nouveau membre (rejoindre) OU retrait d'un membre (quitter)
       // Ne pas modifier : createurId, inviteCode, createdAt
       allow update: if isAuthenticated()
                     && (
@@ -93,6 +93,15 @@ service cloud.firestore {
                        && request.resource.data.createurId == resource.data.createurId
                        && request.resource.data.inviteCode == resource.data.inviteCode
                        && request.resource.data.createdAt == resource.data.createdAt)
+                      ||
+                      // Cas 3: L'utilisateur quitte le projet (retrait de lui-même comme membre)
+                      // Vérifier que l'utilisateur est actuellement membre mais ne le sera plus après
+                      (request.auth.uid in resource.data.membresUids
+                       && !(request.auth.uid in request.resource.data.membresUids)
+                       && request.resource.data.createurId == resource.data.createurId
+                       && request.resource.data.inviteCode == resource.data.inviteCode
+                       && request.resource.data.createdAt == resource.data.createdAt
+                       && request.resource.data.membresUids.size() == resource.data.membresUids.size() - 1)
                     );
 
       // Suppression : Seuls les admins du projet
