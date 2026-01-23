@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProject } from '@/contexts/ProjectContext';
+import { auth } from '@/lib/firebase';
 import { FaArrowLeft, FaLink, FaSpinner, FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { AnimatedPage } from '@/components/AnimatedCard';
@@ -16,6 +17,7 @@ export default function ImporterAppartementPage() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<any>(null);
+  const [showManualForm, setShowManualForm] = useState(false);
 
   if (!currentProject) {
     return (
@@ -57,9 +59,19 @@ export default function ImporterAppartementPage() {
     setPreview(null);
 
     try {
+      // Récupérer le token d'authentification
+      const token = await user?.getIdToken();
+      if (!token) {
+        toast.error('Vous devez être connecté pour importer un appartement');
+        return;
+      }
+
       const response = await fetch('/api/import-appartement', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({
           url: url.trim(),
           projectId: currentProject.id,
@@ -71,6 +83,15 @@ export default function ImporterAppartementPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        // Si LeBonCoin bloque avec un captcha, proposer la saisie manuelle
+        if (data.requiresManualInput) {
+          toast.error('LeBonCoin a détecté le scraping. Veuillez utiliser le formulaire manuel ci-dessous.', {
+            duration: 5000,
+          });
+          setShowManualForm(true);
+          setLoading(false);
+          return;
+        }
         throw new Error(data.error || 'Erreur lors de l\'import');
       }
 
@@ -180,6 +201,7 @@ export default function ImporterAppartementPage() {
                 <li>• Certaines informations peuvent ne pas être détectées automatiquement</li>
                 <li>• Les photos peuvent prendre quelques secondes à télécharger</li>
                 <li>• Vérifiez toujours les informations importées avant de valider</li>
+                <li>• Si LeBonCoin bloque le scraping, utilisez le bouton "Ajouter" pour saisir manuellement</li>
               </ul>
             </div>
           </div>
