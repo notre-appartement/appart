@@ -11,7 +11,7 @@ export interface ParsedAppartement {
   ville: string;
   codePostal: string;
   description: string;
-  photos: string[];
+  photos: string[] | Array<{url: string; base64: string; mimeType: string}>;
   etage?: number;
   ascenseur?: boolean;
   meuble?: boolean;
@@ -287,8 +287,19 @@ export function parseLeBonCoinFromDOM(domData: any, url: string): ParsedAppartem
     // Description
     const description = domData.description || "";
 
-    // Photos
-    const photos = domData.photos || [];
+    // Photos - Extraire les URLs ou les données base64
+    let photos: string[] = [];
+    if (Array.isArray(domData.photos)) {
+      if (domData.photos.length > 0 && typeof domData.photos[0] === "object" && "base64" in domData.photos[0]) {
+        // Si on a des données base64, extraire les URLs (on utilisera base64 côté serveur)
+        photos = (domData.photos as Array<{url: string; base64: string; mimeType: string}>)
+          .map(p => p.url)
+          .filter(Boolean);
+      } else {
+        // Sinon, ce sont juste des URLs
+        photos = domData.photos.filter((p: any) => typeof p === "string");
+      }
+    }
 
     return {
       titre,
@@ -299,7 +310,7 @@ export function parseLeBonCoinFromDOM(domData: any, url: string): ParsedAppartem
       ville: adresseData.ville || "",
       codePostal: adresseData.codePostal || "",
       description,
-      photos,
+      photos: domData.photos || [], // Garder les données complètes (base64 si disponibles)
       lienAnnonce: url,
     };
   } catch (error) {

@@ -17,7 +17,7 @@ interface ImportData {
   ville: string;
   codePostal: string;
   description: string;
-  photos: string[];
+  photos: string[] | Array<{url: string; base64: string; mimeType: string}>;
   etage?: number;
   ascenseur?: boolean;
   meuble?: boolean;
@@ -113,40 +113,66 @@ export async function POST(req: NextRequest) {
 
     // Télécharger les photos vers Firebase Storage
     const photoUrls: string[] = [];
-    for (const photoUrl of importData.photos.slice(0, 10)) {
+    const photos = Array.isArray(importData.photos) ? importData.photos : [];
+
+    for (let i = 0; i < photos.length && i < 10; i++) {
+      const photo = photos[i];
       try {
-        // Télécharger l'image depuis l'URL avec des headers pour éviter les blocages
-        const imageResponse = await fetch(photoUrl, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Referer': 'https://www.leboncoin.fr/',
-            'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
-          },
-        });
+        let blob: Blob;
+        let mimeType: string;
 
-        if (!imageResponse.ok) {
-          console.warn(`Photo non accessible (${imageResponse.status}): ${photoUrl}`);
-          continue;
+        // Si on a des données base64 (depuis Puppeteer)
+        if (typeof photo === "object" && "base64" in photo && photo.base64) {
+          // Convertir base64 en Blob
+          const base64Data = photo.base64;
+          mimeType = photo.mimeType || "image/jpeg";
+
+          // Décoder le base64
+          const byteCharacters = atob(base64Data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let j = 0; j < byteCharacters.length; j++) {
+            byteNumbers[j] = byteCharacters.charCodeAt(j);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          blob = new Blob([byteArray], { type: mimeType });
+        } else {
+          // Sinon, télécharger depuis l'URL (fallback)
+          const photoUrl = typeof photo === "string" ? photo : (photo as any).url;
+          if (!photoUrl) continue;
+
+          const imageResponse = await fetch(photoUrl, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Referer': 'https://www.leboncoin.fr/',
+              'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+            },
+          });
+
+          if (!imageResponse.ok) {
+            console.warn(`Photo non accessible (${imageResponse.status}): ${photoUrl}`);
+            continue;
+          }
+
+          blob = await imageResponse.blob();
+          mimeType = blob.type || "image/jpeg";
         }
-
-        const blob = await imageResponse.blob();
 
         // Vérifier la taille (max 5MB)
         if (blob.size > 5 * 1024 * 1024) {
-          console.warn(`Photo trop grande (${blob.size} bytes), ignorée: ${photoUrl}`);
+          console.warn(`Photo trop grande (${blob.size} bytes), ignorée`);
           continue;
         }
 
         // Vérifier que c'est bien une image
-        if (!blob.type.startsWith('image/')) {
-          console.warn(`Le fichier n'est pas une image (${blob.type}), ignoré: ${photoUrl}`);
+        if (!mimeType.startsWith('image/')) {
+          console.warn(`Le fichier n'est pas une image (${mimeType}), ignoré`);
           continue;
         }
 
         // Générer un nom unique avec timestamp pour éviter les collisions
         const timestamp = Date.now();
         const random = Math.random().toString(36).substring(7);
-        const extension = blob.type.split('/')[1] || 'jpg';
+        const extension = mimeType.split('/')[1] || 'jpg';
         const fileName = `appartements/${projectId}/${timestamp}-${random}.${extension}`;
         const storageRef = ref(storage, fileName);
 
@@ -156,7 +182,7 @@ export async function POST(req: NextRequest) {
         photoUrls.push(downloadUrl);
         console.log(`Photo uploadée avec succès: ${downloadUrl}`);
       } catch (error: any) {
-        console.error(`Erreur lors du téléchargement de la photo ${photoUrl}:`, error.message);
+        console.error(`Erreur lors du téléchargement de la photo:`, error.message);
         // Continuer avec les autres photos
       }
     }

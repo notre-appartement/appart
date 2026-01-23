@@ -13,6 +13,16 @@ interface ImportRequest {
   url: string;
 }
 
+interface DOMData {
+  titre: string;
+  prixText: string;
+  surfaceText: string;
+  piecesText: string;
+  adresseFull: string;
+  description: string;
+  photos: string[] | Array<{url: string; base64: string; mimeType: string}>;
+}
+
 /**
  * Cloud Function pour importer un appartement depuis une URL
  *
@@ -249,7 +259,7 @@ export const importAppartement = onRequest(
       let parsedData;
       if (siteType === "leboncoin") {
         // Extraire les données depuis le DOM avec JavaScript
-        const domData = await page.evaluate(() => {
+        const domData: DOMData = await page.evaluate(() => {
           const getText = (selector: string) => {
             const el = document.querySelector(selector);
             return el ? el.textContent?.trim() || "" : "";
@@ -395,6 +405,68 @@ export const importAppartement = onRequest(
 
         logger.info(`Données extraites du DOM: ${JSON.stringify(domData, null, 2)}`);
 
+        // Télécharger les images depuis Puppeteer (avec les cookies/headers de la page)
+        // Extraire uniquement les URLs (strings) depuis domData.photos
+        const photoUrls: string[] = (domData.photos || []).filter((p): p is string => typeof p === "string");
+        const photoBase64Data: Array<{url: string; base64: string; mimeType: string}> = [];
+
+        logger.info(`Téléchargement de ${photoUrls.length} images depuis Puppeteer...`);
+
+        for (const photoUrl of photoUrls.slice(0, 10)) {
+          try {
+            // Utiliser Puppeteer pour télécharger l'image avec les bons headers/cookies
+            const imageBase64 = await page.evaluate(async (url: string) => {
+              try {
+                const response = await fetch(url);
+                if (!response.ok) return null;
+                const blob = await response.blob();
+                if (blob.size > 5 * 1024 * 1024) return null; // Max 5MB
+
+                // Convertir en base64
+                return new Promise<string>((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    const result = reader.result as string;
+                    // Extraire seulement les données base64 (sans le préfixe data:image/...)
+                    const match = result.match(/^data:([^;]+);base64,(.+)$/);
+                    if (match) {
+                      resolve(JSON.stringify({base64: match[2], mimeType: match[1]}));
+                    } else {
+                      resolve(JSON.stringify({base64: result, mimeType: "image/jpeg"}));
+                    }
+                  };
+                  reader.onerror = reject;
+                  reader.readAsDataURL(blob);
+                });
+              } catch (error) {
+                return null;
+              }
+            }, photoUrl);
+
+            if (imageBase64) {
+              const imageData = JSON.parse(imageBase64) as {base64: string; mimeType: string};
+              photoBase64Data.push({
+                url: photoUrl,
+                base64: imageData.base64,
+                mimeType: imageData.mimeType,
+              });
+              logger.info(`Image téléchargée en base64: ${photoUrl.substring(0, 50)}... (${Math.round(imageData.base64.length / 1024)}KB)`);
+            } else {
+              logger.warn(`Impossible de télécharger l'image: ${photoUrl}`);
+            }
+          } catch (error: any) {
+            logger.warn(`Erreur lors du téléchargement de l'image ${photoUrl}: ${error.message}`);
+          }
+        }
+
+        // Remplacer les URLs par les données base64 si disponibles
+        if (photoBase64Data.length > 0) {
+          domData.photos = photoBase64Data;
+          logger.info(`${photoBase64Data.length} images téléchargées en base64 sur ${photoUrls.length} tentatives`);
+        } else {
+          logger.warn("Aucune image n'a pu être téléchargée en base64, utilisation des URLs");
+        }
+
         // Parser les données extraites
         parsedData = parseLeBonCoinFromDOM(domData, url);
       } else {
@@ -415,7 +487,17 @@ export const importAppartement = onRequest(
       }
 
       logger.info(`Données extraites avec succès: ${parsedData.titre}`);
-      logger.info(`Données complètes: ${JSON.stringify(parsedData, null, 2)}`);
+
+      // Ne pas logger les données complètes si elles contiennent des images base64 (trop volumineux)
+      const logData = {
+        ...parsedData,
+        photos: Array.isArray(parsedData.photos)
+          ? (parsedData.photos as any[]).map((p: any) =>
+              typeof p === "string" ? p : {url: p.url, hasBase64: !!p.base64}
+            )
+          : parsedData.photos,
+      };
+      logger.info(`Données extraites: ${JSON.stringify(logData, null, 2)}`);
 
       res.status(200).json({
         success: true,
