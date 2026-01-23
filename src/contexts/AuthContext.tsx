@@ -179,6 +179,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       setError(null);
+      // Nettoyer le localStorage avant la déconnexion
+      localStorage.removeItem('currentProjectId');
       await firebaseSignOut(auth);
       setProfile(null);
     } catch (err: any) {
