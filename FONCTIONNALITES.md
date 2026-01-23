@@ -37,11 +37,29 @@
     - [x] Limites en temps réel
     - [x] Indication de qui contribue au plan
     - [x] Boutons d'upgrade contextuels
+    - [x] **Mise à jour automatique du plan du projet**
+      - [x] Utilisation de onSnapshot pour écouter les changements d'abonnement des membres
+      - [x] Recalcul automatique du meilleur plan quand un membre améliore son abonnement
+      - [x] Mise à jour en temps réel sans rechargement de page
+    - [x] **Mise à jour automatique du plan du projet**
+      - [x] Utilisation de onSnapshot pour écouter les changements d'abonnement des membres
+      - [x] Recalcul automatique du meilleur plan quand un membre améliore son abonnement
+      - [x] Mise à jour en temps réel sans rechargement de page
   - [x] **Système de suppression intelligent** :
     - [x] Archivage (30 jours de grâce, restauration possible)
     - [x] Anonymisation des appartements (conservation pour stats de marché)
     - [x] Suppression définitive (irréversible)
     - [x] Modal de confirmation avec choix du mode
+  - [x] **Corrections de sécurité et UX**
+    - [x] Permissions Firebase corrigées pour rejoindre un projet avec code d'invitation
+    - [x] Nettoyage automatique du localStorage lors de la déconnexion
+    - [x] Correction : tout membre peut quitter un projet (pas seulement les admins)
+    - [x] Réinitialisation automatique du projet lors du changement d'utilisateur
+  - [x] **Corrections de sécurité et UX**
+    - [x] Permissions Firebase corrigées pour rejoindre un projet avec code d'invitation
+    - [x] Nettoyage automatique du localStorage lors de la déconnexion
+    - [x] Correction : tout membre peut quitter un projet (pas seulement les admins)
+    - [x] Réinitialisation automatique du projet lors du changement d'utilisateur
 
 ## ✅ Phase 1 : Base (Terminé)
 - [x] Structure du projet Next.js avec App Router
@@ -233,6 +251,10 @@
 - [x] Tracking de la dernière connexion
 - [ ] Photos de profil (upload)
 - [x] Règles Firebase pour sécurité serveur (Firestore + Storage déployées)
+- [x] **Corrections des règles Firebase**
+  - [x] Permettre la lecture des projets pour recherche par inviteCode (utilisateurs authentifiés)
+  - [x] Permettre la mise à jour d'un projet pour rejoindre (ajout de soi-même comme membre)
+  - [x] Permettre la mise à jour d'un projet pour quitter (retrait de soi-même comme membre)
 - [ ] Cloud Functions pour validation des limites (optionnel, validation client actuelle)
 
 ### Collaboration
@@ -287,13 +309,31 @@
     - [x] Backgrounds cards (white → gray-800)
     - [x] Inputs et selects (dark:bg-gray-700, dark:text-white)
     - [x] Badges et états (success, warning, error)
-    - [ ] **Pages restantes à thématiser** :
-      - [ ] Emplacements (liste, nouveau, modifier)
-      - [ ] Appartements (nouveau, modifier, détails)
-      - [ ] Projets, Paramètres projet, Abonnement, Checklist
+    - [x] **Pages restantes thématisées** :
+      - [x] Emplacements (liste, nouveau, modifier)
+      - [x] Appartements (nouveau, modifier, détails, comparaison)
+      - [x] Projets (sélection, création)
+      - [x] Paramètres projet
+      - [x] Abonnement (plans, succès)
+      - [x] Checklist de visite
+      - [x] Carte interactive
 - [ ] Thèmes personnalisables
-- [ ] Animations fluides
-- [ ] Skeleton loaders
+- [x] **Animations fluides avec Framer Motion** ✨
+  - [x] Composants d'animation réutilisables (AnimatedCard, AnimatedList, AnimatedPage, etc.)
+  - [x] Animations de page (fade in)
+  - [x] Animations de grille avec effet stagger
+  - [x] Animations de liste avec effet stagger
+  - [x] Effets hover sur les cartes (scale, lift)
+  - [x] Intégration dans les pages principales :
+    - [x] Appartements (grille avec stagger)
+    - [x] Emplacements (liste avec stagger)
+    - [x] Envies (liste avec stagger)
+    - [x] Projets (grille avec stagger)
+- [x] **Skeleton loaders** 💀
+  - [x] Composant SkeletonLoader réutilisable
+  - [x] Support dark mode
+  - [x] Types variés (liste, carte, grille)
+  - [x] Intégration dans les pages de chargement
 - [x] **Toasts de notifications** 🎉
   - [x] Installation react-hot-toast
   - [x] Configuration dans layout.tsx
@@ -307,6 +347,18 @@
     - [x] Envies (ajout, modification, suppression)
     - [x] Abonnement (paiement Stripe)
   - [x] Messages personnalisés avec emojis
+- [x] **Système de dialogues personnalisés** 🎨
+  - [x] Composant ConfirmDialog avec support dark mode
+  - [x] 4 types de dialogues : warning, danger, info, success
+  - [x] Animations fluides avec Framer Motion
+  - [x] Hook useConfirmDialog pour faciliter l'utilisation
+  - [x] Remplacement de tous les confirm() natifs :
+    - [x] Navigation (déconnexion)
+    - [x] Paramètres projet (retirer membre, changer rôle, quitter projet)
+    - [x] Appartements (suppression)
+    - [x] Envies (suppression)
+    - [x] Emplacements (suppression)
+  - [x] Design cohérent avec le thème de l'application
 
 ### Accessibilité
 - [ ] Navigation au clavier
@@ -398,6 +450,13 @@
   - [x] invoice.payment_succeeded
   - [x] invoice.payment_failed
 - [x] Gestion des annulations (cancel_at_period_end)
+- [x] **Rétrogradation d'abonnement** 🔽
+  - [x] Route API `/api/stripe/cancel-subscription` pour annulation immédiate
+  - [x] Bouton "Rétrograder vers Gratuit" fonctionnel dans la page abonnement
+  - [x] Dialogue de confirmation avant annulation
+  - [x] Annulation immédiate de l'abonnement Stripe
+  - [x] Mise à jour automatique du profil vers plan gratuit
+  - [x] Message de succès et rechargement automatique
 - [x] **Configuration Webhook Stripe** ✅
   - [x] Installer Stripe CLI (https://github.com/stripe/stripe-cli/releases/latest)
   - [x] Connecter Stripe CLI : `stripe login`
