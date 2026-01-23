@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "export": "next build && next export",
-    "deploy": "npm run export && gh-pages -d out"
+    "deploy": "npm run export && gh-pages -d out",
+    "check:env": "node check-env-file.js",
+    "check:stripe": "node check-stripe-webhook-config.js",
+    "check:firebase-key": "node verify-firebase-key.js",
+    "test:firebase-admin": "node test-firebase-admin.js"
   },
   "dependencies": {
     "@dataconnect/generated": "file:src/dataconnect-generated",

@@ -398,17 +398,17 @@
   - [x] invoice.payment_succeeded
   - [x] invoice.payment_failed
 - [x] Gestion des annulations (cancel_at_period_end)
-- [ ] **Configuration Webhook Stripe (À faire sur PC personnel)** ⚠️
-  - [ ] Installer Stripe CLI (https://github.com/stripe/stripe-cli/releases/latest)
-  - [ ] Connecter Stripe CLI : `stripe login`
-  - [ ] Récupérer clés Firebase Admin (Console Firebase > Comptes de service > Générer clé)
-  - [ ] Ajouter dans .env.local :
+- [x] **Configuration Webhook Stripe** ✅
+  - [x] Installer Stripe CLI (https://github.com/stripe/stripe-cli/releases/latest)
+  - [x] Connecter Stripe CLI : `stripe login`
+  - [x] Récupérer clés Firebase Admin (Console Firebase > Comptes de service > Générer clé)
+  - [x] Ajouter dans .env.local :
     - FIREBASE_PROJECT_ID
     - FIREBASE_CLIENT_EMAIL
     - FIREBASE_PRIVATE_KEY
-  - [ ] Lancer forwarding : `stripe listen --forward-to localhost:3000/api/stripe/webhook`
-  - [ ] Copier webhook secret (whsec_...) dans .env.local
-  - [ ] Tester : Paiement test → Profil mis à jour automatiquement
+  - [x] Lancer forwarding : `stripe listen --forward-to localhost:3000/api/stripe/webhook`
+  - [x] Copier webhook secret (whsec_...) dans .env.local
+  - [x] Tester : Paiement test → Profil mis à jour automatiquement
 
 ### 📊 Statistiques de Marché (Premium/Pro)
 - [ ] Prix moyen par quartier (basé sur appartements anonymisés)
@@ -518,64 +518,19 @@ Cette fonctionnalité permettrait d'extraire automatiquement les informations d'
 
 ---
 
-## ⚙️ Configuration à Finaliser (Webhook Stripe)
+## ⚙️ Configuration Webhook Stripe ✅ (Terminé)
 
-### 🚧 État actuel (PC de travail)
+### ✅ État actuel
 - ✅ Paiements Stripe fonctionnels
 - ✅ Redirection vers page de succès
-- ❌ Profils utilisateurs NON mis à jour automatiquement
+- ✅ Profils utilisateurs mis à jour automatiquement via webhooks
+- ✅ Stripe CLI installé et configuré
+- ✅ Webhook forwarding opérationnel
+- ✅ Clés Firebase Admin configurées
+- ✅ Webhook secret ajouté dans .env.local
+- ✅ Tests effectués avec succès
 
-### 🎯 À faire sur PC personnel (avec droits admin)
-
-**Pourquoi ?** Le webhook Stripe permet de notifier l'application quand un paiement est réussi, et donc de mettre à jour automatiquement le profil utilisateur (free → premium/pro).
-
-**Étapes détaillées :**
-
-1. **Installer Stripe CLI**
-   - Télécharger : https://github.com/stripe/stripe-cli/releases/latest
-   - Fichier : `stripe_X.X.X_windows_x86_64.zip`
-   - Décompresser dans `C:\stripe\`
-
-2. **Connecter Stripe CLI**
-   ```bash
-   stripe login
-   ```
-   (Autoriser l'accès dans le navigateur)
-
-3. **Récupérer clés Firebase Admin**
-   - Firebase Console > ⚙️ Paramètres > Comptes de service
-   - "Générer une nouvelle clé privée"
-   - Télécharger le fichier JSON
-
-4. **Compléter .env.local**
-   ```bash
-   # Firebase Admin (pour webhooks)
-   FIREBASE_PROJECT_ID=ton-projet-id
-   FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxx@ton-projet.iam.gserviceaccount.com
-   FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-   ```
-
-5. **Lancer le webhook forwarding**
-   ```bash
-   # Terminal 1 : Serveur Next.js
-   npm run dev
-
-   # Terminal 2 : Webhook Stripe
-   stripe listen --forward-to localhost:3000/api/stripe/webhook
-   ```
-
-6. **Copier webhook secret**
-   - Le CLI affiche : `whsec_xxxxx`
-   - Ajouter dans .env.local : `STRIPE_WEBHOOK_SECRET=whsec_xxxxx`
-   - Redémarrer `npm run dev`
-
-7. **Tester**
-   - Faire un paiement test (carte 4242 4242 4242 4242)
-   - Vérifier dans Terminal 2 : `✓ checkout.session.completed`
-   - Vérifier dans Terminal 1 : `✅ Abonnement activé pour [userId]: premium`
-   - Vérifier sur /profil : Badge "PREMIUM" affiché ✅
-
-**Une fois configuré, les abonnements seront automatiquement synchronisés avec Firebase !**
+**Les abonnements sont maintenant automatiquement synchronisés avec Firebase !**
 
 ---
 
