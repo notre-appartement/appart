@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { FaPlus, FaMapMarkerAlt, FaEuroSign, FaRuler, FaTrash, FaFilter, FaExchangeAlt } from 'react-icons/fa';
+import { FaPlus, FaMapMarkerAlt, FaEuroSign, FaRuler, FaTrash, FaFilter, FaExchangeAlt, FaLink } from 'react-icons/fa';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAppartements } from '@/hooks/useAppartements';
@@ -10,12 +10,14 @@ import { useSharedBudget } from '@/hooks/useSharedBudget';
 import { useProject } from '@/contexts/ProjectContext';
 import { SkeletonList } from '@/components/SkeletonLoader';
 import { AnimatedGrid, AnimatedGridItem, AnimatedPage } from '@/components/AnimatedCard';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 
 export default function AppartementsPage() {
   const router = useRouter();
   const { appartements, loading: loadingApparts, deleteAppartement } = useAppartements();
   const { budgetLoyerMax, loading: loadingBudget } = useSharedBudget();
   const { currentProject, loading: projectLoading } = useProject();
+  const { confirm, Dialog } = useConfirmDialog();
   const loading = loadingApparts || loadingBudget || projectLoading;
   const [showFilters, setShowFilters] = useState(false);
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
@@ -27,7 +29,15 @@ export default function AppartementsPage() {
   });
 
   const handleDelete = async (id: string, titre: string) => {
-    if (confirm(`Voulez-vous vraiment supprimer "${titre}" ?`)) {
+    const confirmed = await confirm({
+      title: 'Supprimer l\'appartement',
+      message: `Voulez-vous vraiment supprimer "${titre}" ?`,
+      confirmText: 'Supprimer',
+      cancelText: 'Annuler',
+      type: 'danger',
+    });
+
+    if (confirmed) {
       try {
         await deleteAppartement(id);
         toast.success('🗑️ Appartement supprimé');
@@ -119,7 +129,7 @@ export default function AppartementsPage() {
                 </span>
               )}
             </h2>
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 flex-wrap">
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center space-x-2"
@@ -136,6 +146,14 @@ export default function AppartementsPage() {
                   <span>Comparer ({selectedForComparison.length})</span>
                 </button>
               )}
+              <Link
+                href="/appartements/importer"
+                className="bg-green-600 dark:bg-green-700 text-white px-4 py-3 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors flex items-center space-x-2"
+                title="Importer depuis une URL"
+              >
+                <FaLink />
+                <span className="hidden sm:inline">Importer</span>
+              </Link>
               <Link
                 href="/appartements/nouveau"
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 shadow-lg"
@@ -372,6 +390,7 @@ export default function AppartementsPage() {
           )}
         </div>
       </div>
+      {Dialog}
     </AnimatedPage>
   );
 }

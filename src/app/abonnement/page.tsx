@@ -9,11 +9,13 @@ import AuthGuard from '@/components/AuthGuard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
 import { SUBSCRIPTION_PLANS, SubscriptionPlan } from '@/config/subscription-plans';
+import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 
 export default function AbonnementPage() {
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const { currentPlan, isOnTrial, trialDaysRemaining } = useSubscription();
+  const { confirm, Dialog } = useConfirmDialog();
   const [loading, setLoading] = useState<SubscriptionPlan | null>(null);
   const [showCanceledAlert, setShowCanceledAlert] = useState(false);
 
@@ -26,7 +28,57 @@ export default function AbonnementPage() {
 
   const handleSelectPlan = async (plan: SubscriptionPlan) => {
     if (plan === 'free') {
-      toast.error('Vous êtes déjà sur le plan gratuit !');
+      // Rétrograder vers le plan gratuit
+      if (currentPlan === 'free') {
+        toast.error('Vous êtes déjà sur le plan gratuit !');
+        return;
+      }
+
+      if (!user) {
+        toast.error('Vous devez être connecté');
+        return;
+      }
+
+      // Demander confirmation avant d'annuler
+      const confirmed = await confirm({
+        title: 'Annuler l\'abonnement',
+        message: 'Êtes-vous sûr de vouloir annuler votre abonnement et rétrograder vers le plan gratuit ? Cette action est immédiate et vous perdrez immédiatement l\'accès aux fonctionnalités premium.',
+        confirmText: 'Oui, annuler',
+        cancelText: 'Non, garder mon abonnement',
+        type: 'danger',
+      });
+
+      if (!confirmed) {
+        return;
+      }
+
+      setLoading('free');
+
+      try {
+        const response = await fetch('/api/stripe/cancel-subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user.uid,
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Erreur lors de l\'annulation');
+        }
+
+        toast.success('✅ Abonnement annulé avec succès ! Vous êtes maintenant sur le plan gratuit.');
+
+        // Recharger la page pour mettre à jour l'état
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } catch (error: any) {
+        console.error('Erreur:', error);
+        toast.error(`Erreur lors de l'annulation: ${error.message}`);
+        setLoading(null);
+      }
       return;
     }
 
@@ -157,14 +209,26 @@ export default function AbonnementPage() {
               </ul>
 
               <button
-                disabled={currentPlan === 'free'}
+                onClick={() => handleSelectPlan('free')}
+                disabled={currentPlan === 'free' || loading !== null}
                 className={`w-full py-3 rounded-lg font-bold transition-all ${
                   currentPlan === 'free'
                     ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                    : loading === 'free'
+                    ? 'bg-gray-400 dark:bg-gray-500 text-white cursor-not-allowed'
                     : 'bg-gray-700 dark:bg-gray-600 text-white hover:bg-gray-800 dark:hover:bg-gray-500'
                 }`}
               >
-                {currentPlan === 'free' ? 'Plan actuel' : 'Rétrograder'}
+                {loading === 'free' ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <FaSpinner className="animate-spin" />
+                    Annulation...
+                  </span>
+                ) : currentPlan === 'free' ? (
+                  'Plan actuel'
+                ) : (
+                  'Rétrograder vers Gratuit'
+                )}
               </button>
             </div>
 
@@ -318,6 +382,7 @@ export default function AbonnementPage() {
             </p>
           </div>
         </div>
+        {Dialog}
       </div>
     </AuthGuard>
   );

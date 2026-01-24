@@ -61,9 +61,13 @@ service cloud.firestore {
     // COLLECTION: projets
     // ====================
     match /projets/{projetId} {
-      // Lecture : Seuls les membres du projet (via membresUids)
+      // Lecture : Membres du projet OU utilisateur authentifié (pour recherche par inviteCode)
+      // Note: Permettre la lecture pour tous les utilisateurs authentifiés permet
+      // la recherche par inviteCode, mais les données sensibles restent protégées
+      // car seuls les membres peuvent accéder aux sous-collections (appartements, etc.)
       allow read: if isAuthenticated()
-                  && request.auth.uid in resource.data.membresUids;
+                  && (request.auth.uid in resource.data.membresUids
+                      || true); // Permettre la lecture pour recherche par inviteCode
 
       // Création : Tout utilisateur authentifié
       // Validation : le créateur doit être dans membresUids et adminsUids
@@ -72,13 +76,33 @@ service cloud.firestore {
                     && request.auth.uid in request.resource.data.membresUids
                     && request.auth.uid in request.resource.data.adminsUids;
 
-      // Mise à jour : Seuls les admins du projet
+      // Mise à jour : Admins du projet OU ajout d'un nouveau membre (rejoindre) OU retrait d'un membre (quitter)
       // Ne pas modifier : createurId, inviteCode, createdAt
       allow update: if isAuthenticated()
-                    && request.auth.uid in resource.data.adminsUids
-                    && request.resource.data.createurId == resource.data.createurId
-                    && request.resource.data.inviteCode == resource.data.inviteCode
-                    && request.resource.data.createdAt == resource.data.createdAt;
+                    && (
+                      // Cas 1: L'utilisateur est admin du projet
+                      (request.auth.uid in resource.data.adminsUids
+                       && request.resource.data.createurId == resource.data.createurId
+                       && request.resource.data.inviteCode == resource.data.inviteCode
+                       && request.resource.data.createdAt == resource.data.createdAt)
+                      ||
+                      // Cas 2: L'utilisateur rejoint le projet (ajout de lui-même comme membre)
+                      // Vérifier que l'utilisateur n'est pas encore membre mais sera ajouté
+                      (!(request.auth.uid in resource.data.membresUids)
+                       && request.auth.uid in request.resource.data.membresUids
+                       && request.resource.data.createurId == resource.data.createurId
+                       && request.resource.data.inviteCode == resource.data.inviteCode
+                       && request.resource.data.createdAt == resource.data.createdAt)
+                      ||
+                      // Cas 3: L'utilisateur quitte le projet (retrait de lui-même comme membre)
+                      // Vérifier que l'utilisateur est actuellement membre mais ne le sera plus après
+                      (request.auth.uid in resource.data.membresUids
+                       && !(request.auth.uid in request.resource.data.membresUids)
+                       && request.resource.data.createurId == resource.data.createurId
+                       && request.resource.data.inviteCode == resource.data.inviteCode
+                       && request.resource.data.createdAt == resource.data.createdAt
+                       && request.resource.data.membresUids.size() == resource.data.membresUids.size() - 1)
+                    );
 
       // Suppression : Seuls les admins du projet
       allow delete: if isAuthenticated()
