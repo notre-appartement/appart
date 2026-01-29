@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuth } from 'firebase-admin/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 import { storage } from '@/lib/firebase';
 import { adminDb } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
@@ -88,24 +89,72 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const functionUrl = process.env.NODE_ENV === 'development'
-      ? 'http://localhost:5001/notre-appart/us-central1/importAppartement'
-      : `https://us-central1-${projectIdEnv}.cloudfunctions.net/importAppartement`;
+    // Utiliser la production si forcé ou si pas en dev
+    const useProduction = process.env.FORCE_PRODUCTION_FUNCTIONS === 'true' ||
+                          process.env.NODE_ENV !== 'development';
+
+    // Connecter à l'émulateur Functions en développement (seulement si pas forcé en production)
+    if (process.env.NODE_ENV === 'development' && !useProduction) {
+      try {
+        const functions = getFunctions();
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+      } catch (e) {
+        // Déjà connecté ou erreur, continuer
+      }
+    }
+
+    const functionUrl = useProduction
+      ? `https://us-central1-${projectIdEnv}.cloudfunctions.net/importAppartement`
+      : 'http://localhost:5001/notre-appart/us-central1/importAppartement';
+
+    // En dev avec émulateur + production des functions, le token échoue côté Cloud Function.
+    // On envoie le secret partagé pour que la fonction accepte l'appel.
+    const apiSecret = process.env.IMPORT_APPARTEMENT_SECRET;
+    const useSecret = useProduction &&
+      process.env.NODE_ENV === 'development' &&
+      !!apiSecret;
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (useSecret) {
+      headers['X-Import-Secret'] = apiSecret;
+    } else {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 90000); // 90s (la fonction peut prendre 60s)
 
     let functionResponse: Response;
     try {
+      console.log('Appel de la Cloud Function:', functionUrl, useSecret ? '(auth par secret)' : '');
       functionResponse = await fetch(functionUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers,
         body: JSON.stringify({ url }),
         signal: controller.signal,
       });
+    } catch (fetchError: unknown) {
+      clearTimeout(timeoutId);
+      const msg = fetchError instanceof Error ? fetchError.message : String(fetchError);
+      console.error('Erreur lors de l\'appel à la Cloud Function:', msg);
+
+      // Si on est en dev et que c'est une erreur de connexion, suggérer de lancer l'émulateur
+      if (process.env.NODE_ENV === 'development' &&
+          (msg.includes('ECONNREFUSED') || msg.includes('fetch failed') || msg.includes('Failed to fetch'))) {
+        return NextResponse.json(
+          {
+            error: 'Impossible de se connecter à l\'émulateur Functions. Lancez "firebase emulators:start --only functions,auth,firestore,storage" ou ajoutez FORCE_PRODUCTION_FUNCTIONS=true dans .env.local'
+          },
+          { status: 503 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: `Erreur réseau: ${msg}` },
+        { status: 500 }
+      );
     } finally {
       clearTimeout(timeoutId);
     }

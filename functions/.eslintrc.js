@@ -32,5 +32,6 @@ module.exports = {
     "indent": ["error", 2],
     "max-len": ["error", {"code": 140}],
     "valid-jsdoc": "off",
+    "linebreak-style": "off", // Désactivé pour éviter les problèmes sur Windows
   },
 };

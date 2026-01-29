@@ -48,35 +48,59 @@ export const importAppartement = onRequest(
     timeoutSeconds: 60,
     memory: "1GiB",
     cors: true,
+    // Autoriser les invocations publiques (l'authentification est gérée dans le code)
+    invoker: "public",
   },
   async (req, res) => {
-    // Vérifier l'authentification
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      res.status(401).json({success: false, error: "Non authentifié"});
-      return;
-    }
+    // Normaliser les headers (Express peut les mettre en minuscules)
+    const authHeaderRaw = req.headers.authorization;
+    const authHeader = typeof authHeaderRaw === "string" ?
+      authHeaderRaw :
+      Array.isArray(authHeaderRaw) ?
+        authHeaderRaw[0] :
+        "";
+    const secretHeaderRaw = req.headers["x-import-secret"];
+    const secretHeader = typeof secretHeaderRaw === "string" ?
+      secretHeaderRaw :
+      Array.isArray(secretHeaderRaw) ?
+        secretHeaderRaw[0] :
+        "";
 
-    const token = authHeader.split("Bearer ")[1];
+    // Secret partagé avec l’API Next.js (pour dev avec émulateur + FORCE_PRODUCTION_FUNCTIONS).
+    // À définir : dans GCP (Cloud Functions > importAppartement > Variables d’environnement)
+    // et dans .env.local côté Next.js (IMPORT_APPARTEMENT_SECRET).
+    const sharedSecret = process.env.IMPORT_APPARTEMENT_SECRET;
+    const allowedBySecret = !!sharedSecret &&
+      secretHeader.length > 0 &&
+      secretHeader === sharedSecret;
 
-    // Vérifier le token (sauf en mode émulateur)
-    const isEmulator = process.env.FUNCTIONS_EMULATOR === "true" ||
-                       process.env.FIREBASE_AUTH_EMULATOR_HOST !== undefined;
-
-    if (!isEmulator) {
-      try {
-        // Vérifier le token en production
-        const adminAuth = getAuth();
-        const decodedToken = await adminAuth.verifyIdToken(token);
-        logger.info(`Token vérifié pour l'utilisateur: ${decodedToken.uid}`);
-      } catch (error: unknown) {
-        const msg = error instanceof Error ? error.message : "Token invalide";
-        logger.error("Erreur de vérification du token:", msg);
-        res.status(401).json({success: false, error: `Token invalide: ${msg}`});
+    if (allowedBySecret) {
+      logger.info("Accès autorisé par secret partagé (appel depuis l’API Next.js)");
+    } else {
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        res.status(401).json({success: false, error: "Non authentifié"});
         return;
       }
-    } else {
-      logger.info("Mode émulateur détecté, vérification du token ignorée");
+
+      const token = authHeader.split("Bearer ")[1];
+
+      const isEmulator = process.env.FUNCTIONS_EMULATOR === "true" ||
+                         process.env.FIREBASE_AUTH_EMULATOR_HOST !== undefined;
+
+      if (!isEmulator) {
+        try {
+          const adminAuth = getAuth();
+          const decodedToken = await adminAuth.verifyIdToken(token);
+          logger.info(`Token vérifié pour l'utilisateur: ${decodedToken.uid}`);
+        } catch (error: unknown) {
+          const msg = error instanceof Error ? error.message : "Token invalide";
+          logger.error("Erreur de vérification du token:", msg);
+          res.status(401).json({success: false, error: `Token invalide: ${msg}`});
+          return;
+        }
+      } else {
+        logger.info("Mode émulateur détecté, vérification du token ignorée");
+      }
     }
 
     // Récupérer l'URL depuis le body

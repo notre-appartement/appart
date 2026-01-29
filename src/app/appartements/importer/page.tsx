@@ -66,21 +66,37 @@ export default function ImporterAppartementPage() {
         return;
       }
 
-      const response = await fetch('/api/import-appartement', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          url: url.trim(),
-          projectId: currentProject.id,
-          userId: user?.uid,
-          userName: displayName,
-        }),
-      });
+      console.log('Appel de /api/import-appartement avec URL:', url.trim());
 
-      const data = await response.json();
+      let response: Response;
+      try {
+        response = await fetch('/api/import-appartement', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            url: url.trim(),
+            projectId: currentProject.id,
+            userId: user?.uid,
+            userName: displayName,
+          }),
+        });
+      } catch (fetchError: unknown) {
+        const msg = fetchError instanceof Error ? fetchError.message : String(fetchError);
+        console.error('Erreur fetch:', msg, fetchError);
+        throw new Error(`Erreur réseau: ${msg}. Vérifiez que le serveur Next.js est bien lancé.`);
+      }
+
+      let data: any;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        const text = await response.text();
+        console.error('Réponse non-JSON:', response.status, text.slice(0, 200));
+        throw new Error(`Erreur serveur (${response.status}): ${text.slice(0, 100)}`);
+      }
 
       if (!response.ok) {
         // Si LeBonCoin bloque avec un captcha, proposer la saisie manuelle
@@ -92,7 +108,7 @@ export default function ImporterAppartementPage() {
           setLoading(false);
           return;
         }
-        throw new Error(data.error || 'Erreur lors de l\'import');
+        throw new Error(data.error || `Erreur HTTP ${response.status}`);
       }
 
       toast.success('✅ Appartement importé avec succès !');
@@ -101,9 +117,10 @@ export default function ImporterAppartementPage() {
       setTimeout(() => {
         router.push(`/appartements/${data.appartementId}`);
       }, 1500);
-    } catch (error: any) {
-      console.error('Erreur:', error);
-      toast.error(error.message || 'Erreur lors de l\'import de l\'appartement');
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error('Erreur lors de l\'import:', error);
+      toast.error(msg || 'Erreur lors de l\'import de l\'appartement');
       setLoading(false);
     }
   };
