@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
       // En développement avec émulateur, on peut être plus permissif
       if (process.env.NODE_ENV === 'development' && process.env.FIREBASE_AUTH_EMULATOR_HOST) {
         console.warn('Mode émulateur détecté, vérification du token ignorée');
+        // Créer un token décodé factice pour continuer avec l'userId du body
         decodedToken = { uid: userId } as any;
       } else {
         console.error('Erreur de vérification du token:', error.message);
@@ -67,12 +68,14 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Vérifier que l'userId correspond au token
-    if (userId !== decodedToken.uid) {
-      return NextResponse.json(
-        { error: 'Utilisateur non autorisé' },
-        { status: 403 }
-      );
+    // Vérifier que l'userId correspond au token (sauf en mode émulateur)
+    if (process.env.NODE_ENV !== 'development' || !process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+      if (userId !== decodedToken.uid) {
+        return NextResponse.json(
+          { error: 'Utilisateur non autorisé' },
+          { status: 403 }
+        );
+      }
     }
 
     // Appeler la Cloud Function pour scraper via HTTP direct
