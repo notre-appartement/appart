@@ -26,6 +26,17 @@ interface ImportData {
 
 export async function POST(req: NextRequest) {
   try {
+    // Parser le body en premier (req.json() ne peut être appelé qu'une fois)
+    const body = await req.json();
+    const { url, projectId, userId, userName } = body;
+
+    if (!url || !projectId || !userId) {
+      return NextResponse.json(
+        { error: 'URL, projectId et userId requis' },
+        { status: 400 }
+      );
+    }
+
     // Vérifier l'authentification
     const authHeader = req.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -46,7 +57,6 @@ export async function POST(req: NextRequest) {
       // En développement avec émulateur, on peut être plus permissif
       if (process.env.NODE_ENV === 'development' && process.env.FIREBASE_AUTH_EMULATOR_HOST) {
         console.warn('Mode émulateur détecté, vérification du token ignorée');
-        // Créer un token décodé factice pour continuer
         decodedToken = { uid: userId } as any;
       } else {
         console.error('Erreur de vérification du token:', error.message);
@@ -55,15 +65,6 @@ export async function POST(req: NextRequest) {
           { status: 401 }
         );
       }
-    }
-
-    const { url, projectId, userId, userName } = await req.json();
-
-    if (!url || !projectId || !userId) {
-      return NextResponse.json(
-        { error: 'URL, projectId et userId requis' },
-        { status: 400 }
-      );
     }
 
     // Vérifier que l'userId correspond au token
@@ -75,27 +76,62 @@ export async function POST(req: NextRequest) {
     }
 
     // Appeler la Cloud Function pour scraper via HTTP direct
-    // Utiliser l'URL de la Cloud Function directement
     const projectIdEnv = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    if (!projectIdEnv && process.env.NODE_ENV !== 'development') {
+      console.error('NEXT_PUBLIC_FIREBASE_PROJECT_ID manquant en production');
+      return NextResponse.json(
+        { error: 'Configuration serveur incorrecte (project ID manquant)' },
+        { status: 500 }
+      );
+    }
+
     const functionUrl = process.env.NODE_ENV === 'development'
       ? 'http://localhost:5001/notre-appart/us-central1/importAppartement'
       : `https://us-central1-${projectIdEnv}.cloudfunctions.net/importAppartement`;
 
-    const functionResponse = await fetch(functionUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ url }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90000); // 90s (la fonction peut prendre 60s)
 
-    if (!functionResponse.ok) {
-      const errorData = await functionResponse.json().catch(() => ({ error: 'Erreur lors de l\'appel de la Cloud Function' }));
-      throw new Error(errorData.error || `Erreur HTTP ${functionResponse.status}`);
+    let functionResponse: Response;
+    try {
+      functionResponse = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ url }),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeoutId);
     }
 
-    const functionResult = await functionResponse.json();
+    const responseText = await functionResponse.text();
+
+    if (!functionResponse.ok) {
+      let errorMessage = `Erreur HTTP ${functionResponse.status}`;
+      let errorPayload: Record<string, unknown> = { error: errorMessage };
+      try {
+        const errorData = JSON.parse(responseText) as Record<string, unknown>;
+        if (errorData?.error) errorMessage = String(errorData.error);
+        if (errorData?.requiresManualInput !== undefined) errorPayload.requiresManualInput = errorData.requiresManualInput;
+        if (errorData?.captchaDetected !== undefined) errorPayload.captchaDetected = errorData.captchaDetected;
+      } catch {
+        if (responseText && responseText.length < 200) errorMessage = responseText;
+      }
+      errorPayload.error = errorMessage;
+      console.error('Cloud Function erreur:', functionResponse.status, responseText.slice(0, 500));
+      return NextResponse.json(errorPayload, { status: functionResponse.status >= 500 ? 502 : functionResponse.status });
+    }
+
+    let functionResult: unknown;
+    try {
+      functionResult = JSON.parse(responseText);
+    } catch {
+      console.error('Réponse Cloud Function non-JSON:', responseText.slice(0, 500));
+      throw new Error('Réponse invalide de la Cloud Function');
+    }
     console.log('Réponse de la Cloud Function:', JSON.stringify(functionResult, null, 2));
 
     const response = functionResult as { success: boolean; data?: ImportData; error?: string };

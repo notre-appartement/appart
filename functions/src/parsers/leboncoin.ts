@@ -224,8 +224,8 @@ function parseAddress(addressText: string): { ville: string; codePostal: string;
 
   // Extraire la ville (généralement après le code postal ou à la fin)
   let ville = "";
-  if (cpMatch) {
-    const afterCp = addressText.substring(cpMatch.index! + cpMatch[0].length).trim();
+  if (cpMatch && cpMatch.index !== undefined) {
+    const afterCp = addressText.substring(cpMatch.index + cpMatch[0].length).trim();
     ville = afterCp.split(/[,\n]/)[0].trim();
   } else {
     // Si pas de code postal, prendre le dernier mot (probablement la ville)
@@ -239,13 +239,23 @@ function parseAddress(addressText: string): { ville: string; codePostal: string;
   return {ville, codePostal, adresse};
 }
 
+interface DOMDataInput {
+  titre?: string;
+  prixText?: string;
+  surfaceText?: string;
+  piecesText?: string;
+  adresseFull?: string;
+  description?: string;
+  photos?: string[] | Array<{url: string; base64?: string; mimeType?: string}>;
+}
+
 /**
  * Parse les données extraites depuis le DOM JavaScript
- * @param {any} domData - Les données extraites depuis le DOM
+ * @param {DOMDataInput} domData - Les données extraites depuis le DOM
  * @param {string} url - L'URL de la page
  * @return {ParsedAppartement | null}
  */
-export function parseLeBonCoinFromDOM(domData: any, url: string): ParsedAppartement | null {
+export function parseLeBonCoinFromDOM(domData: DOMDataInput, url: string): ParsedAppartement | null {
   try {
     // Titre
     const titre = domData.titre || "Appartement à louer";
@@ -260,7 +270,7 @@ export function parseLeBonCoinFromDOM(domData: any, url: string): ParsedAppartem
     const pieces = extractNumber(domData.piecesText || "") || 0;
 
     // Adresse - Essayer d'abord depuis adresseFull, sinon depuis la description
-    let adresseData = parseAddress(domData.adresseFull || "");
+    const adresseData = parseAddress(domData.adresseFull || "");
 
     // Si l'adresse n'est pas trouvée, essayer de l'extraire depuis la description
     if (!adresseData.ville && !adresseData.codePostal && domData.description) {
@@ -293,11 +303,11 @@ export function parseLeBonCoinFromDOM(domData: any, url: string): ParsedAppartem
       if (domData.photos.length > 0 && typeof domData.photos[0] === "object" && "base64" in domData.photos[0]) {
         // Si on a des données base64, extraire les URLs (on utilisera base64 côté serveur)
         photos = (domData.photos as Array<{url: string; base64: string; mimeType: string}>)
-          .map(p => p.url)
+          .map((p) => p.url)
           .filter(Boolean);
       } else {
         // Sinon, ce sont juste des URLs
-        photos = domData.photos.filter((p: any) => typeof p === "string");
+        photos = domData.photos.filter((p: string | {url: string}) => typeof p === "string");
       }
     }
 
@@ -310,7 +320,7 @@ export function parseLeBonCoinFromDOM(domData: any, url: string): ParsedAppartem
       ville: adresseData.ville || "",
       codePostal: adresseData.codePostal || "",
       description,
-      photos: domData.photos || [], // Garder les données complètes (base64 si disponibles)
+      photos: photos.slice(0, 10), // Limiter à 10 photos
       lienAnnonce: url,
     };
   } catch (error) {

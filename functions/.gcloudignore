@@ -1,0 +1,43 @@
+# This file specifies files that are *not* uploaded to Google Cloud
+# using gcloud. It follows the same syntax as .gitignore
+
+# Node modules (will be installed by Cloud Functions)
+node_modules/
+
+# Build output (will be generated)
+lib/
+*.js.map
+
+# Development files
+*.log
+.DS_Store
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test files
+**/__tests__/
+**/*.test.ts
+**/*.spec.ts
+
+# Documentation
+*.md
+!README.md
+
+# Git
+.git/
+.gitignore
+
+# TypeScript source maps
+*.map
+
+# ESLint cache
+.eslintcache
+
+# Puppeteer local Chromium (will be downloaded by Cloud Functions)
+.local-chromium/

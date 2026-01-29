@@ -1,13 +1,26 @@
 import {onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import {getAuth} from "firebase-admin/auth";
-import puppeteer from "puppeteer-extra";
+import puppeteerBase from "puppeteer";
+import {addExtra} from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import * as os from "os";
 import {parseLeBonCoinFromDOM} from "./parsers/leboncoin";
 
-// Utiliser le plugin stealth pour éviter la détection
+// Utiliser puppeteer avec puppeteer-extra pour les plugins
+const puppeteer = addExtra(puppeteerBase);
+// Utiliser le plugin stealth pour éviter la détection (StealthPlugin est un constructeur npm)
+// eslint-disable-next-line new-cap
 puppeteer.use(StealthPlugin());
+
+/**
+ * Helper pour attendre un délai (remplace waitForTimeout supprimé dans Puppeteer 24+)
+ * @param {number} ms - Nombre de millisecondes à attendre
+ * @return {Promise<void>}
+ */
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 interface ImportRequest {
   url: string;
@@ -56,9 +69,10 @@ export const importAppartement = onRequest(
         const adminAuth = getAuth();
         const decodedToken = await adminAuth.verifyIdToken(token);
         logger.info(`Token vérifié pour l'utilisateur: ${decodedToken.uid}`);
-      } catch (error: any) {
-        logger.error("Erreur de vérification du token:", error.message);
-        res.status(401).json({success: false, error: `Token invalide: ${error.message}`});
+      } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : "Token invalide";
+        logger.error("Erreur de vérification du token:", msg);
+        res.status(401).json({success: false, error: `Token invalide: ${msg}`});
         return;
       }
     } else {
@@ -109,7 +123,14 @@ export const importAppartement = onRequest(
     let browser;
     try {
       // Lancer Puppeteer avec des options pour éviter la détection
-      browser = await puppeteer.launch({
+      // En production Firebase Functions, utiliser le Chromium système
+      // En développement local, utiliser le Chromium téléchargé par puppeteer
+      const isLocal = process.env.FUNCTIONS_EMULATOR === "true" ||
+                      !process.env.FUNCTION_TARGET;
+
+      // Type des options de lancement
+      type LaunchOptions = Parameters<typeof puppeteerBase.launch>[0];
+      const launchOptions: LaunchOptions = {
         headless: true,
         args: [
           "--no-sandbox",
@@ -118,7 +139,18 @@ export const importAppartement = onRequest(
           "--disable-accelerated-2d-canvas",
           "--disable-gpu",
         ],
-      });
+      };
+
+      // En production, utiliser le Chromium système de Firebase Functions
+      // Cela évite d'avoir à télécharger Chromium pendant le build
+      if (!isLocal) {
+        launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH ||
+                                        process.env.CHROME_BIN ||
+                                        "/usr/bin/google-chrome-stable";
+      }
+      // En local, puppeteer utilisera le Chromium qu'il a téléchargé
+
+      browser = await puppeteer.launch(launchOptions);
 
       const page = await browser.newPage();
 
@@ -163,18 +195,18 @@ export const importAppartement = onRequest(
       }
 
       // Attendre un peu plus pour que le JavaScript se charge
-      await page.waitForTimeout(5000);
+      await delay(5000);
 
       // Scroller plusieurs fois pour déclencher le chargement lazy
       for (let i = 0; i < 3; i++) {
         await page.evaluate((scrollIndex: number) => {
           window.scrollTo(0, (document.body.scrollHeight / 3) * (scrollIndex + 1));
         }, i);
-        await page.waitForTimeout(1000);
+        await delay(1000);
       }
 
       // Attendre que le contenu soit visible
-      await page.waitForTimeout(2000);
+      await delay(2000);
 
       // Logger ce que Puppeteer voit
       const initialPageTitle = await page.title();
@@ -195,8 +227,9 @@ export const importAppartement = onRequest(
         const viewportPath = `${tmpDir}/leboncoin-viewport-${timestamp}.png`;
         await page.screenshot({path: viewportPath, fullPage: false});
         logger.info(`Capture viewport sauvegardée: ${viewportPath}`);
-      } catch (screenshotError: any) {
-        logger.warn(`Impossible de prendre une capture d'écran: ${screenshotError.message}`);
+      } catch (screenshotError: unknown) {
+        const msg = screenshotError instanceof Error ? screenshotError.message : String(screenshotError);
+        logger.warn(`Impossible de prendre une capture d'écran: ${msg}`);
       }
 
       // Vérifier si on est sur une page de captcha ou d'erreur
@@ -219,7 +252,7 @@ export const importAppartement = onRequest(
         "un robot est sur le même réseau",
       ];
 
-      const hasCaptcha = captchaIndicators.some(indicator =>
+      const hasCaptcha = captchaIndicators.some((indicator) =>
         bodyText.includes(indicator) || currentPageTitle.includes(indicator)
       );
 
@@ -234,13 +267,14 @@ export const importAppartement = onRequest(
           const captchaScreenshot = `${tmpDir}/captcha-${timestamp}.png`;
           await page.screenshot({path: captchaScreenshot, fullPage: true});
           logger.info(`Capture d'écran du captcha sauvegardée: ${captchaScreenshot}`);
-        } catch (screenshotError: any) {
-          logger.warn(`Impossible de prendre une capture du captcha: ${screenshotError.message}`);
+        } catch (screenshotError: unknown) {
+          const msg = screenshotError instanceof Error ? screenshotError.message : String(screenshotError);
+          logger.warn(`Impossible de prendre une capture du captcha: ${msg}`);
         }
 
         res.status(400).json({
           success: false,
-          error: "LeBonCoin a détecté le scraping et demande une vérification. Veuillez utiliser le formulaire manuel pour saisir les informations.",
+          error: "LeBonCoin a détecté le scraping. Utilisez le formulaire manuel pour saisir les informations.",
           requiresManualInput: true,
           captchaDetected: true,
         });
@@ -454,8 +488,9 @@ export const importAppartement = onRequest(
             } else {
               logger.warn(`Impossible de télécharger l'image: ${photoUrl}`);
             }
-          } catch (error: any) {
-            logger.warn(`Erreur lors du téléchargement de l'image ${photoUrl}: ${error.message}`);
+          } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : String(error);
+            logger.warn(`Erreur lors du téléchargement de l'image ${photoUrl}: ${msg}`);
           }
         }
 
@@ -489,13 +524,17 @@ export const importAppartement = onRequest(
       logger.info(`Données extraites avec succès: ${parsedData.titre}`);
 
       // Ne pas logger les données complètes si elles contiennent des images base64 (trop volumineux)
+      type PhotoItem = string | {url: string; base64?: string};
       const logData = {
         ...parsedData,
-        photos: Array.isArray(parsedData.photos)
-          ? (parsedData.photos as any[]).map((p: any) =>
-              typeof p === "string" ? p : {url: p.url, hasBase64: !!p.base64}
-            )
-          : parsedData.photos,
+        photos:
+          Array.isArray(parsedData.photos) ?
+            (parsedData.photos as PhotoItem[]).map((p: PhotoItem) =>
+              typeof p === "string" ?
+                p :
+                {url: p.url, hasBase64: !!p.base64}
+            ) :
+            parsedData.photos,
       };
       logger.info(`Données extraites: ${JSON.stringify(logData, null, 2)}`);
 
